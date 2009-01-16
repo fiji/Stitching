@@ -49,32 +49,47 @@ public class Stitch_Image_Grid implements PlugIn
 {
 	private String myURL = "http://fly.mpi-cbg.de/~preibisch/contact.html";
 	
+	public static int gridSizeXStatic = 3, gridSizeYStatic = 3;
+	public static double overlapStatic = 20;
+	public static String directoryStatic = "";
+	public static String fileNamesStatic = "TiledConfocal_{ii}.lsm";
+	public static String rgbOrderStatic = rgbTypes[0];
+	public static String tileConfStatic = "TileConfiguration.txt";
+	public static boolean writeOnlyTileConfStatic = false;
+	public static int startXStatic = 1;
+	public static int startYStatic = 1;
+	public static int startIStatic = 1;
+	public static String handleRGBStatic = colorList[colorList.length - 1];
+	public static String fusionMethodStatic = methodListCollection[LIN_BLEND];
+	public static double alphaStatic = 1.5;
+	public static double thresholdRStatic = 0.3;
+	public static double thresholdDisplacementRelativeStatic = 2.5;
+	public static double thresholdDisplacementAbsoluteStatic = 3.5;
+	public static boolean previewOnlyStatic = false;
+	
 	public void run(String arg0)
 	{
 		GenericDialog gd = new GenericDialog("Stitch Image Grid");
 		GridLayout gridLayout = new GridLayout();
 		
-		gd.addNumericField("grid_size_x", 3, 0);
-		gd.addNumericField("grid_size_y", 3, 0);
-		gd.addSlider("overlap [%]", 0, 100, 20);
-		gd.addStringField("directory", "", 50);
-		//gd.addMessage("Enter the file name, replace either 'x' or 'y' or\nan increasing number 'i' with wildcards:");
-		//gd.addMessage("{i} means 0, 1, 2, 3,...10,...100\n{ii} means 00, 01, 02, 03,...10,...100");
-		//gd.addMessage("e.g. TiledConfocal_X-Tile{xx}_Y-Tile{yy}.tif");
-		gd.addStringField("file_names", "TiledConfocal_{ii}.lsm", 50);
-		gd.addChoice("rgb_order", rgbTypes, rgbTypes[0]);
-		gd.addStringField("Output_file_name", "TileConfiguration.txt", 50);
-		gd.addCheckbox("Save_Only_Tile_Configuration", false);
-		gd.addNumericField("start_x", 1, 0);
-		gd.addNumericField("start_y", 1, 0);
-		gd.addNumericField("start_i", 1, 0);
-		gd.addChoice("channels_for_registration", colorList, colorList[colorList.length - 1]);
-		gd.addChoice("fusion_method", methodListCollection, methodListCollection[LIN_BLEND]);
-		gd.addNumericField("fusion_alpha", gridLayout.alpha, 2);
-		gd.addNumericField("regression_threshold", gridLayout.thresholdR, 2);
-		gd.addNumericField("max/avg_displacement_threshold", gridLayout.thresholdDisplacementRelative, 2);		
-		gd.addNumericField("absolute_displacement_threshold", gridLayout.thresholdDisplacementAbsolute, 2);		
-		gd.addCheckbox("create_only_preview", false);
+		gd.addNumericField("grid_size_x", gridSizeXStatic, 0);
+		gd.addNumericField("grid_size_y", gridSizeYStatic, 0);
+		gd.addSlider("overlap [%]", 0, 100, overlapStatic);
+		gd.addStringField("directory", directoryStatic, 50);
+		gd.addStringField("file_names", fileNamesStatic, 50);
+		gd.addChoice("rgb_order", rgbTypes, rgbOrderStatic);
+		gd.addStringField("Output_file_name", tileConfStatic, 50);
+		gd.addCheckbox("Save_Only_Tile_Configuration", writeOnlyTileConfStatic);
+		gd.addNumericField("start_x", startXStatic, 0);
+		gd.addNumericField("start_y", startYStatic, 0);
+		gd.addNumericField("start_i", startIStatic, 0);
+		gd.addChoice("channels_for_registration", colorList, handleRGBStatic);
+		gd.addChoice("fusion_method", methodListCollection, fusionMethodStatic);
+		gd.addNumericField("fusion_alpha", alphaStatic, 2);
+		gd.addNumericField("regression_threshold", thresholdRStatic, 2);
+		gd.addNumericField("max/avg_displacement_threshold", thresholdDisplacementRelativeStatic, 2);		
+		gd.addNumericField("absolute_displacement_threshold", thresholdDisplacementAbsoluteStatic, 2);		
+		gd.addCheckbox("create_only_preview", previewOnlyStatic);
 		gd.addMessage("");
 		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
 
@@ -86,22 +101,56 @@ public class Stitch_Image_Grid implements PlugIn
 		
 		gridLayout.sizeX = (int)Math.round(gd.getNextNumber());
 		gridLayout.sizeY = (int)Math.round(gd.getNextNumber());
+		gridSizeXStatic = gridLayout.sizeX;
+		gridSizeYStatic = gridLayout.sizeY;
+		
 		double overlap = gd.getNextNumber()/100;
+		overlapStatic = overlap;
+		
 		String directory = gd.getNextString();
+		directoryStatic = directory;
+		
 		String filenames = gd.getNextString();
+		fileNamesStatic = filenames;
+		
 		gridLayout.rgbOrder = gd.getNextChoice();
+		rgbOrderStatic = gridLayout.rgbOrder;
+		
 		String output = gd.getNextString();
+		tileConfStatic = output;
+		
 		boolean writeOnlyOutput = gd.getNextBoolean();
+		writeOnlyTileConfStatic = writeOnlyOutput;
+		
 		int startX = (int)Math.round(gd.getNextNumber());
+		startXStatic = startX;
+		
 		int startY = (int)Math.round(gd.getNextNumber());
+		startYStatic = startY;
+		
 		int startI = (int)Math.round(gd.getNextNumber());
+		startIStatic = startI;
+		
 		String handleRGB = gd.getNextChoice();
+		handleRGBStatic = handleRGB;
+		
 		String fusionMethod = gd.getNextChoice();
+		fusionMethodStatic = fusionMethod;
+		
 		gridLayout.alpha = gd.getNextNumber();
+		alphaStatic = gridLayout.alpha;
+		
 		gridLayout.thresholdR = gd.getNextNumber();
+		thresholdRStatic = gridLayout.thresholdR;
+		
 		gridLayout.thresholdDisplacementRelative = gd.getNextNumber();
+		thresholdDisplacementRelativeStatic = gridLayout.thresholdDisplacementRelative;
+		
 		gridLayout.thresholdDisplacementAbsolute = gd.getNextNumber();
+		thresholdDisplacementAbsoluteStatic = gridLayout.thresholdDisplacementAbsolute;
+		
 		boolean previewOnly = gd.getNextBoolean();
+		previewOnlyStatic = previewOnly;
 
 		// find how to parse
 		String replaceX = "{", replaceY = "{", replaceI = "{";

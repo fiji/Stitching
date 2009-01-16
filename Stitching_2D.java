@@ -33,7 +33,6 @@ import ij.gui.Roi;
 import java.awt.Choice;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Hashtable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,19 +45,26 @@ import stitching.Point2D;
 public class Stitching_2D implements PlugIn
 {
 	private String myURL = "http://fly.mpi-cbg.de/~preibisch/contact.html";
-	public String image1, image2, handleRGB1, handleRGB2, method = "Average", fusedImageName;
-	public boolean fuseImages = true, windowing = true, doLogging = true;
-	public int checkPeaks = 5;
-	public double alpha = 1.5;
+	public String image1, image2, fusedImageName;
+	
+	public static String methodStatic = methodList[1];
+	public static String handleRGB1Static = colorList[colorList.length - 1];
+	public static String handleRGB2Static = colorList[colorList.length - 1];
+	public static boolean fuseImagesStatic = true, windowingStatic = true;
+	public static int checkPeaksStatic = 5;
+	public static double alphaStatic = 1.5;
+
+	public String method = methodList[1];
+	public String handleRGB1= colorList[colorList.length - 1];
+	public String handleRGB2= colorList[colorList.length - 1];
+	public boolean fuseImages= true, windowing = true;
+	public int checkPeaks= 5;
+	public double alpha= 1.5;
+	
+	public boolean doLogging = true;
 	public ImagePlus imp1 = null, imp2 = null;
 	
-	public Point2D shift = null;
-	public static String computeFlag = "Computing....";
-	private static Hashtable<String, String> hash = new Hashtable<String, String>();
-	private static final AtomicInteger ai = new AtomicInteger(0);
-	private String myID = "";
-	private boolean calledFromMacro = false;
-	
+	public Point2D shift = null;	
 	private CrossCorrelationResult2D[] result = null;
 	
 	public Point2D getTranslation() { return shift.clone(); }
@@ -105,19 +111,19 @@ public class Stitching_2D implements PlugIn
 		// create generic dialog
 		GenericDialog gd = new GenericDialog("Stitching of 2D Images");
 		gd.addChoice("First image (reference)", nostackList, nostackList[0]);
-		gd.addChoice("Use_Channel_for_First", colorList, colorList[colorList.length - 1]);
+		gd.addChoice("Use_Channel_for_First", colorList, handleRGB1Static);
 		enableChannelChoice((Choice) gd.getChoices().get(0), (Choice) gd.getChoices().get(1), nostackIDs);
 
 		gd.addChoice("Second image (to register)", nostackList, nostackList[1]);
-		gd.addChoice("Use_Channel_for_Second", colorList, colorList[colorList.length - 1]);
+		gd.addChoice("Use_Channel_for_Second", colorList, handleRGB2Static);
 		enableChannelChoice((Choice) gd.getChoices().get(2), (Choice) gd.getChoices().get(3), nostackIDs);
 
-		gd.addCheckbox("Use windowing", true);
-		gd.addNumericField("How many peaks should be checked", 5, 0);
+		gd.addCheckbox("Use windowing", windowingStatic);
+		gd.addNumericField("How many peaks should be checked", checkPeaksStatic, 0);
 		gd.addMessage("");
-		gd.addCheckbox("Create merged image (fusion)", true);
-		gd.addChoice("Fusion method", methodList, methodList[1]);
-		gd.addNumericField("Fusion alpha", alpha, 2);		
+		gd.addCheckbox("Create merged image (fusion)", fuseImagesStatic);
+		gd.addChoice("Fusion method", methodList, methodStatic);
+		gd.addNumericField("Fusion alpha", alphaStatic, 2);		
 		gd.addStringField("Fused image name: ", "Fused_" + nostackList[0] + "_" + nostackList[1]);
 		gd.addMessage("");
 		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
@@ -131,18 +137,26 @@ public class Stitching_2D implements PlugIn
 			return;
 
 		this.image1 = gd.getNextChoice();
-		this.handleRGB1 = gd.getNextChoice();
+		handleRGB1Static = gd.getNextChoice();
 		this.image2 = gd.getNextChoice();
-		this.handleRGB2 = gd.getNextChoice();
+		handleRGB2Static = gd.getNextChoice();
 		this.imp1 = WindowManager.getImage(nostackIDs[((Choice) gd.getChoices().get(0)).getSelectedIndex()]);
 		this.imp2 = WindowManager.getImage(nostackIDs[((Choice) gd.getChoices().get(2)).getSelectedIndex()]);
-		this.windowing = gd.getNextBoolean();
-		this.checkPeaks = (int) gd.getNextNumber();
-		this.fuseImages = gd.getNextBoolean();
-		this.method = gd.getNextChoice();
-		this.alpha = gd.getNextNumber();
+		windowingStatic = gd.getNextBoolean();
+		checkPeaksStatic = (int) gd.getNextNumber();
+		fuseImagesStatic = gd.getNextBoolean();
+		methodStatic = gd.getNextChoice();
+		alphaStatic = gd.getNextNumber();
 		this.fusedImageName = gd.getNextString();
 
+		method = methodStatic;
+		handleRGB1= handleRGB1Static;
+		handleRGB2= handleRGB2Static;
+		fuseImages = fuseImagesStatic;
+		windowing = windowingStatic;
+		checkPeaks = checkPeaksStatic;
+		alpha = alphaStatic;
+		
 		//
 		// determine wheater a macro called it which limits in determining name
 		// clashes
@@ -162,7 +176,7 @@ public class Stitching_2D implements PlugIn
 			return;
 		}
 
-		if (this.fuseImages)
+		if (fuseImages)
 		{
 			if (imp1.getType() != imp2.getType())
 			{
@@ -170,7 +184,7 @@ public class Stitching_2D implements PlugIn
 				return;
 			}
 
-			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && this.method.equals(methodList[RED_CYAN]))
+			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && method.equals(methodList[RED_CYAN]))
 			{
 				IJ.log("Warning: Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
 			}
@@ -209,12 +223,8 @@ public class Stitching_2D implements PlugIn
 			imp = WindowManager.getImage(img);
 		} catch (Exception e)
 		{
-			if (calledFromMacro)
-				hash.put(myID, "Could not find image: " + e);
-			else
-				IJ.error(myID, "Could not find image: " + e);
-		}
-		;
+			IJ.error("Could not find image: " + e);
+		};
 
 		return imp;
 	}
@@ -223,87 +233,13 @@ public class Stitching_2D implements PlugIn
 	{
 	}
 
-	public Stitching_2D(String image1, String image2, String windowing, String checkPeaks,
-						String fuseImages, String method, String fusedImageName)
+	public Stitching_2D(boolean windowing1, int checkPeaks1, boolean fuseImages1, String method1, String fusedImageName1)
 	{
-
-		// get a unique ID
-		myID = "" + ai.getAndIncrement();
-		hash.put(myID, "Variables parsed.");
-
-		// parse arguments
-		this.image1 = image1;
-		this.image2 = image2;
-		this.windowing = windowing.equals("true");
-		this.fuseImages = fuseImages.equals("true");
-		this.method = method;
-		this.fusedImageName = fusedImageName;
-
-		try
-		{
-			this.checkPeaks = Integer.parseInt(checkPeaks);
-		} catch (Exception e)
-		{
-			hash.put(myID, "Error parsing variable checkPeaks: " + checkPeaks + " (" + e + ") -  Should be a integer number, f. ex. 5");
-		}
-	}
-
-	public Stitching_2D(boolean windowing, int checkPeaks, boolean fuseImages, String method, String fusedImageName)
-	{
-		this.windowing = windowing;
-		this.fuseImages = fuseImages;
-		this.method = method;
-		this.fusedImageName = fusedImageName;
-		this.checkPeaks = checkPeaks;
-	}
-
-	//
-	// call this from a macro
-	// id = call("Stitching_3D.compute", "jimmy", "17.546764379639046");
-	//
-	public static String compute(String image1, String image2, String windowing, String checkPeaks,
-								 String fuseImages, String method, String fusedImageName)
-
-	{
-		Stitching_2D plugIn = new Stitching_2D(image1, image2, windowing, checkPeaks, fuseImages, method, fusedImageName);
-
-		// variables parsing failed
-		if (!hash.get(plugIn.myID).equals("Variables parsed."))
-			return plugIn.myID;
-
-		hash.put(plugIn.myID, computeFlag);
-
-		// the instance of the plugin knows that it was called from the macro (or source code)
-		plugIn.calledFromMacro = true;
-
-		// start working
-		plugIn.work();
-
-		return plugIn.myID;
-	}
-
-	//
-	// call this from a macro, after calling it once (when finished) it will no longer be available
-	// result = call("Your_PlugIn.getResult", id);
-	//
-	// x = call("ij.Macro.getValue", result, "x", 0);
-	// y = call("ij.Macro.getValue", result, "y", 0);
-	// z = call("ij.Macro.getValue", result, "z", 0);
-	// r = call("ij.Macro.getValue", result, "r", 0);
-	// BE CAREFUL: you have to use always LOWER case field names (x,y,z,r, ...)!!!!
-	//
-	public static String getResult(String id)
-	{
-		String result = (String) hash.get(id);
-
-		if (result == null)
-			result = "";
-		else
-		if (!result.equals(computeFlag))
-			hash.remove(id);
-
-		// "x=100 y=12 z=0 r=0.4365436"
-		return result;
+		windowing = windowing1;
+		fuseImages = fuseImages1;
+		method = method1;
+		fusedImageName = fusedImageName1;
+		checkPeaks = checkPeaks1;
 	}
 
 	public void work()
@@ -338,8 +274,8 @@ public class Stitching_2D implements PlugIn
 				return;
 
 			// apply ROIs if they are there and save dimensions of original images and size increases
-			img1 = applyROI(imp1, img1Dim, ext1Dim, this.handleRGB1, windowing);
-			img2 = applyROI(imp2, img2Dim, ext2Dim, this.handleRGB2, windowing);
+			img1 = applyROI(imp1, img1Dim, ext1Dim, handleRGB1, windowing);
+			img2 = applyROI(imp2, img2Dim, ext2Dim, handleRGB2, windowing);
 		}
 		else
 		{
@@ -387,8 +323,8 @@ public class Stitching_2D implements PlugIn
 		ArrayList<Point2D> peaks = findPeaks(invPCM, img1Dim, img2Dim, ext1Dim, ext2Dim, checkPeaks);
 
 		// get the original images
-		img1 = applyROI(imp1, img1Dim, ext1Dim, this.handleRGB1, false /*no windowing of course*/);
-		img2 = applyROI(imp2, img2Dim, ext2Dim, this.handleRGB2, false /*no windowing of course*/);
+		img1 = applyROI(imp1, img1Dim, ext1Dim, handleRGB1, false /*no windowing of course*/);
+		img2 = applyROI(imp2, img2Dim, ext2Dim, handleRGB2, false /*no windowing of course*/);
 
 		// test peaks
 		result = testCrossCorrelation(invPCM, peaks, img1, img2);
@@ -396,10 +332,10 @@ public class Stitching_2D implements PlugIn
 		// get shift of images relative to each other
 		shift = getImageOffset(result[0], imp1, imp2);
 
-		if (this.fuseImages)
+		if (fuseImages)
 		{
 			// merge if wanted
-			ImagePlus fused = fuseImages(imp1, imp2, shift, this.method, this.fusedImageName);
+			ImagePlus fused = fuseImages(imp1, imp2, shift, method, fusedImageName);
 			fused.show();
 		}
 
@@ -1219,10 +1155,7 @@ public class Stitching_2D implements PlugIn
 
 		if (img1HasROI && !img2HasROI || img2HasROI && !img1HasROI)
 		{
-			if (calledFromMacro)
-				hash.put(myID, "Eigher both images should have a ROI or none of them.");
-			else
-				IJ.error(myID, "Eigher both images should have a ROI or none of them.");
+			IJ.error("Eigher both images should have a ROI or none of them.");
 
 			return false;
 		}
@@ -1234,18 +1167,12 @@ public class Stitching_2D implements PlugIn
 
 			if (type1 != Roi.RECTANGLE)
 			{
-				if (calledFromMacro)
-					hash.put(myID, imp1.getTitle() + " has a ROI which is no rectangle.");
-				else
-					IJ.error(myID, imp1.getTitle() + " has a ROI which is no rectangle.");
+				IJ.error(imp1.getTitle() + " has a ROI which is no rectangle.");
 			}
 
 			if (type2 != Roi.RECTANGLE)
 			{
-				if (calledFromMacro)
-					hash.put(myID, imp2.getTitle() + " has a ROI which is no rectangle.");
-				else
-					IJ.error(myID, imp2.getTitle() + " has a ROI which is no rectangle.");
+				IJ.error(imp2.getTitle() + " has a ROI which is no rectangle.");
 			}
 		}
 

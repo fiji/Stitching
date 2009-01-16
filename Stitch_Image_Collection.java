@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import ij.gui.GenericDialog;
 import ij.gui.MultiLineLabel;
+import ij.measure.Calibration;
 import ij.plugin.PlugIn;
 import ij.IJ;
 import ij.ImagePlus;
@@ -64,26 +65,35 @@ import static stitching.CommonFunctions.rgbTypes;
 public class Stitch_Image_Collection implements PlugIn
 {
 	final private String myURL = "http://fly.mpi-cbg.de/~preibisch/contact.html";
-	public String rgbOrder = "rgb";
-	public double thresholdR = 0.3f;
-	public double alpha = 1.5f;
-	public double thresholdDisplacementRelative = 2.5f;
-	public double thresholdDisplacementAbsolute = 3.5f;
 	public int dim = -1;
+	
+	public double alpha, thresholdR, thresholdDisplacementRelative, thresholdDisplacementAbsolute;
+	public String rgbOrder;
+	
+	public static String fileNameStatic = "TileConfiguration.txt";
+	public static String handleRGBStatic = colorList[colorList.length - 1];
+	public static String rgbOrderStatic = rgbTypes[0];	
+	public static String fusionMethodStatic = methodListCollection[LIN_BLEND];
+	public static double alphaStatic = 1.5;
+	public static double thresholdRStatic = 0.3;
+	public static double thresholdDisplacementRelativeStatic = 2.5;
+	public static double thresholdDisplacementAbsoluteStatic = 3.5;
+	public static boolean previewOnlyStatic = false;
+
 	
 	public void run(String arg0)
 	{
 		GenericDialog gd = new GenericDialog("Stitch Image Collection");
 		
-		gd.addStringField("Layout file", "TileConfiguration.txt", 30);
-		gd.addChoice("Channels_for_Registration", colorList, colorList[colorList.length - 1]);
-		gd.addChoice("rgb_order", rgbTypes, rgbTypes[0]);
+		gd.addStringField("Layout file", fileNameStatic, 50);
+		gd.addChoice("Channels_for_Registration", colorList, handleRGBStatic);
+		gd.addChoice("rgb_order", rgbTypes, rgbOrderStatic);
 		gd.addChoice("Fusion_Method", methodListCollection, methodListCollection[LIN_BLEND]);
-		gd.addNumericField("Fusion alpha", alpha, 2);
-		gd.addNumericField("Regression Threshold", thresholdR, 2);
-		gd.addNumericField("Max/Avg Displacement Threshold", thresholdDisplacementRelative, 2);		
-		gd.addNumericField("Absolute Avg Displacement Threshold", thresholdDisplacementAbsolute, 2);		
-		gd.addCheckbox("Create_only_Preview", false);
+		gd.addNumericField("Fusion alpha", alphaStatic, 2);
+		gd.addNumericField("Regression Threshold", thresholdRStatic, 2);
+		gd.addNumericField("Max/Avg Displacement Threshold", thresholdDisplacementRelativeStatic, 2);		
+		gd.addNumericField("Absolute Avg Displacement Threshold", thresholdDisplacementAbsoluteStatic, 2);		
+		gd.addCheckbox("Create_only_Preview", previewOnlyStatic);
 		gd.addMessage("");
 		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
 
@@ -94,14 +104,31 @@ public class Stitch_Image_Collection implements PlugIn
 		if (gd.wasCanceled()) return;
 
 		String fileName = gd.getNextString();
+		fileNameStatic = fileName;
+		
 		String handleRGB = gd.getNextChoice();
-		rgbOrder = gd.getNextChoice();
+		handleRGBStatic = handleRGB;
+		
+		this.rgbOrder = gd.getNextChoice();
+		rgbOrderStatic = rgbOrder;
+		
 		String fusionMethod = gd.getNextChoice();
-		alpha = gd.getNextNumber();
-		thresholdR = gd.getNextNumber();
-		thresholdDisplacementRelative = gd.getNextNumber();
-		thresholdDisplacementAbsolute = gd.getNextNumber();
+		fusionMethodStatic = fusionMethod;
+		
+		this.alpha = gd.getNextNumber();
+		alphaStatic = alpha;
+		
+		this.thresholdR = gd.getNextNumber();
+		thresholdRStatic = thresholdR;
+		
+		this.thresholdDisplacementRelative = gd.getNextNumber();
+		thresholdDisplacementRelativeStatic = thresholdDisplacementRelative;
+		
+		this.thresholdDisplacementAbsolute = gd.getNextNumber();
+		thresholdDisplacementAbsoluteStatic = thresholdDisplacementAbsolute;
+		
 		boolean previewOnly = gd.getNextBoolean();
+		previewOnlyStatic = previewOnly;
 		
 		work(fileName, previewOnly, fusionMethod, handleRGB);		
 	}
@@ -211,6 +238,8 @@ public class Stitch_Image_Collection implements PlugIn
 			IJ.error("Unsupported/Unknown Image Type: " + imageType);
 			return null;
 		}
+
+		Calibration cal = null;
 		
 		final ImageStack fusedStack = fusedImp.getStack();	
 		fusedImp.show();
@@ -235,6 +264,8 @@ public class Stitch_Image_Collection implements PlugIn
 					imp = CommonFunctions.loadImage("", iI.imageName, rgbOrder);
 				else
 					imp = iI.imp;
+
+				cal = updateCalibration( cal, iI.imp.getCalibration() );
 				
 				final Object[] imageStack1 = imp.getStack().getImageArray();
 				final int w1 = imp.getStack().getWidth();
@@ -389,6 +420,8 @@ public class Stitch_Image_Collection implements PlugIn
 					iI.tmp = CommonFunctions.loadImage("", iI.imageName, rgbOrder);
 				else
 					iI.tmp = iI.imp;		
+				
+				cal = updateCalibration( cal, iI.imp.getCalibration() );
 				
 				iI.imageStack = iI.tmp.getStack().getImageArray();
 				iI.w = iI.tmp.getStack().getWidth();
@@ -573,7 +606,26 @@ public class Stitch_Image_Collection implements PlugIn
 		fusedImp.setTitle(name);
 		fusedImp.updateAndDraw();
 		
+		if ( cal != null)
+			fusedImp.setCalibration(cal);
+		
 		return fusedImp;
+	}
+	
+	
+	protected static Calibration updateCalibration( Calibration cal, Calibration newOne )
+	{
+		if ( cal == null )
+			cal = newOne.copy();
+		else
+			if ( !cal.equals(newOne) )
+			{
+				IJ.log( "Calibration mismatch: " );
+				IJ.log( "  First   image: " + cal.toString() );
+				IJ.log( "  Current image: " + newOne.toString() );						
+			}
+		
+		return cal;
 	}
 	
 	final private static void computeLinearWeights(final ImageInformation[] indices, final int num, final int[] pos, final float[] weights, final int[] minDistance, final double alpha)

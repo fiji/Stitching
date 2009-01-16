@@ -24,6 +24,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -63,13 +64,13 @@ public class CommonFunctions
 		if (smallFile.endsWith("tif") || smallFile.endsWith("tiff") || smallFile.endsWith("jpg") || smallFile.endsWith("png") || smallFile.endsWith("bmp") || 
 			smallFile.endsWith("gif") || smallFile.endsWith("jpeg"))
 		{
-			imp = new Opener().openImage(directory + file);
+			imp = new Opener().openImage((new File(directory, file)).getPath());
 		}
 		else
 		{
 			imp = openLOCIImagePlus(directory, file, rgb);
 			if (imp == null)
-				imp = new Opener().openImage(directory + file);
+				imp = new Opener().openImage((new File(directory, file)).getPath());
 		}
 
 		

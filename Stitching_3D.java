@@ -51,11 +51,25 @@ import stitching.Point3D;
 public class Stitching_3D implements PlugIn
 {
 	private String myURL = "http://fly.mpi-cbg.de/~preibisch/contact.html";
-	public String imgStack1, imgStack2, handleRGB1, handleRGB2, method, fusedImageName;
-	public ImagePlus imp1 = null, imp2 = null;
-	public boolean fuseImages, windowing, coregister, wasIndexed, doLogging = true;
+	public String imgStack1, imgStack2, fusedImageName;
+	
+	public static String methodStatic = methodList[1];
+	public static String handleRGB1Static = colorList[colorList.length - 1];
+	public static String handleRGB2Static = colorList[colorList.length - 1];
+	public static boolean fuseImagesStatic = true, windowingStatic = true, coregisterStatic = false;
+	public static int checkPeaksStatic = 5, numberOfChannelsStatic = 1;
+	public static double alphaStatic = 1.5;
+
+	public String method;
+	public String handleRGB1;
+	public String handleRGB2;
+	public boolean fuseImages, windowing, coregister;
 	public int checkPeaks, numberOfChannels;
-	public double minOverlap = 0.01, alpha = 1.5;
+	public double alpha;
+
+	public ImagePlus imp1 = null, imp2 = null;
+	public boolean wasIndexed, doLogging = true;
+	public double minOverlap = 0.01;
 	private ArrayList<String[]> coregStacks;
 	private ArrayList<ImagePlus[]> coregStackIMPs;
 	private ArrayList<Boolean> coregWasIndexed;
@@ -109,21 +123,21 @@ public class Stitching_3D implements PlugIn
 		// create generic dialog
 		GenericDialog gd = new GenericDialog("Stitching of 3D Images");
 		gd.addChoice("First_Stack (reference)", stackList, stackList[0]);
-		gd.addChoice("Use_Channel_for_First", colorList, colorList[colorList.length - 1]);
+		gd.addChoice("Use_Channel_for_First", colorList, handleRGB1Static);
 		enableChannelChoice((Choice) gd.getChoices().get(0), (Choice) gd.getChoices().get(1), stackIDs);
 
 		gd.addChoice("Second_Stack (to register)", stackList, stackList[1]);
-		gd.addChoice("Use_Channel_for_Second", colorList, colorList[colorList.length - 1]);
+		gd.addChoice("Use_Channel_for_Second", colorList, handleRGB2Static);
 		enableChannelChoice((Choice) gd.getChoices().get(2), (Choice) gd.getChoices().get(3), stackIDs);
 
-		gd.addCheckbox("Use_Windowing", true);
-		gd.addNumericField("Peaks", 5, 0);
-		gd.addCheckbox("Create_Fused_Image", true);
-		gd.addChoice("Fusion_Method", methodList, methodList[1]);
-		gd.addNumericField("Fusion alpha", alpha, 2);		
+		gd.addCheckbox("Use_Windowing", windowingStatic);
+		gd.addNumericField("Peaks", checkPeaksStatic, 0);
+		gd.addCheckbox("Create_Fused_Image", fuseImagesStatic);
+		gd.addChoice("Fusion_Method", methodList, methodStatic);
+		gd.addNumericField("Fusion alpha", alphaStatic, 2);		
 		gd.addStringField("Fused_Image_Name: ", "Fused_" + stackList[0] + "_" + stackList[1]);
-		gd.addCheckbox("Apply_to_other_Channels", false);
-		gd.addNumericField("Number_of_other_Channels", 1, 0);
+		gd.addCheckbox("Apply_to_other_Channels", coregisterStatic);
+		gd.addNumericField("Number_of_other_Channels", numberOfChannelsStatic, 0);
 		gd.addMessage("");
 		gd.addMessage("This Plugin is developed by Stephan Preibisch\n" + myURL);
 
@@ -144,19 +158,29 @@ public class Stitching_3D implements PlugIn
 		if (gd.wasCanceled()) return;
 
 		this.imgStack1 = gd.getNextChoice();
-		this.handleRGB1 = gd.getNextChoice();
+		handleRGB1Static = gd.getNextChoice();
 		this.imgStack2 = gd.getNextChoice();
-		this.handleRGB2 = gd.getNextChoice();
+		handleRGB2Static = gd.getNextChoice();
 		this.imp1 = WindowManager.getImage(stackIDs[((Choice) gd.getChoices().get(0)).getSelectedIndex()]);
 		this.imp2 = WindowManager.getImage(stackIDs[((Choice) gd.getChoices().get(2)).getSelectedIndex()]);
-		this.windowing = gd.getNextBoolean();
-		this.checkPeaks = (int) gd.getNextNumber();
-		this.fuseImages = gd.getNextBoolean();
-		this.method = gd.getNextChoice();
-		this.alpha = gd.getNextNumber();
+		windowingStatic = gd.getNextBoolean();
+		checkPeaksStatic = (int) gd.getNextNumber();
+		fuseImagesStatic = gd.getNextBoolean();
+		methodStatic = gd.getNextChoice();
+		alphaStatic = gd.getNextNumber();
 		this.fusedImageName = gd.getNextString();
-		this.coregister = gd.getNextBoolean();
-		this.numberOfChannels = (int) gd.getNextNumber();
+		coregisterStatic = gd.getNextBoolean();
+		numberOfChannelsStatic = (int) gd.getNextNumber();
+
+		method = methodStatic;
+		handleRGB1 = handleRGB1Static;
+		handleRGB2 = handleRGB2Static;
+		fuseImages = fuseImagesStatic;
+		windowing = windowingStatic;
+		coregister = coregisterStatic;
+		checkPeaks = checkPeaksStatic;
+		numberOfChannels = numberOfChannelsStatic;
+		alpha = alphaStatic;
 
 		//
 		// determine wheater a macro called it which limits in determining name
@@ -177,7 +201,7 @@ public class Stitching_3D implements PlugIn
 			return;
 		}
 
-		if (this.fuseImages)
+		if (fuseImages)
 		{
 			if (imp1.getType() != imp2.getType())
 			{
@@ -185,13 +209,13 @@ public class Stitching_3D implements PlugIn
 				return;
 			}
 
-			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && this.method.equals(methodList[RED_CYAN]))
+			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && method.equals(methodList[RED_CYAN]))
 			{
 				IJ.log("Warning: Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
 			}
 		}
 
-		if (!this.fuseImages) this.coregister = false;
+		if (!fuseImages) coregister = false;
 
 		if (imp1.getType() == ImagePlus.COLOR_256)
 		{
@@ -206,14 +230,14 @@ public class Stitching_3D implements PlugIn
 			wasIndexed = false;
 		}
 
-		if (this.coregister)
+		if (coregister)
 		{
-			if (this.fuseImages == false)
+			if (fuseImages == false)
 			{
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "Co-Registration makes only sense if you want to fuse the image stacks, actually you only get the numbers. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else this.coregister = false;
+				else coregister = false;
 
 			}
 			else if (stackList.length < 3)
@@ -221,26 +245,26 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have only two stacks open, there is nothing to co-register. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else this.coregister = false;
+				else coregister = false;
 			}
-			else if (this.numberOfChannels < 1)
+			else if (numberOfChannels < 1)
 			{
 
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have selected less than 1 stack to co-register...that makes no sense to me. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else this.coregister = false;
+				else coregister = false;
 			}
 			else
 			{
 				GenericDialog coreg = new GenericDialog("Co-Registration");
-				for (int i = 0; i < this.numberOfChannels; i++)
+				for (int i = 0; i < numberOfChannels; i++)
 				{
 					coreg.addMessage("Co-Register Stack #" + (i + 1));
 					coreg.addChoice("First_Image_Stack_" + (i + 1) + " (not moved)", stackList, stackList[2]);
 					coreg.addChoice("Second_Image_Stack_" + (i + 1) + " (moved)", stackList, stackList[3]);
 					coreg.addStringField("Fused_Image_Name_" + (i + 1), "Fused Channel " + (i + 2));
-					if (i + 1 != this.numberOfChannels) coreg.addMessage("");
+					if (i + 1 != numberOfChannels) coreg.addMessage("");
 				}
 
 				coreg.showDialog();
@@ -251,7 +275,7 @@ public class Stitching_3D implements PlugIn
 				this.coregStackIMPs = new ArrayList<ImagePlus[]>();
 				this.coregWasIndexed = new ArrayList<Boolean>();
 
-				for (int i = 0; i < this.numberOfChannels; i++)
+				for (int i = 0; i < numberOfChannels; i++)
 				{
 					String[] entry = new String[3];
 					entry[0] = coreg.getNextChoice();
@@ -370,13 +394,13 @@ public class Stitching_3D implements PlugIn
 	{
 	}
 
-	public Stitching_3D(boolean windowing, int checkPeaks, boolean fuseImages, String method, String fusedImageName)
+	public Stitching_3D(boolean windowing1, int checkPeaks1, boolean fuseImages1, String method1, String fusedImageName1)
 	{
-		this.windowing = windowing;
-		this.fuseImages = fuseImages;
-		this.method = method;
-		this.fusedImageName = fusedImageName;
-		this.checkPeaks = checkPeaks;
+		windowing = windowing1;
+		fuseImages = fuseImages1;
+		method = method1;
+		fusedImageName = fusedImageName1;
+		checkPeaks = checkPeaks1;
 	}
 
 	public void work()
@@ -417,8 +441,8 @@ public class Stitching_3D implements PlugIn
 			// images and size increases
 			if (this.translation == null)
 			{
-				img1 = applyROI(imp1, img1Dim, ext1Dim, this.handleRGB1, windowing);
-				img2 = applyROI(imp2, img2Dim, ext2Dim, this.handleRGB2, windowing);
+				img1 = applyROI(imp1, img1Dim, ext1Dim, handleRGB1, windowing);
+				img2 = applyROI(imp2, img2Dim, ext2Dim, handleRGB2, windowing);
 			}
 		}
 		else
@@ -466,8 +490,8 @@ public class Stitching_3D implements PlugIn
 			ArrayList<Point3D> peaks = findPeaks(invPCM, img1Dim, img2Dim, ext1Dim, ext2Dim);
 
 			// get the original images
-			img1 = applyROI(imp1, img1Dim, ext1Dim, this.handleRGB1, false /* no windowing of course*/);
-			img2 = applyROI(imp2, img2Dim, ext2Dim, this.handleRGB2, false /* no windowing of course*/);
+			img1 = applyROI(imp1, img1Dim, ext1Dim, handleRGB1, false /* no windowing of course*/);
+			img2 = applyROI(imp2, img2Dim, ext2Dim, handleRGB2, false /* no windowing of course*/);
 
 			// test peaks
 			result = testCrossCorrelation(invPCM, peaks, img1, img2);
@@ -484,10 +508,10 @@ public class Stitching_3D implements PlugIn
 			shift = this.translation;
 		}
 
-		if (this.fuseImages)
+		if (fuseImages)
 		{
 			// merge if wanted
-			ImagePlus fused = fuseImages(imp1, imp2, shift, this.method, this.fusedImageName);
+			ImagePlus fused = fuseImages(imp1, imp2, shift, method, fusedImageName);
 
 			if (fused != null)
 			{
@@ -497,7 +521,7 @@ public class Stitching_3D implements PlugIn
 			}
 
 			// coregister other channels
-			if (this.coregister) for (int i = 0; i < this.numberOfChannels; i++)
+			if (coregister) for (int i = 0; i < numberOfChannels; i++)
 			{
 				String[] stacks = this.coregStacks.get(i);
 				ImagePlus[] imps = this.coregStackIMPs.get(i);
@@ -506,7 +530,7 @@ public class Stitching_3D implements PlugIn
 				imp1 = imps[0];
 				imp2 = imps[1];
 
-				ImagePlus coregistered = fuseImages(imp1, imp2, shift, this.method, stacks[2]);
+				ImagePlus coregistered = fuseImages(imp1, imp2, shift, method, stacks[2]);
 
 				if (coregistered != null)
 				{
@@ -609,473 +633,6 @@ public class Stitching_3D implements PlugIn
 		return Stitch_Image_Collection.fuseImages(imageInformationList, max, name, fusionMethod, "rgb", dim, alpha);
 	}
 	
-	/*private ImagePlus fuseImages(ImagePlus imp1, ImagePlus imp2, Point3D shift, String method, String name)
-	{
-		int type = 0;
-
-		if (method.equals("Average")) type = AVG;
-		else if (method.equals("Linear Blending")) type = LIN_BLEND;
-		else if (method.equals("Max. Intensity")) type = MAX;
-		else if (method.equals("Min. Intensity")) type = MIN;
-		else if (method.equals("Red-Cyan Overlay")) type = RED_CYAN;
-
-		if (imp1.getType() != imp2.getType())
-		{
-			IJ.error("Image Types changed, they are not the same. Cannot fuse them");
-			return null;
-		}
-
-		Object[] imageStack1 = imp1.getStack().getImageArray();
-		int w1 = imp1.getStack().getWidth();
-		int h1 = imp1.getStack().getHeight();
-		int d1 = imp1.getStack().getSize();
-
-		Object[] imageStack2 = imp2.getStack().getImageArray();
-		int w2 = imp2.getStack().getWidth();
-		int h2 = imp2.getStack().getHeight();
-		int d2 = imp2.getStack().getSize();
-
-		int sx = shift.x;
-		int sy = shift.y;
-		int sz = shift.z;
-				
-		int imgW, imgH, imgD;
-
-		if (sx >= 0) imgW = Math.max(w1, w2 + sx);
-		else imgW = Math.max(w1 - sx, w2); // equals max(w1 + Math.abs(sx), w2);
-
-		if (sy >= 0) imgH = Math.max(h1, h2 + sy);
-		else imgH = Math.max(h1 - sy, h2);
-
-		if (sz >= 0) imgD = Math.max(d1, d2 + sz);
-		else imgD = Math.max(d1 - sz, d2);
-
-		int offsetImg1X = Math.max(0, -sx); // + max(0, max(0, -sx) - max(0, (w1
-											// - w2)/2));
-		int offsetImg1Y = Math.max(0, -sy); // + max(0, max(0, -sy) - max(0, (h1
-											// - h2)/2));
-		int offsetImg1Z = Math.max(0, -sz); // + max(0, max(0, -sy) - max(0, (h1
-											// - h2)/2));
-		int offsetImg2X = Math.max(0, sx); // + max(0, max(0, sx) - max(0, (w2
-											// - w1)/2));
-		int offsetImg2Y = Math.max(0, sy); // + max(0, max(0, sy) - max(0, (h2
-											// - h1)/2));
-		int offsetImg2Z = Math.max(0, sz); // + max(0, max(0, sy) - max(0, (h2
-											// - h1)/2));
-
-		
-		final int up = 0;
-		final int dn = 1;
-		final int img1 = 0;
-		final int img2 = 1;		
-		
-		// get the weightening directions
-		double xw[][] = new double[2][2]; // [img1, img2][up, down]
-		double yw[][] = new double[2][2]; // [img1, img2][up, down]
-		double zw[][] = new double[2][2]; // [img1, img2][up, down]
-
-		// get size of min enclosing rectangle
-		Point3D[] result = getCommonRectangle(new ImagePlus[]{imp1, imp2}, new Point3D[]{shift}, true);
-		Point3D size = result[1];
-
-		// now compute the beginning of the enclosing rectangle relative to the big resulting image
-		Point3D offset = new Point3D(Math.max(offsetImg2X, offsetImg1X), Math.max(offsetImg2Y, offsetImg1Y), Math.max(offsetImg2Z, offsetImg1Z));
-		
-		if (type == LIN_BLEND)
-		{					
-			if (offsetImg1X == offsetImg2X)
-			{
-				xw[img1][up] = xw[img2][up] = 0;
-			}
-			else if (offsetImg1X < offsetImg2X)
-			{
-				xw[img1][up] = 1;
-				xw[img2][up] = 0;
-			}
-			else
-			{
-				xw[img1][up] = 0;
-				xw[img2][up] = 1;
-			}
-	
-			if (offsetImg1Y == offsetImg2Y)
-			{
-				yw[img1][up] = yw[img2][up] = 0;
-			}
-			else if (offsetImg1Y < offsetImg2Y)
-			{
-				yw[img1][up] = 1;
-				yw[img2][up] = 0;
-			}
-			else
-			{
-				yw[img1][up] = 0;
-				yw[img2][up] = 1;
-			}
-	
-			if (offsetImg1Z == offsetImg2Z)
-			{
-				zw[img1][up] = zw[img2][up] = 0;
-			}
-			else if (offsetImg1Z < offsetImg2Z)
-			{
-				zw[img1][up] = 1;
-				zw[img2][up] = 0;
-			}
-			else
-			{
-				zw[img1][up] = 0;
-				zw[img2][up] = 1;
-			}
-			
-			if (offsetImg1X + w1 == offsetImg2X + w2)
-			{
-				xw[img1][dn] = xw[img2][dn] = 0;
-			}
-			else if (offsetImg1X + w1 > offsetImg2X + w2)
-			{
-				xw[img1][dn] = 1;
-				xw[img2][dn] = 0;
-			}
-			else
-			{
-				xw[img1][dn] = 0;
-				xw[img2][dn] = 1;
-			}
-	
-			if (offsetImg1Y + h1 == offsetImg2Y + h2)
-			{
-				yw[img1][dn] = yw[img2][dn] = 0;
-			}
-			else if (offsetImg1Y + h1 > offsetImg2Y + h2)
-			{
-				yw[img1][dn] = 1;
-				yw[img2][dn] = 0;
-			}
-			else
-			{
-				yw[img1][dn] = 0;
-				yw[img2][dn] = 1;
-			}
-	
-			if (offsetImg1Z + d1 == offsetImg2Z + d2)
-			{
-				zw[img1][dn] = zw[img2][dn] = 0;
-			}
-			else if (offsetImg1Z + d1 > offsetImg2Z + d2)
-			{
-				zw[img1][dn] = 1;
-				zw[img2][dn] = 0;
-			}
-			else
-			{
-				zw[img1][dn] = 0;
-				zw[img2][dn] = 1;
-			}
-		}
-		
-		int imageType = imp1.getType();
-
-		// FloatArray3D fused = null;
-		ImagePlus fusedImp = null;
-		ImageStack fusedStack = null;
-		ImageProcessor fusedIp = null;
-		float pixel1 = 0, pixel2 = 0;
-		int[] pixel1rgb = null, pixel2rgb = null;
-
-		// get min and max intensity of both stacks
-		double min1 = imp1.getStack().getProcessor(1).getMin();
-		double max1 = imp1.getStack().getProcessor(1).getMax();
-
-		double min2 = imp2.getStack().getProcessor(1).getMin();
-		double max2 = imp2.getStack().getProcessor(1).getMax();
-
-		for (int stack = 2; stack <= d1; stack++)
-		{
-			if (imp1.getStack().getProcessor(stack).getMin() < min1) min1 = imp1.getStack().getProcessor(stack).getMin();
-			if (imp1.getStack().getProcessor(stack).getMax() < max1) max1 = imp1.getStack().getProcessor(stack).getMax();
-		}
-
-		for (int stack = 2; stack <= d2; stack++)
-		{
-			if (imp2.getStack().getProcessor(stack).getMin() < min2) min2 = imp2.getStack().getProcessor(stack).getMin();
-			if (imp2.getStack().getProcessor(stack).getMax() < max2) max2 = imp2.getStack().getProcessor(stack).getMax();
-		}
-
-		if (type != RED_CYAN)
-		{
-			if (imageType == ImagePlus.GRAY8) fusedImp = IJ.createImage(name, "8-bit black", imgW, imgH, imgD);
-			else if (imageType == ImagePlus.GRAY16) fusedImp = IJ.createImage(name, "16-bit black", imgW, imgH, imgD);
-			else if (imageType == ImagePlus.GRAY32) fusedImp = IJ.createImage(name, "32-bit black", imgW, imgH, imgD);
-			else if (imageType == ImagePlus.COLOR_RGB) fusedImp = IJ.createImage(name, "rgb black", imgW, imgH, imgD);
-			else
-			{
-				IJ.error("Unknown Image Type: " + imageType);
-				return null;
-			}
-		}
-		else
-		{
-			fusedImp = IJ.createImage(name, "rgb black", imgW, imgH, imgD);
-		}
-
-		fusedStack = fusedImp.getStack();
-
-		float min = Float.MAX_VALUE;
-		float max = Float.MIN_VALUE;
-		float pixel3 = 0;
-		int[] pixel3rgb = new int[3];
-		int[] iArray = new int[3];
-
-		for (int z = 0; z < imgD; z++)
-		{
-			fusedIp = fusedStack.getProcessor(z + 1);
-
-			for (int y = 0; y < imgH; y++)
-				for (int x = 0; x < imgW; x++)
-				{
-					if (imageType == ImagePlus.COLOR_RGB)
-					{
-						pixel1rgb = getPixelMinRGB(imageStack1, w1, h1, d1, x - offsetImg1X, y - offsetImg1Y, z - offsetImg1Z, min1);
-						pixel2rgb = getPixelMinRGB(imageStack2, w2, h2, d2, x - offsetImg2X, y - offsetImg2Y, z - offsetImg2Z, min2);
-					}
-					else
-					{
-						pixel1 = getPixelMin(imageType, imageStack1, w1, h1, d1, x - offsetImg1X, y - offsetImg1Y, z - offsetImg1Z, min1);
-						pixel2 = getPixelMin(imageType, imageStack2, w2, h2, d2, x - offsetImg2X, y - offsetImg2Y, z - offsetImg2Z, min2);
-					}
-
-					if (type != RED_CYAN)
-					{						
-						// combine images if overlapping
-						if (x >= offsetImg1X && x >= offsetImg2X && x < offsetImg1X + w1 && x < offsetImg2X + w2 && y >= offsetImg1Y && y >= offsetImg2Y && y < offsetImg1Y + h1 && y < offsetImg2Y + h2 && z >= offsetImg1Z && z >= offsetImg2Z && z < offsetImg1Z + d1 && z < offsetImg2Z + d2)
-						{
-							// compute w1(weight Image1) and w2(weight image2)
-							double weight1 = 0.5;
-							double weight2 = 0.5;
-							
-							if (type == LIN_BLEND)
-							{
-								// first we need the relative positions in the enclosing rectangle
-								final double px = (x - offset.x)/(double)(size.x-1);
-								final double py = (y - offset.y)/(double)(size.y-1);
-								final double pz = (z - offset.z)/(double)(size.z-1);
-	
-								final double wx1, wx2, wy1, wy2, wz1, wz2;
-								
-								if (px < 0.5)
-								{
-									wx1 = 0.5 * 2*px + xw[img1][up] * (1 - 2*px);
-									wx2 = 0.5 * 2*px + xw[img2][up] * (1 - 2*px);
-								}
-								else if (px > 0.5)
-								{
-									wx1 = 0.5 * (1 - 2*(px-0.5)) + xw[img1][dn] * 2*(px-0.5);
-									wx2 = 0.5 * (1 - 2*(px-0.5)) + xw[img2][dn] * 2*(px-0.5);
-								}
-								else
-								{
-									wx1 = wx2 = 0.5;
-								}
-	
-								if (py < 0.5)
-								{
-									wy1 = 0.5 * 2*py + yw[img1][up] * (1 - 2*py);
-									wy2 = 0.5 * 2*py + yw[img2][up] * (1 - 2*py);
-								}
-								else if (py > 0.5)
-								{
-									wy1 = 0.5 * (1 - 2*(py-0.5)) + yw[img1][dn] * 2*(py-0.5);
-									wy2 = 0.5 * (1 - 2*(py-0.5)) + yw[img2][dn] * 2*(py-0.5);
-								}
-								else
-								{
-									wy1 = wy2 = 0.5;
-								}
-	
-								if (pz < 0.5)
-								{
-									wz1 = 0.5 * 2*pz + zw[img1][up] * (1 - 2*pz);
-									wz2 = 0.5 * 2*pz + zw[img2][up] * (1 - 2*pz);
-								}
-								else if (pz > 0.5)
-								{
-									wz1 = 0.5 * (1 - 2*(pz-0.5)) + zw[img1][dn] * 2*(pz-0.5);
-									wz2 = 0.5 * (1 - 2*(pz-0.5)) + zw[img2][dn] * 2*(pz-0.5);
-								}
-								else
-								{
-									wz1 = wz2 = 0.5;
-								}
-								
-								weight1 = wx1 * wy1 * wz1;
-								weight2 = wx2 * wy2 * wz2;
-								
-								if (weight1 == 0 && weight2 == 0)
-								{
-									weight1 = weight2 = 0.5;
-								}
-								else
-								{
-									double norm = weight1 + weight2; 
-									weight1 /= norm;
-									weight2 /= norm;
-								}
-							}
-							
-							pixel3 = 0;
-							pixel3rgb = new int[3];
-
-							if (imageType == ImagePlus.COLOR_RGB)
-							{
-								if (type == AVG)
-								{
-									pixel3rgb[0] = (int) ((pixel1rgb[0] + pixel2rgb[0]) / 2.0 + 0.5);
-									pixel3rgb[1] = (int) ((pixel1rgb[1] + pixel2rgb[1]) / 2.0 + 0.5);
-									pixel3rgb[2] = (int) ((pixel1rgb[2] + pixel2rgb[2]) / 2.0 + 0.5);
-								}
-								else if (type == LIN_BLEND)
-								{
-									pixel3rgb[0] = (int) ((pixel1rgb[0]*weight1 + pixel2rgb[0]*weight2) + 0.5);
-									pixel3rgb[1] = (int) ((pixel1rgb[1]*weight1 + pixel2rgb[1]*weight2) + 0.5);
-									pixel3rgb[2] = (int) ((pixel1rgb[2]*weight1 + pixel2rgb[2]*weight2) + 0.5);									
-								}
-								else if (type == MAX)
-								{
-									pixel3rgb[0] = Math.max(pixel1rgb[0], pixel2rgb[0]);
-									pixel3rgb[1] = Math.max(pixel1rgb[1], pixel2rgb[1]);
-									pixel3rgb[2] = Math.max(pixel1rgb[2], pixel2rgb[2]);
-								}
-								else if (type == MIN)
-								{
-									pixel3rgb[0] = Math.min(pixel1rgb[0], pixel2rgb[0]);
-									pixel3rgb[1] = Math.min(pixel1rgb[1], pixel2rgb[1]);
-									pixel3rgb[2] = Math.min(pixel1rgb[2], pixel2rgb[2]);
-								}
-							}
-							else
-							{
-								if (type == AVG) pixel3 = (pixel1 + pixel2) / 2f;								
-								else if (type == LIN_BLEND) pixel3 = (float)(pixel1*weight1 + pixel2*weight2);
-								else if (type == MAX) pixel3 = Math.max(pixel1, pixel2);
-								else if (type == MIN) pixel3 = Math.min(pixel1, pixel2);
-							}
-						}
-						else
-						{
-							if (imageType == ImagePlus.COLOR_RGB)
-							{
-								pixel3rgb[0] = Math.max(pixel1rgb[0], pixel2rgb[0]);
-								pixel3rgb[1] = Math.max(pixel1rgb[1], pixel2rgb[1]);
-								pixel3rgb[2] = Math.max(pixel1rgb[2], pixel2rgb[2]);
-							}
-							else pixel3 = Math.max(pixel1, pixel2);
-						}
-
-						if (imageType == ImagePlus.COLOR_RGB) fusedIp.putPixel(x, y, pixel3rgb);
-						else if (imageType == ImagePlus.GRAY8 || imageType == ImagePlus.GRAY16) fusedIp.putPixel(x, y, (int) (pixel3 + 0.5));
-						else fusedIp.putPixelValue(x, y, pixel3);
-
-						if (pixel3 < min) min = pixel3;
-						else if (pixel3 > max) max = pixel3;
-					}
-					else
-					{
-						iArray[0] = (int) (((pixel1 - min1) / (max1 - min1)) * 255D);
-						iArray[1] = iArray[2] = (int) (((pixel2 - min2) / (max2 - min2)) * 255D);
-						fusedIp.putPixel(x, y, iArray);
-					}
-				}
-		}
-
-		// adjust contrast for images with colordepth higher than 8 Bit
-		if (imageType == ImagePlus.GRAY16 || imageType == ImagePlus.GRAY32) fusedImp.getProcessor().setMinAndMax(min, max);
-
-		
-		  if (type != 3) { fusedImp = FloatArrayToStack(fused, name, min, max);
-		  fused.data = null; fused = null; }
-		 
-
-		return fusedImp;
-	}
-	
-	private Point3D[] getCommonRectangle(ImagePlus img[], Point3D t[], boolean min)
-	{
-		Point3D size = new Point3D(0, 0, 0);
-
-		// defines where the output image starts relative to the first image
-		Point3D startOffset = new Point3D(0, 0, 0);
-
-		if (false)
-		{
-		    // maximum size (bounding box)
-		    Point3D start = new Point3D(0, 0, 0);
-		    Point3D minStart = new Point3D(0, 0, 0);
-		    Point3D end = new Point3D(img[0].getWidth(), img[0].getWidth(), img[0].getStack().getSize());
-		    
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-				start.z += t[i - 1].z;
-				
-				minStart.x = Math.min(start.x, minStart.x);
-				minStart.y = Math.min(start.y, minStart.y);
-				minStart.z = Math.min(start.z, minStart.z);
-				
-				end.x = Math.max(end.x, start.x + img[i].getWidth());
-				end.y = Math.max(end.y, start.y + img[i].getWidth());
-				end.z = Math.max(end.z, start.z + img[i].getStack().getSize());
-		    }
-
-		    size.x = end.x - minStart.x;
-		    size.y = end.y - minStart.y;
-		    size.z = end.z - minStart.z;
-
-		    startOffset.x = minStart.x;
-		    startOffset.y = minStart.y;
-		    startOffset.z = minStart.z;
-		}
-		else
-		 {
-		    // minimum size
-		    Point3D start = new Point3D(0, 0, 0);
-	
-		    Point3D minEnd = new Point3D(img[0].getWidth(), img[0].getHeight(), img[0].getStack().getSize());
-		    Point3D maxStart = new Point3D(0, 0, 0);
-	
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-				start.z += t[i - 1].z;
-		
-				maxStart.x = Math.max(start.x, maxStart.x);
-				maxStart.y = Math.max(start.y, maxStart.y);
-				maxStart.z = Math.max(start.z, maxStart.z);
-		
-				minEnd.x = Math.min(minEnd.x, start.x + img[i].getWidth());
-				minEnd.y = Math.min(minEnd.y, start.y + img[i].getHeight());
-				minEnd.z = Math.min(minEnd.z, start.z + img[i].getStack().getSize());
-		    }
-	
-		    size.x = minEnd.x - maxStart.x;
-		    size.y = minEnd.y - maxStart.y;
-		    size.z = minEnd.z - maxStart.z;
-	
-		    startOffset.x = maxStart.x;
-		    startOffset.y = maxStart.y;
-		    startOffset.z = maxStart.z;
-		}
-		 
-		 Point3D[] result = new Point3D[2];
-		 
-		 result[0] = startOffset;
-		 result[1] = size;
-		 
-		 return result;
-	}*/
-
 	private CrossCorrelationResult3D[] testCrossCorrelation(FloatArray3D invPCM, ArrayList<Point3D> peaks, final FloatArray3D img1, final FloatArray3D img2)
 	{
 		final int numBestHits = peaks.size();
