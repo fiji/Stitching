@@ -16,6 +16,11 @@
 	<name>plugins/Stitching_.jar</name>
 	<description></description>
 
+	<properties>
+		<!-- Prevent the plugin from being copied to ./plugins/ by default -->
+		<imagej.app.directory>path/to/Fiji.app/</imagej.app.directory>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>edu.mines</groupId>
