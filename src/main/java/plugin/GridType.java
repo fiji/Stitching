@@ -69,7 +69,7 @@ public class GridType
 		final GenericDialogPlus gd = new GenericDialogPlus( "Grid/Collection stitching" );
 		gd.addChoice( "Type", choose1, choose1[ Stitching_Grid.defaultGridChoice1 ] );
 		
-		if ( !IJ.isMacro() )
+		if ( !IJ.macroRunning() )
 		{
 			gd.addChoice( "Order", choose2[ Stitching_Grid.defaultGridChoice1 ], choose2[ Stitching_Grid.defaultGridChoice1 ][ Stitching_Grid.defaultGridChoice2 ] );
 			
@@ -110,7 +110,7 @@ public class GridType
 		
 		type = Stitching_Grid.defaultGridChoice1 = gd.getNextChoiceIndex();
 
-		if ( !IJ.isMacro() )
+		if ( !IJ.macroRunning() )
 		{
 			order = gd.getNextChoiceIndex();
 		}
