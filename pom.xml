@@ -74,6 +74,13 @@
 		</dependency>
 	</dependencies>
 
+	<scm>
+		<connection>scm:git:git://github.com/fiji/Stitching</connection>
+		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/fiji/Stitching</url>
+	</scm>
+
 	<!-- NB: for project parent -->
 	<repositories>
 		<repository>
