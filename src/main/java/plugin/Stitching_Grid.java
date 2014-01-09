@@ -82,7 +82,7 @@ public class Stitching_Grid implements PlugIn
 	public static boolean writeOnlyTileConfStatic = false;
 	
 	public static boolean defaultIgnoreCalibration = false;
-	public static double defaultIncreaseOverlap = 10;
+	public static double defaultIncreaseOverlap = 0;
 	public static boolean defaultVirtualInput = false;
 	
 	public static int defaultStartI = 1;
