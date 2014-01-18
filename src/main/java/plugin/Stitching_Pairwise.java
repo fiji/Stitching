@@ -67,6 +67,8 @@ public class Stitching_Pairwise implements PlugIn
 	@Override
 	public void run( final String arg0 ) 
 	{
+		IJ.log( "Stitching internal version: " + Stitching_Grid.version );
+		
 		// get list of image stacks
 		final int[] idList = WindowManager.getIDList();		
 

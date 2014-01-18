@@ -55,6 +55,7 @@ import tools.RoiPicker;
  */
 public class Stitching_Grid implements PlugIn
 {
+	final public static String version = "1.01";
 	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
 	
 	public static boolean seperateOverlapY = false;
@@ -108,6 +109,8 @@ public class Stitching_Grid implements PlugIn
 	@Override
 	public void run( String arg0 ) 
 	{
+		IJ.log( "Stitching internal version: " + Stitching_Grid.version );
+
 		final GridType grid = new GridType();
 		
 		final int gridType = grid.getType();
