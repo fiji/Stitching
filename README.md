@@ -20,4 +20,6 @@ channels and supports timelapse registration. To remove brightness
 differences at the tile borders, non-linear intensity blending can be
 applied.
 
-For further details, please see http://fiji.sc/Stitching
+For further details, please see the:
+- documentation http://fiji.sc/Stitching
+- publication: http://bioinformatics.oxfordjournals.org/content/25/11/1463.abstract
