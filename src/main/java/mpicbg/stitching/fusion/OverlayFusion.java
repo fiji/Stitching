@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import stitching.utils.CompositeImageFixer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
 import mpicbg.imglib.cursor.LocalizableCursor;
@@ -99,7 +100,7 @@ public class OverlayFusion
 		{
 			result.setDimensions( size[ 2 ], imp.getNChannels(), imp.getNFrames() );
 			result = OverlayFusion.switchZCinXYCZT( result );
-			return new CompositeImage( result, CompositeImage.COMPOSITE );
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
 		else
 		{
@@ -109,7 +110,7 @@ public class OverlayFusion
 			result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
 			
 			if ( imp.getNChannels() > 1 )
-				return new CompositeImage( result, CompositeImage.COMPOSITE );
+				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 			else
 				return result;
 		}
@@ -174,7 +175,7 @@ public class OverlayFusion
 			result.setDimensions( numChannels, 1, 1 );
 		}
 		
-		return new CompositeImage( result, CompositeImage.COMPOSITE );
+		return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 	}
 		
 	/**
@@ -334,7 +335,7 @@ public class OverlayFusion
 		result.getCalibration().pixelWidth = imp.getCalibration().pixelWidth;
 		result.getCalibration().pixelHeight = imp.getCalibration().pixelHeight;
 		result.getCalibration().pixelDepth = imp.getCalibration().pixelDepth;
-		final CompositeImage composite = new CompositeImage( result );
+		final CompositeImage composite = CompositeImageFixer.makeComposite( result );
 		
 		return composite;
 	}
@@ -397,7 +398,7 @@ public class OverlayFusion
 		result.getCalibration().pixelWidth = imp.getCalibration().pixelWidth;
 		result.getCalibration().pixelHeight = imp.getCalibration().pixelHeight;
 		result.getCalibration().pixelDepth = imp.getCalibration().pixelDepth;
-		final CompositeImage composite = new CompositeImage( result );
+		final CompositeImage composite = CompositeImageFixer.makeComposite(  result );
 		
 		return composite;
 	}

@@ -37,6 +37,7 @@ import mpicbg.stitching.StitchingParameters;
 import mpicbg.stitching.fusion.Fusion;
 import mpicbg.stitching.fusion.OverlayFusion;
 import stitching.CommonFunctions;
+import stitching.utils.CompositeImageFixer;
 
 
 public class Stitching_Pairwise implements PlugIn 
@@ -476,7 +477,7 @@ public class Stitching_Pairwise implements PlugIn
 				
 				// numchannels, z-slices, timepoints (but right now the order is still XYZCT)
 				result.setDimensions( timepoint0.getNChannels(), timepoint0.getNSlices(), imp1.getNFrames() );
-				return new CompositeImage( result, CompositeImage.COMPOSITE );
+				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 			}
 			else
 			{
