@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import stitching.utils.CompositeImageFixer;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
@@ -246,7 +247,7 @@ public class Fusion
 		{
 			result.setDimensions( size[ 2 ], numChannels, numTimePoints );
 			result = OverlayFusion.switchZCinXYCZT( result );
-			return new CompositeImage( result, CompositeImage.COMPOSITE );
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
 		else
 		{
@@ -256,7 +257,7 @@ public class Fusion
 			result.setDimensions( numChannels, 1, numTimePoints );
 			
 			if ( numChannels > 1 || numTimePoints > 1 )
-				return new CompositeImage( result, CompositeImage.COMPOSITE );
+				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 			else
 				return result;
 		}
