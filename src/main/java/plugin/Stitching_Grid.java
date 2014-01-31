@@ -499,7 +499,7 @@ public class Stitching_Grid implements PlugIn
     	if ( gridType != 6 )
     		writeTileConfiguration( new File( directory, outputFile ), elements );
     	    	
-    	// call the final stitiching
+    	// call the final stitching
     	final ArrayList<ImagePlusTimePoint> optimized = CollectionStitchingImgLib.stitchCollection( elements, params );
     	
     	if ( optimized == null )
