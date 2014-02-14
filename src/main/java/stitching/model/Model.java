@@ -24,9 +24,9 @@
 package stitching.model;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Abstract class for arbitrary transformation models to be applied
@@ -376,11 +376,13 @@ public abstract class Model implements CoordinateTransform
 	 * Create a meaningful string representation of the model for save into
 	 * text-files or display on terminals.
 	 */
+	@Override
 	abstract public String toString();
 
 	
 	/**
 	 * Clone the model.
 	 */
+	@Override
 	abstract public Model clone();
-};
+}

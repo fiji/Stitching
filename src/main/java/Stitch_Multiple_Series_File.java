@@ -67,6 +67,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 	public static boolean previewOnlyStatic = false;
 	public static boolean ignoreCalibrationStatic = false;
 	
+	@Override
 	public void run(String arg0)
 	{
 		GenericDialogPlus gd = new GenericDialogPlus( "Stitch Multiple Series File" );

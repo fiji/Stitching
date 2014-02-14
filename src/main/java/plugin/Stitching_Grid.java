@@ -1105,7 +1105,7 @@ public class Stitching_Grid implements PlugIn
 			System.out.println( "Stitch_Grid.getLayoutFromFile: " + e );
 			IJ.log( "Stitching_Grid.getLayoutFromFile: " + e );
 			return null;
-		};
+		}
 		
 		if (ds != null) {
 			ImagePlus img = elements.get(0).open(true);
@@ -1594,14 +1594,11 @@ public class Stitching_Grid implements PlugIn
 						--currentPosition[ 0 ];
 						return;
 					}
-					else
-					{
-						// just we have to change rows
-						currentPosition[ 1 ] += snakeDirectionY;
-						
-						// and change the direction of the snake in x
-						snakeDirectionX *= -1;
-					}
+					// just we have to change rows
+					currentPosition[ 1 ] += snakeDirectionY;
+					
+					// and change the direction of the snake in x
+					snakeDirectionX *= -1;
 				}
 			}
 			else if ( gridType == 3 ) // "Snake by columns" 

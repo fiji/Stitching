@@ -2,7 +2,6 @@ package mpicbg.stitching;
 
 import ij.ImagePlus;
 import mpicbg.models.Model;
-import mpicbg.models.TranslationModel2D;
 
 public class ComparePair 
 {

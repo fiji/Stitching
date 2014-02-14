@@ -40,6 +40,7 @@ public class FloatArray2D extends FloatArray
 		this.height = height;
 	}
 
+	@Override
 	public FloatArray2D clone()
 	{
 		FloatArray2D clone = new FloatArray2D(width, height);

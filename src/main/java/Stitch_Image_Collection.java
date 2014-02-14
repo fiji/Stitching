@@ -25,32 +25,32 @@ import static stitching.CommonFunctions.MAX;
 import static stitching.CommonFunctions.MIN;
 import static stitching.CommonFunctions.RED_CYAN;
 import static stitching.CommonFunctions.addHyperLinkListener;
+import static stitching.CommonFunctions.colorList;
 import static stitching.CommonFunctions.getPixelMin;
 import static stitching.CommonFunctions.getPixelMinRGB;
+import static stitching.CommonFunctions.methodListCollection;
+import static stitching.CommonFunctions.rgbTypes;
+import fiji.util.gui.GenericDialogPlus;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.MultiLineLabel;
+import ij.measure.Calibration;
+import ij.plugin.PlugIn;
+import ij.plugin.ZProjector;
+import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.PrintWriter;
-
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import fiji.util.gui.GenericDialogPlus;
-
-import ij.gui.MultiLineLabel;
-import ij.measure.Calibration;
-import ij.plugin.PlugIn;
-import ij.IJ;
-import ij.ImagePlus;
-import ij.WindowManager;
-import ij.plugin.ZProjector;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.ImageStack;
 
 import stitching.CommonFunctions;
 import stitching.GridLayout;
@@ -58,11 +58,13 @@ import stitching.ImageInformation;
 import stitching.OverlapProperties;
 import stitching.Point2D;
 import stitching.Point3D;
-import stitching.model.*;
-
-import static stitching.CommonFunctions.colorList;
-import static stitching.CommonFunctions.methodListCollection;
-import static stitching.CommonFunctions.rgbTypes;
+import stitching.model.NotEnoughDataPointsException;
+import stitching.model.Point;
+import stitching.model.PointMatch;
+import stitching.model.Tile;
+import stitching.model.TileConfiguration;
+import stitching.model.TranslationModel2D;
+import stitching.model.TranslationModel3D;
 
 public class Stitch_Image_Collection implements PlugIn
 {
@@ -84,6 +86,7 @@ public class Stitch_Image_Collection implements PlugIn
 	public static boolean previewOnlyStatic = false;
 
 	
+	@Override
 	public void run(String arg0)
 	{
 		GenericDialogPlus gd = new GenericDialogPlus("Stitch Image Collection");
@@ -322,7 +325,7 @@ public class Stitch_Image_Collection implements PlugIn
 		{
 			fusedImp.setSlice(imgD/2 + 1);
 		}
-		catch (Exception e){};
+		catch (Exception e){}
 	
 		if (type == CommonFunctions.NONE || type == MAX || type == RED_CYAN)
 		{
@@ -515,6 +518,7 @@ public class Stitch_Image_Collection implements PlugIn
 	        for (int ithread = 0; ithread < threads.length; ++ithread)
 	            threads[ithread] = new Thread(new Runnable()
 	            {
+	                @Override
 	                public void run()
 	                {
 	                	final int dimension = dim;
@@ -842,7 +846,7 @@ public class Stitch_Image_Collection implements PlugIn
 		for (int i = 0; i < num; i++)
 			avg += values[i][channel];
 		
-		return (int)((avg/(double)num) + 0.5);
+		return (int)((avg/num) + 0.5);
 	}
 	
 	final private static float avg(final float[] values, final int num)
@@ -855,7 +859,7 @@ public class Stitch_Image_Collection implements PlugIn
 		for (int i = 0; i < num; i++)
 			avg += values[i];
 		
-		return (float)(avg/(double)num);
+		return (float)(avg/num);
 	}
 
 	final private static int getMin(final int[][] values, final int channel, final int num)
@@ -1451,8 +1455,8 @@ public class Stitch_Image_Collection implements PlugIn
 					for (int x = 0; x < fp.getWidth(); x++)
 					{
 						final float newValue = fp.getPixelValue(x, y);
-						final float oldValue = out.getPixelValue(x - startX + (int)Math.round(iI.offset[0]), y - startY + (int)Math.round(iI.offset[1]));
-						out.putPixelValue(x - startX + (int)Math.round(iI.offset[0]), y - startY + (int)Math.round(iI.offset[1]), Math.max(newValue, oldValue));
+						final float oldValue = out.getPixelValue(x - startX + Math.round(iI.offset[0]), y - startY + Math.round(iI.offset[1]));
+						out.putPixelValue(x - startX + Math.round(iI.offset[0]), y - startY + Math.round(iI.offset[1]), Math.max(newValue, oldValue));
 					}	
 			}
 			
@@ -1607,7 +1611,7 @@ public class Stitch_Image_Collection implements PlugIn
 			System.err.println("Stitch_Many_Cubes.readLayoutFile: " + e);
 			IJ.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			return null;
-		};
+		}
 		
 		return imageInformationList;
 	}

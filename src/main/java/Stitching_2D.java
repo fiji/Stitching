@@ -1,5 +1,25 @@
-import static stitching.CommonFunctions.*;
+import static stitching.CommonFunctions.RED_CYAN;
+import static stitching.CommonFunctions.addHyperLinkListener;
+import static stitching.CommonFunctions.colorList;
+import static stitching.CommonFunctions.computeFFT;
+import static stitching.CommonFunctions.computePhaseCorrelationMatrix;
+import static stitching.CommonFunctions.getPixelValueRGB;
+import static stitching.CommonFunctions.methodList;
+import static stitching.CommonFunctions.quicksort;
+import static stitching.CommonFunctions.startTask;
+import static stitching.CommonFunctions.zeroPadImages;
 
+import java.awt.Choice;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import stitching.CrossCorrelationResult2D;
+import stitching.FloatArray2D;
+import stitching.ImageInformation;
+import stitching.Point2D;
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License 2
@@ -19,30 +39,16 @@ import static stitching.CommonFunctions.*;
  * available at http://www.eclipse.org/legal/cpl-v10.html  
  *
  * @author Stephan Preibisch
- */
-
-import ij.plugin.PlugIn;
+ */import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.MultiLineLabel;
-import ij.IJ;
-import ij.WindowManager;
-import ij.ImagePlus;
-import ij.process.*;
 import ij.gui.Roi;
 
-import java.awt.Checkbox;
-import java.awt.Choice;
-import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
+import ij.plugin.PlugIn;
 
-import stitching.CrossCorrelationResult2D;
-import stitching.FloatArray2D;
-import stitching.ImageInformation;
-import stitching.Point2D;
+import ij.process.ImageProcessor;
 
 public class Stitching_2D implements PlugIn
 {
@@ -79,6 +85,7 @@ public class Stitching_2D implements PlugIn
 	// a macro can call to only fuse two images given a certain shift
 	private Point2D translation = null;
 
+	@Override
 	public void run(String args)
 	{
 		// get list of image stacks
@@ -221,6 +228,7 @@ public class Stitching_2D implements PlugIn
 
 		controller.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				setRGB(nostackIDs[controller.getSelectedIndex()], target);
@@ -246,7 +254,7 @@ public class Stitching_2D implements PlugIn
 		} catch (Exception e)
 		{
 			IJ.error("Could not find image: " + e);
-		};
+		}
 
 		return imp;
 	}
@@ -757,57 +765,29 @@ public class Stitching_2D implements PlugIn
 		// defines where the output image starts relative to the first image
 		Point2D startOffset = new Point2D(0, 0);
 
-		if (false)
-		{
-		    // maximum size (bounding box)
-		    Point2D start = new Point2D(0, 0);
-		    Point2D minStart = new Point2D(0, 0);
-		    Point2D end = new Point2D(img[0].getWidth(), img[0].getWidth());
-		    
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-				
-				minStart.x = Math.min(start.x, minStart.x);
-				minStart.y = Math.min(start.y, minStart.y);
-				
-				end.x = Math.max(end.x, start.x + img[i].getWidth());
-				end.y = Math.max(end.y, start.y + img[i].getWidth());
-		    }
+		// minimum size
+		Point2D start = new Point2D(0, 0, 0);
 
-		    size.x = end.x - minStart.x;
-		    size.y = end.y - minStart.y;
-		    
-		    startOffset.x = minStart.x;
-		    startOffset.y = minStart.y;		    
+		Point2D minEnd = new Point2D(img[0].getWidth(), img[0].getHeight());
+		Point2D maxStart = new Point2D(0, 0, 0);
+
+		for (int i = 1; i < img.length; i++)
+		{
+		start.x += t[i - 1].x;
+		start.y += t[i - 1].y;
+
+		maxStart.x = Math.max(start.x, maxStart.x);
+		maxStart.y = Math.max(start.y, maxStart.y);
+
+		minEnd.x = Math.min(minEnd.x, start.x + img[i].getWidth());
+		minEnd.y = Math.min(minEnd.y, start.y + img[i].getHeight());
 		}
-		else
-		 {
-		    // minimum size
-		    Point2D start = new Point2D(0, 0, 0);
-	
-		    Point2D minEnd = new Point2D(img[0].getWidth(), img[0].getHeight());
-		    Point2D maxStart = new Point2D(0, 0, 0);
-	
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-		
-				maxStart.x = Math.max(start.x, maxStart.x);
-				maxStart.y = Math.max(start.y, maxStart.y);
-		
-				minEnd.x = Math.min(minEnd.x, start.x + img[i].getWidth());
-				minEnd.y = Math.min(minEnd.y, start.y + img[i].getHeight());
-		    }
-	
-		    size.x = minEnd.x - maxStart.x;
-		    size.y = minEnd.y - maxStart.y;
-	
-		    startOffset.x = maxStart.x;
-		    startOffset.y = maxStart.y;
-		}
+
+		size.x = minEnd.x - maxStart.x;
+		size.y = minEnd.y - maxStart.y;
+
+		startOffset.x = maxStart.x;
+		startOffset.y = maxStart.y;
 		 
 		 Point2D[] result = new Point2D[2];
 		 
@@ -852,6 +832,7 @@ public class Stitching_2D implements PlugIn
 
 			Runnable task = new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					try
@@ -950,8 +931,8 @@ public class Stitching_2D implements PlugIn
 			return result;
 		}
 
-		avg1 /= (double) count;
-		avg2 /= (double) count;
+		avg1 /= count;
+		avg2 /= count;
 
 		double var1 = 0, var2 = 0;
 		double coVar = 0;
@@ -988,10 +969,10 @@ public class Stitching_2D implements PlugIn
 				}
 			}
 
-		SSQ /= (double) count;
-		var1 /= (double) count;
-		var2 /= (double) count;
-		coVar /= (double) count;
+		SSQ /= count;
+		var1 /= count;
+		var2 /= count;
+		coVar /= count;
 
 		double stDev1 = Math.sqrt(var1);
 		double stDev2 = Math.sqrt(var2);
@@ -1329,7 +1310,7 @@ public class Stitching_2D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y)] = (float) (pixelTmp[count++] & 0xff);
+					pixels.data[pixels.getPos(x, y)] = pixelTmp[count++] & 0xff;
 		}
 		else if (ip.getPixels() instanceof short[])
 		{
@@ -1338,7 +1319,7 @@ public class Stitching_2D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y)] = (float) (pixelTmp[count++] & 0xffff);
+					pixels.data[pixels.getPos(x, y)] = pixelTmp[count++] & 0xffff;
 		}
 		else if (ip.getPixels() instanceof int[]) 
 		{
@@ -1405,7 +1386,7 @@ public class Stitching_2D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop)] = (float) (pixelTmp[x + y * width] & 0xff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop)] = pixelTmp[x + y * width] & 0xff;
 		}
 		else if (ip.getPixels() instanceof short[])
 		{
@@ -1413,7 +1394,7 @@ public class Stitching_2D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop)] = (float) (pixelTmp[x + y * width] & 0xffff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop)] = pixelTmp[x + y * width] & 0xffff;
 		}
 		else if (ip.getPixels() instanceof int[])
 		{

@@ -26,19 +26,13 @@ public class MedianPixelFusion implements PixelFusion
 	public float getValue() 
 	{ 
 		if ( list.size() == 0 )
-		{
 			return 0;
-		}
-		else
-		{
-			Collections.sort( list );
-			final int size = list.size();
-			
-			if ( size % 2 == 1 )
-				return list.get( size/2 );
-			else
-				return (list.get( size/2 - 1) + list.get( size/2 ))/2.0f ;
-		}
+		Collections.sort( list );
+		final int size = list.size();
+		
+		if ( size % 2 == 1 )
+			return list.get( size/2 );
+		return (list.get( size/2 - 1) + list.get( size/2 ))/2.0f ;
 	}
 	
 	@Override

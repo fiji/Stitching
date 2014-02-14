@@ -20,21 +20,6 @@
  */
 package stitching;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.HashMap;
-
-import loci.formats.ChannelSeparator;
-import loci.formats.FormatException;
-import loci.formats.FormatTools;
-import loci.formats.IFormatReader;
-import loci.formats.meta.MetadataRetrieve;
-
 import edu.mines.jtk.dsp.FftComplex;
 import edu.mines.jtk.dsp.FftReal;
 import ij.IJ;
@@ -46,6 +31,21 @@ import ij.plugin.BrowserLauncher;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ShortProcessor;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import loci.formats.ChannelSeparator;
+import loci.formats.FormatException;
+import loci.formats.FormatTools;
+import loci.formats.IFormatReader;
+import loci.formats.meta.MetadataRetrieve;
 
 public class CommonFunctions
 {
@@ -91,6 +91,7 @@ public class CommonFunctions
 		{
 			text.addMouseListener(new MouseAdapter()
 			{
+				@Override
 				public void mouseClicked(MouseEvent e)
 				{
 					try
@@ -103,12 +104,14 @@ public class CommonFunctions
 					}
 				}
 	
+				@Override
 				public void mouseEntered(MouseEvent e)
 				{
 					text.setForeground(Color.BLUE);
 					text.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				}
 	
+				@Override
 				public void mouseExited(MouseEvent e)
 				{
 					text.setForeground(Color.BLACK);
@@ -302,7 +305,7 @@ public class CommonFunctions
 								color[0] = color[1] = color[2] = 0;
 								
 								for (int c = 0; c < channels; c++)
-									color[c] = (byte)((int)getShortValue(b[c], 2 * (x + y*width))/256);
+									color[c] = (byte)(getShortValue(b[c], 2 * (x + y*width))/256);
 								
 								cp.putPixel(x, y, color);
 							}
@@ -603,6 +606,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					int myNumber = ai.getAndIncrement();
@@ -637,6 +641,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[height * 2];
@@ -676,6 +681,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[depth * 2];
@@ -782,8 +788,7 @@ public class CommonFunctions
 		if (inPlace) multiply(fft1, fft2, true);
 		else fftTemp1 = multiply(fftTemp1, fftTemp2, false);
 
-		if (inPlace) return null;
-		else return fftTemp1;
+		return inPlace ? null : fftTemp1;
 	}
 
 	public static void normalizeComplexVectorsToUnitVectors(float[] complex)
@@ -870,7 +875,7 @@ public class CommonFunctions
 		}
 
 		if (overwriteA) return complexA;
-		else return complexResult;
+		return complexResult;
 	}
 
 	public static FloatArray3D pffftInv3DMT(final FloatArray3D values, final int nfft)
@@ -890,6 +895,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					int myNumber = ai.getAndIncrement();
@@ -930,6 +936,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[height * 2];
@@ -968,6 +975,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[complexWidth];
@@ -987,7 +995,7 @@ public class CommonFunctions
 							fft.complexToReal(1, tempIn, tempOut);
 
 							for (int i = 0; i < tempOut.length; i++)
-								tempOut[i] /= (float) (width * height * depth);
+								tempOut[i] /= width * height * depth;
 
 							// fft.scale(width, tempOut);
 
@@ -1069,12 +1077,12 @@ public class CommonFunctions
 		if (imageType == ImagePlus.GRAY8)
 		{
 			byte[] pixelTmp = (byte[]) imageStack[z];
-			return (float) (pixelTmp[x + y * width] & 0xff);
+			return pixelTmp[x + y * width] & 0xff;
 		}
 		else if (imageType == ImagePlus.GRAY16)
 		{
 			short[] pixelTmp = (short[]) imageStack[z];
-			return (float) (pixelTmp[x + y * width] & 0xffff);
+			return pixelTmp[x + y * width] & 0xffff;
 		}
 		else
 		// instance of float[]

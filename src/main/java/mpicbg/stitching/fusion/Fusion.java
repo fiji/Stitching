@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import stitching.utils.CompositeImageFixer;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
@@ -38,6 +37,7 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.NoninvertibleModelException;
+import stitching.utils.CompositeImageFixer;
 
 /**
  * Manages the fusion for all types except the overlayfusion
@@ -249,18 +249,14 @@ public class Fusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		else
-		{
-			//IJ.log( "ch: " + imp.getNChannels() );
-			//IJ.log( "slices: " + imp.getNSlices() );
-			//IJ.log( "frames: " + imp.getNFrames() );
-			result.setDimensions( numChannels, 1, numTimePoints );
-			
-			if ( numChannels > 1 || numTimePoints > 1 )
-				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
-			else
-				return result;
-		}
+		//IJ.log( "ch: " + imp.getNChannels() );
+		//IJ.log( "slices: " + imp.getNSlices() );
+		//IJ.log( "frames: " + imp.getNFrames() );
+		result.setDimensions( numChannels, 1, numTimePoints );
+		
+		if ( numChannels > 1 || numTimePoints > 1 )
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
+		return result;
 	}
 	
 	/**
@@ -302,6 +298,7 @@ public class Fusion
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread(new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID
@@ -413,6 +410,7 @@ A:        					for ( int i = 0; i < numImages; ++i )
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread( new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID
@@ -660,7 +658,7 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 		
 		for ( int i = 0; i < numImages * numTimePoints; ++i )
 		{
-			final InvertibleBoundable boundable = (InvertibleBoundable)models.get( i ); 
+			final InvertibleBoundable boundable = models.get( i ); 
 			boundables.add( boundable );
 			
 			//IJ.log( "i: " + boundable );

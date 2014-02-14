@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import stitching.utils.CompositeImageFixer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
 import mpicbg.imglib.cursor.LocalizableCursor;
@@ -30,6 +29,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.InvertibleCoordinateTransform;
 import mpicbg.models.NoninvertibleModelException;
+import stitching.utils.CompositeImageFixer;
 
 public class OverlayFusion 
 {
@@ -102,18 +102,14 @@ public class OverlayFusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		else
-		{
-			//IJ.log( "ch: " + imp.getNChannels() );
-			//IJ.log( "slices: " + imp.getNSlices() );
-			//IJ.log( "frames: " + imp.getNFrames() );
-			result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
-			
-			if ( imp.getNChannels() > 1 )
-				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
-			else
-				return result;
-		}
+		//IJ.log( "ch: " + imp.getNChannels() );
+		//IJ.log( "slices: " + imp.getNSlices() );
+		//IJ.log( "frames: " + imp.getNFrames() );
+		result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
+		
+		if ( imp.getNChannels() > 1 )
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
+		return result;
 	}
 	
 	public static <T extends RealType<T>> CompositeImage createOverlay( final T targetType, final ArrayList<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality, final int timepoint, final InterpolatorFactory< FloatType > factory )
@@ -202,6 +198,7 @@ public class OverlayFusion
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread(new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID

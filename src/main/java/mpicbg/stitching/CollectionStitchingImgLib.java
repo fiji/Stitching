@@ -48,6 +48,7 @@ public class CollectionStitchingImgLib
 	        for ( int ithread = 0; ithread < threads.length; ++ithread )
 	            threads[ ithread ] = new Thread(new Runnable()
 	            {
+	                @Override
 	                public void run()
 	                {		
 	                   	final int myNumber = ai.getAndIncrement();

@@ -26,8 +26,7 @@ public class AveragePixelFusion implements PixelFusion
 	{ 
 		if ( count == 0 )
 			return 0;
-		else
-			return (float) (avg/(double)count); 
+		return (float) (avg/count); 
 	}
 
 	@Override

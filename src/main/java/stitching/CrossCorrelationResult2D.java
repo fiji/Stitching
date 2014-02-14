@@ -29,11 +29,13 @@ public class CrossCorrelationResult2D implements Quicksortable
 	public double SSQ, R, PCMValue;
 	public ImagePlus overlapImp, errorMapImp;
 
+	@Override
 	public double getQuicksortValue()
 	{
 		return 1 - R;
 	}
 	
+	@Override
 	public CrossCorrelationResult2D clone()
 	{
 		CrossCorrelationResult2D cc = new CrossCorrelationResult2D();

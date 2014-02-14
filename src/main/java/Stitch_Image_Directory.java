@@ -24,6 +24,11 @@ import static stitching.CommonFunctions.addHyperLinkListener;
 import static stitching.CommonFunctions.colorList;
 import static stitching.CommonFunctions.methodListCollection;
 import static stitching.CommonFunctions.rgbTypes;
+import fiji.util.gui.GenericDialogPlus;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.MultiLineLabel;
+import ij.plugin.PlugIn;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,18 +36,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import fiji.util.gui.GenericDialogPlus;
-
 import stitching.CommonFunctions;
 import stitching.GridLayout;
 import stitching.ImageInformation;
-import stitching.model.TranslationModel3D;
 import stitching.model.TranslationModel2D;
-
-import ij.IJ;
-import ij.ImagePlus;
-import ij.plugin.*;
-import ij.gui.*;
+import stitching.model.TranslationModel3D;
 
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
@@ -62,6 +60,7 @@ public class Stitch_Image_Directory implements PlugIn
 	public static double thresholdDisplacementRelativeStatic = 2.5;
 	public static double thresholdDisplacementAbsoluteStatic = 3.5;
 	
+	@Override
 	public void run(String arg0)
 	{
 		GenericDialogPlus gd = new GenericDialogPlus("Stitch Directory with Images (unknown configuration)");

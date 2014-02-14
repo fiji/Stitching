@@ -62,6 +62,7 @@ public class RoiPicker extends AbstractTool implements ActionListener,
 	 * RUN METHOD
 	 */
 
+	@Override
 	public void run(String arg) {
 		super.run(arg);
 	}

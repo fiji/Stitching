@@ -23,13 +23,12 @@
  */
 package stitching.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import ij.IJ;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-
-import ij.IJ;
+import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**

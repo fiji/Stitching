@@ -25,7 +25,6 @@ package stitching.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.lang.IndexOutOfBoundsException;
 import java.util.ListIterator;
 
 public class ErrorStatistic
@@ -51,11 +50,11 @@ public class ErrorStatistic
 		values.add( new_value );
 		mean /= values.size();
 		
-		var0 += new_value * new_value / ( double )( values.size() - 1 );
+		var0 += new_value * new_value / ( values.size() - 1 );
 		std0 = Math.sqrt( var0 );
 		
 		double tmp = new_value - mean;
-		var += tmp * tmp / ( double )( values.size() - 1 );
+		var += tmp * tmp / ( values.size() - 1 );
 		std = Math.sqrt( var );
 		
 		sortedValues.add( new_value );
@@ -84,7 +83,7 @@ public class ErrorStatistic
 			s += li.previous();
 			++i;
 		}
-		s /= ( double )width;
+		s /= width;
 		return s;
 	}
 }

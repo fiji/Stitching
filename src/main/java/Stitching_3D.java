@@ -19,29 +19,37 @@
  * @author Stephan Preibisch
  */
 
-import static stitching.CommonFunctions.*;
-
-import ij.plugin.PlugIn;
-import ij.gui.GenericDialog;
-import ij.gui.YesNoCancelDialog;
+import static stitching.CommonFunctions.RED_CYAN;
+import static stitching.CommonFunctions.addHyperLinkListener;
+import static stitching.CommonFunctions.colorList;
+import static stitching.CommonFunctions.computeFFT;
+import static stitching.CommonFunctions.computePhaseCorrelationMatrix;
+import static stitching.CommonFunctions.getPixelValueRGB;
+import static stitching.CommonFunctions.methodList;
+import static stitching.CommonFunctions.quicksort;
+import static stitching.CommonFunctions.startTask;
+import static stitching.CommonFunctions.zeroPadImages;
 import ij.IJ;
-import ij.WindowManager;
 import ij.ImagePlus;
-import ij.process.*;
-import ij.gui.Roi;
-import ij.gui.MultiLineLabel;
 import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.GenericDialog;
+import ij.gui.MultiLineLabel;
+import ij.gui.Roi;
+import ij.gui.YesNoCancelDialog;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+import ij.process.StackConverter;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Date;
-
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.Component;
 import java.awt.Checkbox;
 import java.awt.Choice;
+import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import stitching.CrossCorrelationResult3D;
 import stitching.FloatArray3D;
@@ -87,6 +95,7 @@ public class Stitching_3D implements PlugIn
 	// a macro can call to only fuse two images given a certain shift
 	private Point3D translation = null;
 
+	@Override
 	public void run(String args)
 	{
 		// get list of image stacks
@@ -251,7 +260,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "Co-Registration makes only sense if you want to fuse the image stacks, actually you only get the numbers. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 
 			}
 			else if (stackList.length < 3)
@@ -259,7 +268,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have only two stacks open, there is nothing to co-register. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 			}
 			else if (numberOfChannels < 1)
 			{
@@ -267,7 +276,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have selected less than 1 stack to co-register...that makes no sense to me. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 			}
 			else
 			{
@@ -343,6 +352,7 @@ public class Stitching_3D implements PlugIn
 
 		controller.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				setRGB(stackIDs[controller.getSelectedIndex()], target);
@@ -360,6 +370,7 @@ public class Stitching_3D implements PlugIn
 	{
 		master.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				if (ie.getStateChange() == ItemEvent.SELECTED)
@@ -391,6 +402,7 @@ public class Stitching_3D implements PlugIn
 	{
 		master.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				if (ie.getStateChange() == ItemEvent.SELECTED)
@@ -430,7 +442,6 @@ public class Stitching_3D implements PlugIn
 		{
 			IJ.error("Could not find image stack: " + e);
 		}
-		;
 
 		return imp;
 	}
@@ -718,6 +729,7 @@ public class Stitching_3D implements PlugIn
 
 			Runnable task = new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					try
@@ -849,8 +861,8 @@ public class Stitching_3D implements PlugIn
 			return result;
 		}
 
-		avg1 /= (double) count;
-		avg2 /= (double) count;
+		avg1 /= count;
+		avg2 /= count;
 
 		double var1 = 0, var2 = 0;
 		double coVar = 0;
@@ -901,10 +913,10 @@ public class Stitching_3D implements PlugIn
 			off2 = oldZ2 + arrayOffsetZ2;
 		}
 
-		SSQ /= (double) count;
-		var1 /= (double) count;
-		var2 /= (double) count;
-		coVar /= (double) count;
+		SSQ /= count;
+		var1 /= count;
+		var2 /= count;
+		coVar /= count;
 
 		double stDev1 = Math.sqrt(var1);
 		double stDev2 = Math.sqrt(var2);
@@ -1255,7 +1267,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y, countSlice)] = (float) (pixelTmp[count++] & 0xff);
+					pixels.data[pixels.getPos(x, y, countSlice)] = pixelTmp[count++] & 0xff;
 		}
 		else if (imageStack[0] instanceof short[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1264,7 +1276,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y, countSlice)] = (float) (pixelTmp[count++] & 0xffff);
+					pixels.data[pixels.getPos(x, y, countSlice)] = pixelTmp[count++] & 0xffff;
 		}
 		else if (imageStack[0] instanceof float[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1330,7 +1342,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = (float) (pixelTmp[x + y * width] & 0xff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = pixelTmp[x + y * width] & 0xff;
 		}
 		else if (imageStack[0] instanceof short[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1338,7 +1350,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = (float) (pixelTmp[x + y * width] & 0xffff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = pixelTmp[x + y * width] & 0xffff;
 		}
 		else if (imageStack[0] instanceof float[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{

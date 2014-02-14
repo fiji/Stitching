@@ -41,14 +41,15 @@ public class Point3D
 		this.value = value;
 	}
 
+	@Override
 	public String toString()
 	{
 		if (printValue)
 			return "x: " + x + " y: " + y  + " z: " + z + " value: " + value;
-		else
-			return "x: " + x + " y: " + y  + " z: " + z;
+		return "x: " + x + " y: " + y  + " z: " + z;
 	}
 	
+	@Override
 	public Point3D clone()
 	{
 		return new Point3D(x, y, z, value);

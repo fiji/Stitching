@@ -22,7 +22,8 @@ package stitching;
 
 
 import ij.ImagePlus;
-import stitching.model.*;
+import stitching.model.Model;
+import stitching.model.Tile;
 
 public class ImageInformation extends Tile implements Comparable<ImageInformation>
 {
@@ -56,6 +57,7 @@ public class ImageInformation extends Tile implements Comparable<ImageInformatio
 	public float[] position;
 	final public int id, dim;
 	
+	@Override
 	public String toString()
 	{
 		String out =  "Image: '" + imageName + "' Imp: '" + imp + "' Offset: (";
@@ -70,6 +72,7 @@ public class ImageInformation extends Tile implements Comparable<ImageInformatio
 		return out;
 	}
 
+	@Override
 	public int compareTo(ImageInformation o)
 	{
 		if (id < o.id)

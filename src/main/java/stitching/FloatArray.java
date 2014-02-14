@@ -24,5 +24,6 @@ public abstract class FloatArray
 {
 	public float data[] = null;
 
+	@Override
 	public abstract FloatArray clone();
 }

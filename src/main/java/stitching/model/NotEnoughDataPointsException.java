@@ -23,7 +23,6 @@
  */
 package stitching.model;
 
-import java.lang.Exception;
 
 /**
  * Signalizes that there were not enough data points available to estimate the

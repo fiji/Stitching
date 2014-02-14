@@ -1,6 +1,7 @@
 package plugin;
 
 import static stitching.CommonFunctions.addHyperLinkListener;
+import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.gui.MultiLineLabel;
 
@@ -10,8 +11,6 @@ import java.awt.event.ItemListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
-
-import fiji.util.gui.GenericDialogPlus;
 
 public class GridType 
 {
@@ -166,6 +165,7 @@ public class GridType
 	{
 		choice1.addItemListener( new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				try
@@ -195,6 +195,7 @@ public class GridType
 
 		choice2.addItemListener( new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				try
