@@ -51,6 +51,7 @@ public class PaintInvertibleCoordinateTransformThread extends Thread
 		this.setName( "PaintInvertibleCoordinateTransformThread" );
 	}
 	
+	@Override
 	public void run()
 	{
 		while ( !isInterrupted() )

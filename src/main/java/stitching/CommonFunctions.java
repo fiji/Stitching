@@ -91,6 +91,7 @@ public class CommonFunctions
 		{
 			text.addMouseListener(new MouseAdapter()
 			{
+				@Override
 				public void mouseClicked(MouseEvent e)
 				{
 					try
@@ -103,12 +104,14 @@ public class CommonFunctions
 					}
 				}
 	
+				@Override
 				public void mouseEntered(MouseEvent e)
 				{
 					text.setForeground(Color.BLUE);
 					text.setCursor(new Cursor(Cursor.HAND_CURSOR));
 				}
 	
+				@Override
 				public void mouseExited(MouseEvent e)
 				{
 					text.setForeground(Color.BLACK);
@@ -603,6 +606,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					int myNumber = ai.getAndIncrement();
@@ -637,6 +641,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[height * 2];
@@ -676,6 +681,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[depth * 2];
@@ -889,6 +895,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					int myNumber = ai.getAndIncrement();
@@ -929,6 +936,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[height * 2];
@@ -967,6 +975,7 @@ public class CommonFunctions
 		for (int ithread = 0; ithread < threads.length; ++ithread)
 			threads[ithread] = new Thread(new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					float[] tempIn = new float[complexWidth];

@@ -298,6 +298,7 @@ public class Fusion
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread(new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID
@@ -409,6 +410,7 @@ A:        					for ( int i = 0; i < numImages; ++i )
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread( new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID

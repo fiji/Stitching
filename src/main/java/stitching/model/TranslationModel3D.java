@@ -35,6 +35,7 @@ public class TranslationModel3D extends InvertibleModel
 	final public int getMinSetSize(){ return MIN_SET_SIZE; }
 
 	//@Override
+	@Override
 	public float[] apply( float[] point )
 	{
 		assert point.length == 3 : "3d translations can be applied to 3d points only.";
@@ -46,6 +47,7 @@ public class TranslationModel3D extends InvertibleModel
 	}
 	
 	//@Override
+	@Override
 	public void applyInPlace( float[] point )
 	{
 		assert point.length == 3 : "3d translations can be applied to 3d points only.";
@@ -56,6 +58,7 @@ public class TranslationModel3D extends InvertibleModel
 	}
 	
 	//@Override
+	@Override
 	public float[] applyInverse( float[] point )
 	{
 		assert point.length == 3 : "3d translations can be applied to 3d points only.";
@@ -67,6 +70,7 @@ public class TranslationModel3D extends InvertibleModel
 	}
 
 	//@Override
+	@Override
 	public void applyInverseInPlace( float[] point )
 	{
 		assert point.length == 3 : "3d translations can be applied to 3d points only.";
@@ -83,6 +87,7 @@ public class TranslationModel3D extends InvertibleModel
 		return ( "[1,3](" + translation[ 0 ] + "," + translation[ 1 ] + "," + translation[ 2 ] + ") " + cost );
 	}
 
+	@Override
 	final public void fit( Collection< PointMatch > matches ) throws NotEnoughDataPointsException
 	{
 		if ( matches.size() < MIN_SET_SIZE ) throw new NotEnoughDataPointsException( matches.size() + " data points are not enough to estimate a 3d translation model, at least " + MIN_SET_SIZE + " data points required." );
@@ -130,6 +135,7 @@ public class TranslationModel3D extends InvertibleModel
 	 * @param scale gives a multiplicative factor to each dimensional distance (scales the amount of shaking)
 	 * @param center local pivot point for centered shakes (e.g. rotation)
 	 */
+	@Override
 	final public void shake(
 			Collection< PointMatch > matches,
 			float scale,
@@ -138,6 +144,7 @@ public class TranslationModel3D extends InvertibleModel
 		// TODO If you ever need it, please implement it...
 	}
 
+	@Override
 	public TranslationModel3D clone()
 	{
 		TranslationModel3D tm = new TranslationModel3D();

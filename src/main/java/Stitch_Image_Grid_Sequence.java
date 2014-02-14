@@ -60,6 +60,7 @@ public class Stitch_Image_Grid_Sequence implements PlugIn
 	public static boolean previewOnlyStatic = false;
 	public static boolean computeOverlapStatic = true;
 
+	@Override
 	public void run(String arg0) 
 	{
 		GenericDialogPlus gd = new GenericDialogPlus("Stitch Image Grid Sequence");

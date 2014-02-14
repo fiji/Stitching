@@ -87,6 +87,7 @@ public class Stitching_3D implements PlugIn
 	// a macro can call to only fuse two images given a certain shift
 	private Point3D translation = null;
 
+	@Override
 	public void run(String args)
 	{
 		// get list of image stacks
@@ -343,6 +344,7 @@ public class Stitching_3D implements PlugIn
 
 		controller.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				setRGB(stackIDs[controller.getSelectedIndex()], target);
@@ -360,6 +362,7 @@ public class Stitching_3D implements PlugIn
 	{
 		master.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				if (ie.getStateChange() == ItemEvent.SELECTED)
@@ -391,6 +394,7 @@ public class Stitching_3D implements PlugIn
 	{
 		master.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				if (ie.getStateChange() == ItemEvent.SELECTED)
@@ -717,6 +721,7 @@ public class Stitching_3D implements PlugIn
 
 			Runnable task = new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					try

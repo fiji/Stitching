@@ -62,6 +62,7 @@ public class Stitch_Image_Directory implements PlugIn
 	public static double thresholdDisplacementRelativeStatic = 2.5;
 	public static double thresholdDisplacementAbsoluteStatic = 3.5;
 	
+	@Override
 	public void run(String arg0)
 	{
 		GenericDialogPlus gd = new GenericDialogPlus("Stitch Directory with Images (unknown configuration)");

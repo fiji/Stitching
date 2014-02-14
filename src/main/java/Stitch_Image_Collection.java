@@ -84,6 +84,7 @@ public class Stitch_Image_Collection implements PlugIn
 	public static boolean previewOnlyStatic = false;
 
 	
+	@Override
 	public void run(String arg0)
 	{
 		GenericDialogPlus gd = new GenericDialogPlus("Stitch Image Collection");
@@ -515,6 +516,7 @@ public class Stitch_Image_Collection implements PlugIn
 	        for (int ithread = 0; ithread < threads.length; ++ithread)
 	            threads[ithread] = new Thread(new Runnable()
 	            {
+	                @Override
 	                public void run()
 	                {
 	                	final int dimension = dim;

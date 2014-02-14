@@ -43,6 +43,7 @@ public class FloatArray3D extends FloatArray
 		this.depth = depth;
 	}
 
+	@Override
 	public FloatArray3D clone()
 	{
 		FloatArray3D clone = new FloatArray3D(width, height, depth);

@@ -79,6 +79,7 @@ public class Stitching_2D implements PlugIn
 	// a macro can call to only fuse two images given a certain shift
 	private Point2D translation = null;
 
+	@Override
 	public void run(String args)
 	{
 		// get list of image stacks
@@ -221,6 +222,7 @@ public class Stitching_2D implements PlugIn
 
 		controller.addItemListener(new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				setRGB(nostackIDs[controller.getSelectedIndex()], target);
@@ -852,6 +854,7 @@ public class Stitching_2D implements PlugIn
 
 			Runnable task = new Runnable()
 			{
+				@Override
 				public void run()
 				{
 					try

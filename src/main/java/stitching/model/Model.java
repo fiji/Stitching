@@ -376,11 +376,13 @@ public abstract class Model implements CoordinateTransform
 	 * Create a meaningful string representation of the model for save into
 	 * text-files or display on terminals.
 	 */
+	@Override
 	abstract public String toString();
 
 	
 	/**
 	 * Clone the model.
 	 */
+	@Override
 	abstract public Model clone();
 }

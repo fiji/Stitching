@@ -38,11 +38,13 @@ public class Point2D
 		this.value = value;
 	}
 	
+	@Override
 	public String toString()
 	{
 		return "x: " + x + " y: " + y; 
 	}
 	
+	@Override
 	public Point2D clone()
 	{
 		return new Point2D(x, y, value);

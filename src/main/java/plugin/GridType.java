@@ -166,6 +166,7 @@ public class GridType
 	{
 		choice1.addItemListener( new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				try
@@ -195,6 +196,7 @@ public class GridType
 
 		choice2.addItemListener( new ItemListener()
 		{
+			@Override
 			public void itemStateChanged(ItemEvent ie)
 			{
 				try

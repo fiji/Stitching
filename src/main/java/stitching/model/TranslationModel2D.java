@@ -35,6 +35,7 @@ public class TranslationModel2D extends InvertibleModel
 	final public int getMinSetSize(){ return MIN_SET_SIZE; }
 
 	//@Override
+	@Override
 	public float[] apply( float[] point )
 	{
 		assert point.length == 2 : "2d translations can be applied to 2d points only.";
@@ -45,6 +46,7 @@ public class TranslationModel2D extends InvertibleModel
 	}
 	
 	//@Override
+	@Override
 	public void applyInPlace( float[] point )
 	{
 		assert point.length == 2 : "2d translations can be applied to 2d points only.";
@@ -54,6 +56,7 @@ public class TranslationModel2D extends InvertibleModel
 	}
 	
 	//@Override
+	@Override
 	public float[] applyInverse( float[] point )
 	{
 		assert point.length == 2 : "2d translations can be applied to 2d points only.";
@@ -64,6 +67,7 @@ public class TranslationModel2D extends InvertibleModel
 	}
 
 	//@Override
+	@Override
 	public void applyInverseInPlace( float[] point )
 	{
 		assert point.length == 2 : "2d translations can be applied to 2d points only.";
@@ -79,6 +83,7 @@ public class TranslationModel2D extends InvertibleModel
 		return ( "[1,2](" + translation[ 0 ] + "," + translation[ 1 ] + ") " + cost );
 	}
 
+	@Override
 	final public void fit( Collection< PointMatch > matches ) throws NotEnoughDataPointsException
 	{
 		if ( matches.size() < MIN_SET_SIZE ) throw new NotEnoughDataPointsException( matches.size() + " data points are not enough to estimate a 2d translation model, at least " + MIN_SET_SIZE + " data points required." );
@@ -121,6 +126,7 @@ public class TranslationModel2D extends InvertibleModel
 	 * @param scale gives a multiplicative factor to each dimensional distance (scales the amount of shaking)
 	 * @param center local pivot point for centered shakes (e.g. rotation)
 	 */
+	@Override
 	final public void shake(
 			Collection< PointMatch > matches,
 			float scale,
@@ -129,6 +135,7 @@ public class TranslationModel2D extends InvertibleModel
 		// TODO If you ever need it, please implement it...
 	}
 
+	@Override
 	public TranslationModel2D clone()
 	{
 		TranslationModel2D tm = new TranslationModel2D();

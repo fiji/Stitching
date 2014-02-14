@@ -198,6 +198,7 @@ public class OverlayFusion
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread(new Runnable()
             {
+                @Override
                 public void run()
                 {
                 	// Thread ID
