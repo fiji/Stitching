@@ -765,57 +765,29 @@ public class Stitching_2D implements PlugIn
 		// defines where the output image starts relative to the first image
 		Point2D startOffset = new Point2D(0, 0);
 
-		if (false)
-		{
-		    // maximum size (bounding box)
-		    Point2D start = new Point2D(0, 0);
-		    Point2D minStart = new Point2D(0, 0);
-		    Point2D end = new Point2D(img[0].getWidth(), img[0].getWidth());
-		    
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-				
-				minStart.x = Math.min(start.x, minStart.x);
-				minStart.y = Math.min(start.y, minStart.y);
-				
-				end.x = Math.max(end.x, start.x + img[i].getWidth());
-				end.y = Math.max(end.y, start.y + img[i].getWidth());
-		    }
+		// minimum size
+		Point2D start = new Point2D(0, 0, 0);
 
-		    size.x = end.x - minStart.x;
-		    size.y = end.y - minStart.y;
-		    
-		    startOffset.x = minStart.x;
-		    startOffset.y = minStart.y;		    
+		Point2D minEnd = new Point2D(img[0].getWidth(), img[0].getHeight());
+		Point2D maxStart = new Point2D(0, 0, 0);
+
+		for (int i = 1; i < img.length; i++)
+		{
+		start.x += t[i - 1].x;
+		start.y += t[i - 1].y;
+
+		maxStart.x = Math.max(start.x, maxStart.x);
+		maxStart.y = Math.max(start.y, maxStart.y);
+
+		minEnd.x = Math.min(minEnd.x, start.x + img[i].getWidth());
+		minEnd.y = Math.min(minEnd.y, start.y + img[i].getHeight());
 		}
-		else
-		 {
-		    // minimum size
-		    Point2D start = new Point2D(0, 0, 0);
-	
-		    Point2D minEnd = new Point2D(img[0].getWidth(), img[0].getHeight());
-		    Point2D maxStart = new Point2D(0, 0, 0);
-	
-		    for (int i = 1; i < img.length; i++)
-		    {
-				start.x += t[i - 1].x;
-				start.y += t[i - 1].y;
-		
-				maxStart.x = Math.max(start.x, maxStart.x);
-				maxStart.y = Math.max(start.y, maxStart.y);
-		
-				minEnd.x = Math.min(minEnd.x, start.x + img[i].getWidth());
-				minEnd.y = Math.min(minEnd.y, start.y + img[i].getHeight());
-		    }
-	
-		    size.x = minEnd.x - maxStart.x;
-		    size.y = minEnd.y - maxStart.y;
-	
-		    startOffset.x = maxStart.x;
-		    startOffset.y = maxStart.y;
-		}
+
+		size.x = minEnd.x - maxStart.x;
+		size.y = minEnd.y - maxStart.y;
+
+		startOffset.x = maxStart.x;
+		startOffset.y = maxStart.y;
 		 
 		 Point2D[] result = new Point2D[2];
 		 
