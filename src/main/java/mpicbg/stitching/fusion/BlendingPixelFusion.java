@@ -68,8 +68,7 @@ public class BlendingPixelFusion implements PixelFusion
 	{ 
 		if ( weightSum == 0 )
 			return 0;
-		else
-			return (float)( valueSum / weightSum );
+		return (float)( valueSum / weightSum );
 	}
 
 	@Override

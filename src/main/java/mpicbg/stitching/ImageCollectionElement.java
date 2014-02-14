@@ -69,67 +69,59 @@ public class ImageCollectionElement
 		{
 			return imp;
 		}
-		else
+		// TODO: Unify this image loading mechanism with the one in
+		// plugin/Stitching_Grid.java. Otherwise changes to how images
+		// are loaded must be made in multiple places in the code.
+		if ( imp != null )
+			imp.close();
+		
+		this.virtual = virtual;
+		
+		try 
 		{
-			// TODO: Unify this image loading mechanism with the one in
-			// plugin/Stitching_Grid.java. Otherwise changes to how images
-			// are loaded must be made in multiple places in the code.
-			if ( imp != null )
-				imp.close();
-			
-			this.virtual = virtual;
-			
-			try 
+			if ( !file.exists() )
 			{
-				if ( !file.exists() )
-				{
-					IJ.log( "Cannot find file: '" + file + "' - abort stitching." );
-					return null;
-				}
-				
-				ImporterOptions options = new ImporterOptions();
-				options.setId( file.getAbsolutePath() );
-				options.setSplitChannels( false );
-				options.setSplitTimepoints( false );
-				options.setSplitFocalPlanes( false );
-				options.setAutoscale( false );
-				options.setVirtual( virtual );
-				
-				final ImagePlus[] imp;
-				
-				if ( virtual )
-					imp = BF.openImagePlus( options );
-				else
-					imp = BF.openImagePlus( file.getAbsolutePath() ); // this worked, so we keep it (altough both should be the same)
-				
-				if ( imp.length > 1 )
-				{
-					IJ.log( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
-					
-					for ( ImagePlus i : imp )
-						i.close();
-					
-					return null;
-				}
-				else
-				{
-					if ( imp[ 0 ].getNSlices() == 1 )
-						size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight() };
-					else
-						size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight(), imp[ 0 ].getNSlices() };
-					
-					this.imp = imp[ 0 ];
-					return this.imp;
-				}
-				
-			} 
-			catch ( Exception e ) 
-			{
-				IJ.log( "Cannot open file '" + file + "': " + e );
-				//e.printStackTrace();
+				IJ.log( "Cannot find file: '" + file + "' - abort stitching." );
 				return null;
-			} 
+			}
 			
+			ImporterOptions options = new ImporterOptions();
+			options.setId( file.getAbsolutePath() );
+			options.setSplitChannels( false );
+			options.setSplitTimepoints( false );
+			options.setSplitFocalPlanes( false );
+			options.setAutoscale( false );
+			options.setVirtual( virtual );
+			
+			final ImagePlus[] imp;
+			
+			if ( virtual )
+				imp = BF.openImagePlus( options );
+			else
+				imp = BF.openImagePlus( file.getAbsolutePath() ); // this worked, so we keep it (altough both should be the same)
+			
+			if ( imp.length > 1 )
+			{
+				IJ.log( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
+				
+				for ( ImagePlus i : imp )
+					i.close();
+				
+				return null;
+			}
+			if ( imp[ 0 ].getNSlices() == 1 )
+				size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight() };
+			else
+				size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight(), imp[ 0 ].getNSlices() };
+			
+			this.imp = imp[ 0 ];
+			return this.imp;
+		} 
+		catch ( Exception e ) 
+		{
+			IJ.log( "Cannot open file '" + file + "': " + e );
+			//e.printStackTrace();
+			return null;
 		}
 	}
 

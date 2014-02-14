@@ -45,8 +45,7 @@ public class Point3D
 	{
 		if (printValue)
 			return "x: " + x + " y: " + y  + " z: " + z + " value: " + value;
-		else
-			return "x: " + x + " y: " + y  + " z: " + z;
+		return "x: " + x + " y: " + y  + " z: " + z;
 	}
 	
 	public Point3D clone()

@@ -321,11 +321,8 @@ public class PairWiseStitchingImgLib
 		{
 			return img;
 		}
-		else
-		{
-			img.close();
-			return null;
-		}
+		img.close();
+		return null;
 	}
 	
 	/**
@@ -525,8 +522,7 @@ public class PairWiseStitchingImgLib
 	{
 		if ( channel == 0 || imp.getType() != ImagePlus.GRAY8 )
 			return null;
-		else
-			return ImageJFunctions.wrapByte( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
+		return ImageJFunctions.wrapByte( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
 	}
 
 	/**
@@ -544,8 +540,7 @@ public class PairWiseStitchingImgLib
 	{
 		if ( channel == 0 || imp.getType() != ImagePlus.GRAY16 )
 			return null;
-		else
-			return ImageJFunctions.wrapShort( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
+		return ImageJFunctions.wrapShort( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
 	}
 
 	/**
@@ -563,8 +558,7 @@ public class PairWiseStitchingImgLib
 	{
 		if ( channel == 0 || imp.getType() != ImagePlus.GRAY32 )
 			return null;
-		else
-			return ImageJFunctions.wrapFloat( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
+		return ImageJFunctions.wrapFloat( Hyperstack_rearranger.getImageChunk( imp, channel, timepoint ) );
 	}
 
 	/**
@@ -582,10 +576,7 @@ public class PairWiseStitchingImgLib
 		// first test the roi
 		roi = getOnlyRectangularRoi( roi );
 		
-		if ( roi == null && channel > 0 )
-			return true;
-		else
-			return false;
+		return roi == null && channel > 0;
 	}
 
 	protected static Roi getOnlyRectangularRoi( Roi roi )
@@ -593,8 +584,7 @@ public class PairWiseStitchingImgLib
 		// we can only do rectangular rois
 		if ( roi != null && roi.getType() != Roi.RECTANGLE )
 			return null;
-		else
-			return roi;
+		return roi;
 	}
 
 	/*

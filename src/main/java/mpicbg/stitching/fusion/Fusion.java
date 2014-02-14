@@ -249,18 +249,14 @@ public class Fusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		else
-		{
-			//IJ.log( "ch: " + imp.getNChannels() );
-			//IJ.log( "slices: " + imp.getNSlices() );
-			//IJ.log( "frames: " + imp.getNFrames() );
-			result.setDimensions( numChannels, 1, numTimePoints );
-			
-			if ( numChannels > 1 || numTimePoints > 1 )
-				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
-			else
-				return result;
-		}
+		//IJ.log( "ch: " + imp.getNChannels() );
+		//IJ.log( "slices: " + imp.getNSlices() );
+		//IJ.log( "frames: " + imp.getNFrames() );
+		result.setDimensions( numChannels, 1, numTimePoints );
+		
+		if ( numChannels > 1 || numTimePoints > 1 )
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
+		return result;
 	}
 	
 	/**

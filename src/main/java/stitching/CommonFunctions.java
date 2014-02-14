@@ -782,8 +782,7 @@ public class CommonFunctions
 		if (inPlace) multiply(fft1, fft2, true);
 		else fftTemp1 = multiply(fftTemp1, fftTemp2, false);
 
-		if (inPlace) return null;
-		else return fftTemp1;
+		return inPlace ? null : fftTemp1;
 	}
 
 	public static void normalizeComplexVectorsToUnitVectors(float[] complex)
@@ -870,7 +869,7 @@ public class CommonFunctions
 		}
 
 		if (overwriteA) return complexA;
-		else return complexResult;
+		return complexResult;
 	}
 
 	public static FloatArray3D pffftInv3DMT(final FloatArray3D values, final int nfft)

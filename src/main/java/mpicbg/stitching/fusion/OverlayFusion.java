@@ -102,18 +102,14 @@ public class OverlayFusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		else
-		{
-			//IJ.log( "ch: " + imp.getNChannels() );
-			//IJ.log( "slices: " + imp.getNSlices() );
-			//IJ.log( "frames: " + imp.getNFrames() );
-			result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
-			
-			if ( imp.getNChannels() > 1 )
-				return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
-			else
-				return result;
-		}
+		//IJ.log( "ch: " + imp.getNChannels() );
+		//IJ.log( "slices: " + imp.getNSlices() );
+		//IJ.log( "frames: " + imp.getNFrames() );
+		result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
+		
+		if ( imp.getNChannels() > 1 )
+			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
+		return result;
 	}
 	
 	public static <T extends RealType<T>> CompositeImage createOverlay( final T targetType, final ArrayList<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality, final int timepoint, final InterpolatorFactory< FloatType > factory )

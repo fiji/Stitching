@@ -1594,14 +1594,11 @@ public class Stitching_Grid implements PlugIn
 						--currentPosition[ 0 ];
 						return;
 					}
-					else
-					{
-						// just we have to change rows
-						currentPosition[ 1 ] += snakeDirectionY;
-						
-						// and change the direction of the snake in x
-						snakeDirectionX *= -1;
-					}
+					// just we have to change rows
+					currentPosition[ 1 ] += snakeDirectionY;
+					
+					// and change the direction of the snake in x
+					snakeDirectionX *= -1;
 				}
 			}
 			else if ( gridType == 3 ) // "Snake by columns" 

@@ -251,7 +251,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "Co-Registration makes only sense if you want to fuse the image stacks, actually you only get the numbers. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 
 			}
 			else if (stackList.length < 3)
@@ -259,7 +259,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have only two stacks open, there is nothing to co-register. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 			}
 			else if (numberOfChannels < 1)
 			{
@@ -267,7 +267,7 @@ public class Stitching_3D implements PlugIn
 				YesNoCancelDialog error = new YesNoCancelDialog(null, "Error", "You have selected less than 1 stack to co-register...that makes no sense to me. Do you want to continue?");
 
 				if (!error.yesPressed()) return;
-				else coregister = false;
+				coregister = false;
 			}
 			else
 			{

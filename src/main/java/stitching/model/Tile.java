@@ -283,7 +283,7 @@ public class Tile
 			{
 				return true;
 			}
-			else model = old_model;
+			model = old_model;
 		}
 		// no better model found, so roll back
 		update();
