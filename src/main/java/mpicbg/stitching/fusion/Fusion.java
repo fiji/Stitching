@@ -658,7 +658,7 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 		
 		for ( int i = 0; i < numImages * numTimePoints; ++i )
 		{
-			final InvertibleBoundable boundable = (InvertibleBoundable)models.get( i ); 
+			final InvertibleBoundable boundable = models.get( i ); 
 			boundables.add( boundable );
 			
 			//IJ.log( "i: " + boundable );

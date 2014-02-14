@@ -305,7 +305,7 @@ public class CommonFunctions
 								color[0] = color[1] = color[2] = 0;
 								
 								for (int c = 0; c < channels; c++)
-									color[c] = (byte)((int)getShortValue(b[c], 2 * (x + y*width))/256);
+									color[c] = (byte)(getShortValue(b[c], 2 * (x + y*width))/256);
 								
 								cp.putPixel(x, y, color);
 							}
@@ -995,7 +995,7 @@ public class CommonFunctions
 							fft.complexToReal(1, tempIn, tempOut);
 
 							for (int i = 0; i < tempOut.length; i++)
-								tempOut[i] /= (float) (width * height * depth);
+								tempOut[i] /= width * height * depth;
 
 							// fft.scale(width, tempOut);
 
@@ -1077,12 +1077,12 @@ public class CommonFunctions
 		if (imageType == ImagePlus.GRAY8)
 		{
 			byte[] pixelTmp = (byte[]) imageStack[z];
-			return (float) (pixelTmp[x + y * width] & 0xff);
+			return pixelTmp[x + y * width] & 0xff;
 		}
 		else if (imageType == ImagePlus.GRAY16)
 		{
 			short[] pixelTmp = (short[]) imageStack[z];
-			return (float) (pixelTmp[x + y * width] & 0xffff);
+			return pixelTmp[x + y * width] & 0xffff;
 		}
 		else
 		// instance of float[]

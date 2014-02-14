@@ -853,8 +853,8 @@ public class Stitching_3D implements PlugIn
 			return result;
 		}
 
-		avg1 /= (double) count;
-		avg2 /= (double) count;
+		avg1 /= count;
+		avg2 /= count;
 
 		double var1 = 0, var2 = 0;
 		double coVar = 0;
@@ -905,10 +905,10 @@ public class Stitching_3D implements PlugIn
 			off2 = oldZ2 + arrayOffsetZ2;
 		}
 
-		SSQ /= (double) count;
-		var1 /= (double) count;
-		var2 /= (double) count;
-		coVar /= (double) count;
+		SSQ /= count;
+		var1 /= count;
+		var2 /= count;
+		coVar /= count;
 
 		double stDev1 = Math.sqrt(var1);
 		double stDev2 = Math.sqrt(var2);
@@ -1259,7 +1259,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y, countSlice)] = (float) (pixelTmp[count++] & 0xff);
+					pixels.data[pixels.getPos(x, y, countSlice)] = pixelTmp[count++] & 0xff;
 		}
 		else if (imageStack[0] instanceof short[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1268,7 +1268,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = 0; y < height; y++)
 				for (int x = 0; x < width; x++)
-					pixels.data[pixels.getPos(x, y, countSlice)] = (float) (pixelTmp[count++] & 0xffff);
+					pixels.data[pixels.getPos(x, y, countSlice)] = pixelTmp[count++] & 0xffff;
 		}
 		else if (imageStack[0] instanceof float[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1334,7 +1334,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = (float) (pixelTmp[x + y * width] & 0xff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = pixelTmp[x + y * width] & 0xff;
 		}
 		else if (imageStack[0] instanceof short[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{
@@ -1342,7 +1342,7 @@ public class Stitching_3D implements PlugIn
 
 			for (int y = yCrop; y < yCrop + hCrop; y++)
 				for (int x = xCrop; x < xCrop + wCrop; x++)
-					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = (float) (pixelTmp[x + y * width] & 0xffff);
+					pixels.data[pixels.getPos(x - xCrop, y - yCrop, countSlice)] = pixelTmp[x + y * width] & 0xffff;
 		}
 		else if (imageStack[0] instanceof float[]) for (int countSlice = 0; countSlice < nstacks; countSlice++)
 		{

@@ -52,8 +52,8 @@ public class GlobalOptimization
 						p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ] } );						
 					}
 					
-					t1.addMatch( new PointMatchStitching( p1, p2, (float)pair.getCrossCorrelation(), pair ) );
-					t2.addMatch( new PointMatchStitching( p2, p1, (float)pair.getCrossCorrelation(), pair ) );
+					t1.addMatch( new PointMatchStitching( p1, p2, pair.getCrossCorrelation(), pair ) );
+					t2.addMatch( new PointMatchStitching( p2, p1, pair.getCrossCorrelation(), pair ) );
 					t1.addConnectedTile( t2 );
 					t2.addConnectedTile( t1 );
 					

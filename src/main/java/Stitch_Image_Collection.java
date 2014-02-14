@@ -844,7 +844,7 @@ public class Stitch_Image_Collection implements PlugIn
 		for (int i = 0; i < num; i++)
 			avg += values[i][channel];
 		
-		return (int)((avg/(double)num) + 0.5);
+		return (int)((avg/num) + 0.5);
 	}
 	
 	final private static float avg(final float[] values, final int num)
@@ -857,7 +857,7 @@ public class Stitch_Image_Collection implements PlugIn
 		for (int i = 0; i < num; i++)
 			avg += values[i];
 		
-		return (float)(avg/(double)num);
+		return (float)(avg/num);
 	}
 
 	final private static int getMin(final int[][] values, final int channel, final int num)
@@ -1453,8 +1453,8 @@ public class Stitch_Image_Collection implements PlugIn
 					for (int x = 0; x < fp.getWidth(); x++)
 					{
 						final float newValue = fp.getPixelValue(x, y);
-						final float oldValue = out.getPixelValue(x - startX + (int)Math.round(iI.offset[0]), y - startY + (int)Math.round(iI.offset[1]));
-						out.putPixelValue(x - startX + (int)Math.round(iI.offset[0]), y - startY + (int)Math.round(iI.offset[1]), Math.max(newValue, oldValue));
+						final float oldValue = out.getPixelValue(x - startX + Math.round(iI.offset[0]), y - startY + Math.round(iI.offset[1]));
+						out.putPixelValue(x - startX + Math.round(iI.offset[0]), y - startY + Math.round(iI.offset[1]), Math.max(newValue, oldValue));
 					}	
 			}
 			
