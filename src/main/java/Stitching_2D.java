@@ -246,7 +246,7 @@ public class Stitching_2D implements PlugIn
 		} catch (Exception e)
 		{
 			IJ.error("Could not find image: " + e);
-		};
+		}
 
 		return imp;
 	}

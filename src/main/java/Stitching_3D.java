@@ -430,7 +430,6 @@ public class Stitching_3D implements PlugIn
 		{
 			IJ.error("Could not find image stack: " + e);
 		}
-		;
 
 		return imp;
 	}

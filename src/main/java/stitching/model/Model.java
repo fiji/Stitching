@@ -383,4 +383,4 @@ public abstract class Model implements CoordinateTransform
 	 * Clone the model.
 	 */
 	abstract public Model clone();
-};
+}

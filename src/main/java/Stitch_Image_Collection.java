@@ -322,7 +322,7 @@ public class Stitch_Image_Collection implements PlugIn
 		{
 			fusedImp.setSlice(imgD/2 + 1);
 		}
-		catch (Exception e){};
+		catch (Exception e){}
 	
 		if (type == CommonFunctions.NONE || type == MAX || type == RED_CYAN)
 		{
@@ -1607,7 +1607,7 @@ public class Stitch_Image_Collection implements PlugIn
 			System.err.println("Stitch_Many_Cubes.readLayoutFile: " + e);
 			IJ.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			return null;
-		};
+		}
 		
 		return imageInformationList;
 	}

@@ -1105,7 +1105,7 @@ public class Stitching_Grid implements PlugIn
 			System.out.println( "Stitch_Grid.getLayoutFromFile: " + e );
 			IJ.log( "Stitching_Grid.getLayoutFromFile: " + e );
 			return null;
-		};
+		}
 		
 		if (ds != null) {
 			ImagePlus img = elements.get(0).open(true);
