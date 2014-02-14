@@ -20,21 +20,6 @@
  */
 package stitching;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.HashMap;
-
-import loci.formats.ChannelSeparator;
-import loci.formats.FormatException;
-import loci.formats.FormatTools;
-import loci.formats.IFormatReader;
-import loci.formats.meta.MetadataRetrieve;
-
 import edu.mines.jtk.dsp.FftComplex;
 import edu.mines.jtk.dsp.FftReal;
 import ij.IJ;
@@ -46,6 +31,21 @@ import ij.plugin.BrowserLauncher;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ShortProcessor;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import loci.formats.ChannelSeparator;
+import loci.formats.FormatException;
+import loci.formats.FormatTools;
+import loci.formats.IFormatReader;
+import loci.formats.meta.MetadataRetrieve;
 
 public class CommonFunctions
 {

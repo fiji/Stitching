@@ -24,9 +24,9 @@
 package stitching.model;
 
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Abstract class for arbitrary transformation models to be applied

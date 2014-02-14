@@ -3,18 +3,16 @@ import static stitching.CommonFunctions.addHyperLinkListener;
 import static stitching.CommonFunctions.colorList;
 import static stitching.CommonFunctions.methodListCollection;
 import static stitching.CommonFunctions.rgbTypes;
+import fiji.util.gui.GenericDialogPlus;
+import ij.IJ;
+import ij.gui.GenericDialog;
+import ij.gui.MultiLineLabel;
+import ij.plugin.PlugIn;
 
 import java.awt.Checkbox;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
-
-import fiji.util.gui.GenericDialogPlus;
-
-import ij.IJ;
-import ij.gui.GenericDialog;
-import ij.gui.MultiLineLabel;
-import ij.plugin.PlugIn;
 
 
 public class Stitch_Many_Images implements PlugIn

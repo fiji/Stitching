@@ -23,10 +23,10 @@
  */
 package stitching.model;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PaintInvertibleCoordinateTransformThread extends Thread
 {

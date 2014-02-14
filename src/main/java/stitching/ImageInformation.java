@@ -22,7 +22,8 @@ package stitching;
 
 
 import ij.ImagePlus;
-import stitching.model.*;
+import stitching.model.Model;
+import stitching.model.Tile;
 
 public class ImageInformation extends Tile implements Comparable<ImageInformation>
 {

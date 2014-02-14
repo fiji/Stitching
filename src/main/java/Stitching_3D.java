@@ -19,29 +19,37 @@
  * @author Stephan Preibisch
  */
 
-import static stitching.CommonFunctions.*;
-
-import ij.plugin.PlugIn;
-import ij.gui.GenericDialog;
-import ij.gui.YesNoCancelDialog;
+import static stitching.CommonFunctions.RED_CYAN;
+import static stitching.CommonFunctions.addHyperLinkListener;
+import static stitching.CommonFunctions.colorList;
+import static stitching.CommonFunctions.computeFFT;
+import static stitching.CommonFunctions.computePhaseCorrelationMatrix;
+import static stitching.CommonFunctions.getPixelValueRGB;
+import static stitching.CommonFunctions.methodList;
+import static stitching.CommonFunctions.quicksort;
+import static stitching.CommonFunctions.startTask;
+import static stitching.CommonFunctions.zeroPadImages;
 import ij.IJ;
-import ij.WindowManager;
 import ij.ImagePlus;
-import ij.process.*;
-import ij.gui.Roi;
-import ij.gui.MultiLineLabel;
 import ij.ImageStack;
+import ij.WindowManager;
+import ij.gui.GenericDialog;
+import ij.gui.MultiLineLabel;
+import ij.gui.Roi;
+import ij.gui.YesNoCancelDialog;
+import ij.plugin.PlugIn;
+import ij.process.ImageProcessor;
+import ij.process.StackConverter;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Date;
-
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.Component;
 import java.awt.Checkbox;
 import java.awt.Choice;
+import java.awt.Component;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import stitching.CrossCorrelationResult3D;
 import stitching.FloatArray3D;

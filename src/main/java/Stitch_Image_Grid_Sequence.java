@@ -21,13 +21,13 @@ import static stitching.CommonFunctions.addHyperLinkListener;
 import static stitching.CommonFunctions.colorList;
 import static stitching.CommonFunctions.methodListCollection;
 import static stitching.CommonFunctions.rgbTypes;
-import stitching.GridLayout;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.MultiLineLabel;
 import ij.io.FileSaver;
 import ij.plugin.PlugIn;
+import stitching.GridLayout;
 
 /**
  * Plugin class to stitch a sequence of grid of images (fixed X/Y configuration)

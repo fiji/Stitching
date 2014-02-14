@@ -1,15 +1,14 @@
 import static stitching.CommonFunctions.addHyperLinkListener;
+import fiji.util.gui.GenericDialogPlus;
+import ij.IJ;
+import ij.gui.MultiLineLabel;
+import ij.plugin.PlugIn;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import fiji.util.gui.GenericDialogPlus;
-import ij.IJ;
-import ij.gui.MultiLineLabel;
-import ij.plugin.PlugIn;
 
 
 public class DeltaVision_Converter implements PlugIn

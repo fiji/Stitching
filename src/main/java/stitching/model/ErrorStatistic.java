@@ -25,7 +25,6 @@ package stitching.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.lang.IndexOutOfBoundsException;
 import java.util.ListIterator;
 
 public class ErrorStatistic

@@ -23,7 +23,6 @@
  */
 package stitching.model;
 
-import java.lang.Exception;
 
 /**
  * Signalizes that the {@link Model} is not invertible.
