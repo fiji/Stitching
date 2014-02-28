@@ -284,6 +284,19 @@ public class Fusion
 		final int[] globalProgress = {0};
 		IJ.showProgress(0);
 
+		final long[] lastDraw = {System.currentTimeMillis()};
+		final ImagePlus[] fusionImp = new ImagePlus[1];
+
+		try {
+			fusionImp[0] =
+				((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+			fusionImp[0].setTitle("fusing...");
+			fusionImp[0].show();
+		}
+		catch (ImgLibException e) {
+			IJ.log("Output image has no ImageJ type: " + e);
+		}
+
 		final int[][] max = new int[ numImages ][ numDimensions ];
 		for ( int i = 0; i < numImages; ++i )
 			for ( int d = 0; d < numDimensions; ++d )
@@ -334,7 +347,7 @@ public class Fusion
                         {
             				out.fwd();
             				stepsTaken++;
-            				
+            				drawFusion(lastDraw, fusionImp);
             				// update status message if necessary
             				updateStatus(globalProgress, localProgress, stepsTaken, steps, output);
             				
@@ -378,6 +391,7 @@ A:        					for ( int i = 0; i < numImages; ++i )
             });
         
         SimpleMultiThreading.startAndJoin( threads );
+        if (fusionImp[0] != null) fusionImp[0].hide();
 	}
 
 	/**
@@ -402,6 +416,20 @@ A:        					for ( int i = 0; i < numImages; ++i )
 		// global progress variable. See #fuseBlock
 		final int[] globalProgress = {0};
 		IJ.showProgress(0);
+		
+		final long[] lastDraw = {System.currentTimeMillis()};
+		final ImagePlus[] fusionImp = new ImagePlus[1];
+
+		try {
+			fusionImp[0] =
+				((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+			fusionImp[0].setTitle("fusing...");
+			fusionImp[0].show();
+		}
+		catch (ImgLibException e) {
+			IJ.log("Output image has no ImageJ type: " + e);
+		}
+		
 		
 		// run multithreaded
 		final AtomicInteger ai = new AtomicInteger(0);					
@@ -440,7 +468,7 @@ A:        					for ( int i = 0; i < numImages; ++i )
             			cursor.fwd();
             			cursor.getPosition( pos );
           				stepsTaken++;
-          				
+          				drawFusion(lastDraw, fusionImp);
           				// update status message if necessary
           				updateStatus(globalProgress, localProgress, stepsTaken, steps, output);
           				
@@ -454,9 +482,12 @@ A:        					for ( int i = 0; i < numImages; ++i )
                 		randomAccess.getType().setReal( cursor.getType().getRealFloat() );
             		}           		
                  }
+
+
             });
         
         SimpleMultiThreading.startAndJoin( threads );
+        if (fusionImp[0] != null) fusionImp[0].hide();
 	}
 
 	/**
@@ -711,6 +742,19 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 		
 		//IJ.log( "size: " + Util.printCoordinates( size ) );
 		//IJ.log( "offset: " + Util.printCoordinates( offset ) );		
+	}
+
+	private static void drawFusion(long[] lastDraw, ImagePlus[] fusion) {
+		final long redrawDelay = 500;
+		if (fusion[0] != null && System.currentTimeMillis() - lastDraw[0] > redrawDelay) {
+			synchronized(lastDraw) {
+				if (System.currentTimeMillis() - lastDraw[0] > redrawDelay) {
+					lastDraw[0] = System.currentTimeMillis();
+					fusion[0].updateAndDraw();
+				}
+			}
+		}
+		
 	}
 
 	/**
