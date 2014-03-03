@@ -17,6 +17,9 @@
 	<description></description>
 
 	<properties>
+		<bio-formats.groupId>ome</bio-formats.groupId>
+		<bio-formats.version>5.0.0</bio-formats.version>
+
 		<!-- Prevent the plugin from being copied to ./plugins/ by default -->
 		<imagej.app.directory>path/to/Fiji.app/</imagej.app.directory>
 	</properties>
@@ -54,22 +57,27 @@
 		</dependency>
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>loci-common</artifactId>
+			<artifactId>bio-formats_plugins</artifactId>
 			<version>${bio-formats.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>loci_plugins</artifactId>
+			<artifactId>formats-api</artifactId>
+			<version>${bio-formats.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${bio-formats.groupId}</groupId>
+			<artifactId>formats-bsd</artifactId>
+			<version>${bio-formats.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${bio-formats.groupId}</groupId>
+			<artifactId>formats-common</artifactId>
 			<version>${bio-formats.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
 			<artifactId>ome-xml</artifactId>
-			<version>${bio-formats.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>scifio</artifactId>
 			<version>${bio-formats.version}</version>
 		</dependency>
 	</dependencies>
