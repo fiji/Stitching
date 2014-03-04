@@ -47,8 +47,7 @@ import stitching.utils.CompositeImageFixer;
  */
 public class Fusion 
 {
-
-	public static boolean displayFusion = false;
+	public static long redrawDelay = 500;
 
 	/**
 	 * 
@@ -59,7 +58,7 @@ public class Fusion
 	 * @param subpixelResolution - if there is no subpixel resolution, we do not need to convert to float as no interpolation is necessary, we can compute everything with RealType
 	 */
 	public static < T extends RealType< T > > ImagePlus fuse( final T targetType, final ArrayList< ImagePlus > images, final ArrayList< InvertibleBoundable > models, 
-			final int dimensionality, final boolean subpixelResolution, final int fusionType, final String outputDirectory, final boolean noOverlap, final boolean ignoreZeroValues )
+			final int dimensionality, final boolean subpixelResolution, final int fusionType, final String outputDirectory, final boolean noOverlap, final boolean ignoreZeroValues, final boolean displayImages )
 	{
 		// first we need to estimate the boundaries of the new image
 		final float[] offset = new float[ dimensionality ];
@@ -155,7 +154,7 @@ public class Fusion
 					
 					if ( outputDirectory == null )
 					{
-						fuseBlock( out, blockData, offset, models, fusion );
+						fuseBlock( out, blockData, offset, models, fusion, displayImages );
 					}
 					else
 					{
@@ -201,9 +200,9 @@ public class Fusion
 					if ( outputDirectory == null )
 					{
 						if ( noOverlap )
-							fuseBlockNoOverlap( out, blockData, offset, models );
+							fuseBlockNoOverlap( out, blockData, offset, models, displayImages );
 						else
-							fuseBlock( out, blockData, offset, models, fusion );
+							fuseBlock( out, blockData, offset, models, fusion, displayImages );
 					}
 					else
 					{
@@ -236,7 +235,10 @@ public class Fusion
 			}
 		}
 
-		IJ.showStatus("Fusion complete.");
+		IJ.showStatus( "Fusion complete." );
+		
+		// reset the progress bar
+		IJ.showProgress( 1.01 );
 
 		// has been written to disk ...
 		if ( stack == null )
@@ -270,7 +272,7 @@ public class Fusion
 	 * @param transform - the transformation
 	 */
 	protected static <T extends RealType<T>> void fuseBlock( final Image<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final float[] offset, 
-			final ArrayList< InvertibleBoundable > transform, final PixelFusion fusion )
+			final ArrayList< InvertibleBoundable > transform, final PixelFusion fusion, final boolean displayFusion )
 	{
 		final int numDimensions = output.getNumDimensions();
 		final int numImages = input.size();
@@ -279,28 +281,7 @@ public class Fusion
 		for ( int d = 1; d < output.getNumDimensions(); ++d )
 			imageSize *= output.getDimension( d );
 		
-		final long steps = imageSize;
-
-		// global progress variable. Needs to be final to be used in subordinate
-		// threads, but needs to be an object so it can be passed by value and updated
-		// statically.
-		final int[] globalProgress = {0};
-		IJ.showProgress(0);
-
-		final long[] lastDraw = {System.currentTimeMillis()};
-		final ImagePlus[] fusionImp = new ImagePlus[1];
-
-		if (displayFusion) {
-			try {
-				fusionImp[0] =
-					((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
-				fusionImp[0].setTitle("fusing...");
-				fusionImp[0].show();
-			}
-			catch (ImgLibException e) {
-				IJ.log("Output image has no ImageJ type: " + e);
-			}
-		}
+		IJ.showProgress( 0 );
 
 		final int[][] max = new int[ numImages ][ numDimensions ];
 		for ( int i = 0; i < numImages; ++i )
@@ -322,6 +303,25 @@ public class Fusion
                 	// Thread ID
                 	final int myNumber = ai.getAndIncrement();
         
+                	// only the first thread does preview and update the status bar
+                	// this requires no synchronized stuff
+            		long lastDraw = 0;
+            		ImagePlus fusionImp = null;
+
+                	if ( displayFusion && myNumber == 0 )
+                	{
+                		try
+            			{
+            				fusionImp = ((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+            				fusionImp.setTitle( "fusing..." );
+            				fusionImp.show();
+            			}
+            			catch ( ImgLibException e )
+            			{
+            				IJ.log( "Output image has no ImageJ type: " + e );
+            			}                		
+                	}
+
                 	// get chunk of pixels to process
                 	final Chunk myChunk = threadChunks.get( myNumber );
                 	final long startPos = myChunk.getStartPosition();
@@ -336,12 +336,6 @@ public class Fusion
             		final float[][] tmp = new float[ numImages ][ output.getNumDimensions() ];
             		final PixelFusion myFusion = fusion.copy();
             		
-            		// tracks the progress [0-100/#threads] made by this thread
-            		int[] localProgress = {0};
-            		
-            		// number of pixels processed
-            		long stepsTaken = 0;
-            		
             		try 
             		{
                 		// move to the starting position of the current thread
@@ -351,10 +345,17 @@ public class Fusion
                         for ( long j = 0; j < loopSize; ++j )
                         {
             				out.fwd();
-            				stepsTaken++;
-            				drawFusion(lastDraw, fusionImp);
-            				// update status message if necessary
-            				updateStatus(globalProgress, localProgress, stepsTaken, steps, output);
+
+            				// just thread 0
+            				if ( myNumber == 0 )
+            				{
+            					// just every 10000'th pixel
+            					if ( j % 10000 == 0 )
+            					{
+                    				lastDraw = drawFusion( lastDraw, fusionImp );
+            						IJ.showProgress( (double)j / (double)loopSize );
+            					}
+            				}
             				
             				// get the current position in the output image
             				for ( int d = 0; d < numDimensions; ++d )
@@ -392,11 +393,12 @@ A:        					for ( int i = 0; i < numImages; ++i )
             			return;
             		}
 
+                    if ( fusionImp != null )
+                    	fusionImp.hide();
                 }
             });
         
-        SimpleMultiThreading.startAndJoin( threads );
-        if (fusionImp[0] != null) fusionImp[0].hide();
+        SimpleMultiThreading.startAndJoin( threads );        
 	}
 
 	/**
@@ -407,7 +409,7 @@ A:        					for ( int i = 0; i < numImages; ++i )
 	 * @param transform - the transformation
 	 */
 	protected static <T extends RealType<T>> void fuseBlockNoOverlap( final Image<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final float[] offset, 
-			final ArrayList< InvertibleBoundable > transform )
+			final ArrayList< InvertibleBoundable > transform, final boolean displayFusion )
 	{
 		final int numDimensions = output.getNumDimensions();
 		final int numImages = input.size();
@@ -415,33 +417,11 @@ A:        					for ( int i = 0; i < numImages; ++i )
 		
 		for ( int d = 1; d < output.getNumDimensions(); ++d )
 			imageSize *= output.getDimension( d );
-		
-		final long steps = imageSize;
-		
-		// global progress variable. See #fuseBlock
-		final int[] globalProgress = {0};
-		IJ.showProgress(0);
-		
-		final long[] lastDraw = {System.currentTimeMillis()};
-		final ImagePlus[] fusionImp = new ImagePlus[1];
-
-		if (displayFusion) {
-			try {
-				fusionImp[0] =
-					((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
-				fusionImp[0].setTitle("fusing...");
-				fusionImp[0].show();
-			}
-			catch (ImgLibException e) {
-				IJ.log("Output image has no ImageJ type: " + e);
-			}
-		}
-		
-		
+				
 		// run multithreaded
 		final AtomicInteger ai = new AtomicInteger(0);					
         final Thread[] threads = SimpleMultiThreading.newThreads( numImages );
-
+        
         for (int ithread = 0; ithread < threads.length; ++ithread)
             threads[ithread] = new Thread( new Runnable()
             {
@@ -450,7 +430,26 @@ A:        					for ( int i = 0; i < numImages; ++i )
                 {
                 	// Thread ID
                 	final int myImage = ai.getAndIncrement();
-        
+                	
+                	// only the first thread does preview and update the status bar
+                	// this requires no synchronized stuff
+            		long lastDraw = 0;
+            		ImagePlus fusionImp = null;
+
+                	if ( displayFusion && myImage == 0 )
+                	{
+                		try
+            			{
+            				fusionImp = ((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+            				fusionImp.setTitle( "fusing..." );
+            				fusionImp.show();
+            			}
+            			catch ( ImgLibException e )
+            			{
+            				IJ.log( "Output image has no ImageJ type: " + e );
+            			}                		
+                	}
+
                 	final Image< ? extends RealType<?> > image = input.get( myImage ).getImage();
                 	final int[] translation = new int[ numDimensions ];
                 	
@@ -464,20 +463,23 @@ A:        					for ( int i = 0; i < numImages; ++i )
             		final LocalizableCursor< ? extends RealType<?> > cursor = image.createLocalizableCursor();
             		final LocalizableByDimCursor< ? extends RealType<?> > randomAccess = output.createLocalizableByDimCursor();
             		final int[] pos = new int[ numDimensions ];
-            		// tracks the progress [0-100/#threads] made by this thread
-            		int[] localProgress = {0};
-            		
-            		// number of pixels processed
-            		long stepsTaken = 0;
             		
             		while ( cursor.hasNext() )
             		{
             			cursor.fwd();
             			cursor.getPosition( pos );
-          				stepsTaken++;
-          				drawFusion(lastDraw, fusionImp);
-          				// update status message if necessary
-          				updateStatus(globalProgress, localProgress, stepsTaken, steps, output);
+            			
+        				// just thread 0
+        				if ( myImage == 0 )
+        				{
+        					// just every 10000'th pixel
+        					final int j = cursor.getArrayIndex(); 
+        					if ( j % 10000 == 0 )
+        					{
+                				lastDraw = drawFusion( lastDraw, fusionImp );
+        						IJ.showProgress( (double)j / (double)image.getNumPixels() );
+        					}
+        				}
           				
                 		for ( int d = 0; d < numDimensions; ++d )
                 		{
@@ -487,14 +489,14 @@ A:        					for ( int i = 0; i < numImages; ++i )
                 		
                 		randomAccess.setPosition( pos );
                 		randomAccess.getType().setReal( cursor.getType().getRealFloat() );
-            		}           		
+            		}
+            		
+    				if ( fusionImp != null )
+    					fusionImp.hide();
                  }
-
-
             });
         
-        SimpleMultiThreading.startAndJoin( threads );
-        if (fusionImp[0] != null) fusionImp[0].hide();
+        SimpleMultiThreading.startAndJoin( threads );        
 	}
 
 	/**
@@ -532,26 +534,26 @@ A:        					for ( int i = 0; i < numImages; ++i )
 		
 		try 
 		{
+			final int sliceSize = outputSlice.getNumPixels();
+			
 			for ( int slice = 0; slice < numSlices; ++slice )
 			{
 				IJ.showStatus("Fusing time point: " + t + " of " + numTimePoints + ", " +
 						"channel: " + c + " of " + numChannels + ", slice: " + (slice + 1) + " of " +
 						numSlices + "...");
 				out.reset();
-				int stepsTaken = 0;
-				// Writing occurs on one thread only, so these can both be declared here.
-				int[] localProgress = {0};
-				int[] globalProgress = {0};
+
 				IJ.showProgress(0);
 				
 				// fill all pixels of the current slice
 				while ( out.hasNext() )
 				{
 					out.fwd();
-  				stepsTaken++;
-  				
-  				// update status message if necessary
-  				updateStatus(globalProgress, localProgress, stepsTaken, imageSize, outputSlice);
+  					
+					// just every 10000'th pixel
+					final long j = out.getArrayIndex(); 
+					if ( j % 10000 == 0 )
+						IJ.showProgress( (double)( j + ( slice * sliceSize ) ) / (double)( numSlices * sliceSize ) );
 					
 					// get the current position in the output image
 					for ( int d = 0; d < 2; ++d )
@@ -751,58 +753,14 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 		//IJ.log( "offset: " + Util.printCoordinates( offset ) );		
 	}
 
-	private static void drawFusion(long[] lastDraw, ImagePlus[] fusion) {
-		final long redrawDelay = 500;
-		if (fusion[0] != null && System.currentTimeMillis() - lastDraw[0] > redrawDelay) {
-			synchronized(lastDraw) {
-				if (System.currentTimeMillis() - lastDraw[0] > redrawDelay) {
-					lastDraw[0] = System.currentTimeMillis();
-					fusion[0].updateAndDraw();
-				}
-			}
-		}
+	private static long drawFusion( final long lastDraw, final ImagePlus fusion )
+	{
+		final long t = System.currentTimeMillis();
 		
-	}
-
-	/**
-	 * Threadsafe method to display ImageJ status updates. Takes a global progress
-	 * and local progress value (between 0 and 100), by reference, which are
-	 * updated if the given localPosition, relative to the global maximum value,
-	 * is a worthy increase in local progress (in which case both local and
-	 * global progress is updated).
-	 * <p>
-	 * The global/local progress split must be used
-	 * when running multithreaded, as it allows the local position to be
-	 * maintained per thread, instead of requiring a global position to be
-	 * maintained (which would require synchronized updates every step, which
-	 * effectively would nullify any multithreading benefits).
-	 * </p>
-	 * <p>
-	 * NB: will only enter a synchronized block if there is progress to report,
-	 * and only once per progress milestone. Synchronization will be locked on
-	 * the provided Image object, so multiple fusions can operate simultaneously
-	 * on separate images.
-	 * </p>
-	 */
-	private static void updateStatus(int[] globalProgress, int[] localProgress,
-		long localPosition, long globalMax, Image<?> imageLock) {
-		// assume a 0-100 % based update granularity
-		final int updates = 100;
-		// Compute the current progress. The actual value relative to the global
-		// is irrelevant. But if local progress is made, it implies global progress
-		// has been made.
-		final int currentProgress = (int)((double)localPosition / 
-				(globalMax - 1) * updates);
-
-		if (currentProgress > localProgress[0]) {
-			synchronized(imageLock) {
-				if (currentProgress > localProgress[0]) {
-					localProgress[0]++;
-					globalProgress[0]++;
-					IJ.showProgress((double)globalProgress[0] / updates);
-				}
-			}
-		}
+		if ( fusion != null && t - lastDraw > redrawDelay )
+			fusion.updateAndDraw();
+		
+		return t;
 	}
 
 	public static void main( String[] args )

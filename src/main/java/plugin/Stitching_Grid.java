@@ -55,7 +55,7 @@ import tools.RoiPicker;
  */
 public class Stitching_Grid implements PlugIn
 {
-	final public static String version = "1.01";
+	final public static String version = "1.02";
 	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
 	
 	public static boolean seperateOverlapY = false;
@@ -320,7 +320,7 @@ public class Stitching_Grid implements PlugIn
 
 		params.subpixelAccuracy = defaultSubpixelAccuracy = gd.getNextBoolean();
 		final boolean downSample = params.downSample = defaultDownSample = gd.getNextBoolean();
-		Fusion.displayFusion = defaultDisplayFusion = gd.getNextBoolean();
+		params.displayFusion = defaultDisplayFusion = gd.getNextBoolean();
 		params.virtual = defaultVirtualInput = gd.getNextBoolean();
 		params.cpuMemChoice = defaultMemorySpeedChoice = gd.getNextChoiceIndex();
 		params.outputVariant = defaultResult = gd.getNextChoiceIndex();
@@ -583,11 +583,11 @@ public class Stitching_Grid implements PlugIn
 			}
 			
 			if ( is32bit )
-				imp = Fusion.fuse( new FloatType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false );
+				imp = Fusion.fuse( new FloatType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false, params.displayFusion );
 			else if ( is16bit )
-				imp = Fusion.fuse( new UnsignedShortType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false );
+				imp = Fusion.fuse( new UnsignedShortType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false, params.displayFusion );
 			else if ( is8bit )
-				imp = Fusion.fuse( new UnsignedByteType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false );
+				imp = Fusion.fuse( new UnsignedByteType(), images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, params.outputDirectory, noOverlap, false, params.displayFusion );
 			else
 				IJ.log( "Unknown image type for fusion." );
 			
