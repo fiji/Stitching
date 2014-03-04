@@ -55,7 +55,7 @@ import tools.RoiPicker;
  */
 public class Stitching_Grid implements PlugIn
 {
-	final public static String version = "1.01";
+	final public static String version = "1.02";
 	final private String myURL = "http://fly.mpi-cbg.de/preibisch";
 	
 	public static boolean seperateOverlapY = false;
