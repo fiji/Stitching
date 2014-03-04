@@ -47,6 +47,9 @@ import stitching.utils.CompositeImageFixer;
  */
 public class Fusion 
 {
+
+	public static boolean displayFusion = false;
+
 	/**
 	 * 
 	 * @param targetType
@@ -287,14 +290,16 @@ public class Fusion
 		final long[] lastDraw = {System.currentTimeMillis()};
 		final ImagePlus[] fusionImp = new ImagePlus[1];
 
-		try {
-			fusionImp[0] =
-				((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
-			fusionImp[0].setTitle("fusing...");
-			fusionImp[0].show();
-		}
-		catch (ImgLibException e) {
-			IJ.log("Output image has no ImageJ type: " + e);
+		if (displayFusion) {
+			try {
+				fusionImp[0] =
+					((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+				fusionImp[0].setTitle("fusing...");
+				fusionImp[0].show();
+			}
+			catch (ImgLibException e) {
+				IJ.log("Output image has no ImageJ type: " + e);
+			}
 		}
 
 		final int[][] max = new int[ numImages ][ numDimensions ];
@@ -420,14 +425,16 @@ A:        					for ( int i = 0; i < numImages; ++i )
 		final long[] lastDraw = {System.currentTimeMillis()};
 		final ImagePlus[] fusionImp = new ImagePlus[1];
 
-		try {
-			fusionImp[0] =
-				((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
-			fusionImp[0].setTitle("fusing...");
-			fusionImp[0].show();
-		}
-		catch (ImgLibException e) {
-			IJ.log("Output image has no ImageJ type: " + e);
+		if (displayFusion) {
+			try {
+				fusionImp[0] =
+					((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
+				fusionImp[0].setTitle("fusing...");
+				fusionImp[0].show();
+			}
+			catch (ImgLibException e) {
+				IJ.log("Output image has no ImageJ type: " + e);
+			}
 		}
 		
 		
