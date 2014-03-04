@@ -235,7 +235,10 @@ public class Fusion
 			}
 		}
 
-		IJ.showStatus("Fusion complete.");
+		IJ.showStatus( "Fusion complete." );
+		
+		// reset the progress bar
+		IJ.showProgress( 1.01 );
 
 		// has been written to disk ...
 		if ( stack == null )
