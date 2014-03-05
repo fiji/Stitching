@@ -413,10 +413,6 @@ A:        					for ( int i = 0; i < numImages; ++i )
 	{
 		final int numDimensions = output.getNumDimensions();
 		final int numImages = input.size();
-		long imageSize = output.getDimension( 0 );
-		
-		for ( int d = 1; d < output.getNumDimensions(); ++d )
-			imageSize *= output.getDimension( d );
 				
 		// run multithreaded
 		final AtomicInteger ai = new AtomicInteger(0);					
@@ -512,10 +508,6 @@ A:        					for ( int i = 0; i < numImages; ++i )
 	{
 		final int numImages = input.size();
 		final int numDimensions = offset.length;
-		long imageSize = outputSlice.getDimension( 0 );
-		
-		for ( int d = 1; d < outputSlice.getNumDimensions(); ++d )
-			imageSize *= outputSlice.getDimension( d );
 
 		// the maximal dimensions of each image
 		final int[][] max = new int[ numImages ][ numDimensions ];
