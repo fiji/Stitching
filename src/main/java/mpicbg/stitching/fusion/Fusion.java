@@ -753,14 +753,29 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 		//IJ.log( "offset: " + Util.printCoordinates( offset ) );		
 	}
 
+	/**
+	 * Helper method to redraw a given ImagePlus. If the current system time -
+	 * lastDraw is past the {@link #redrawDelay},
+	 * {@link ImagePlus#updateAndDraw()} will be invoked on the given image. The
+	 * return value can be used to keep track of when the image was last drawn.
+	 * 
+	 * @param lastDraw - Time the ImagePlus was last drawn
+	 * @param fusion - Intermediate fusion (some but not all pixels fused) to
+	 *          potentially redraw
+	 * @return The time of the most recent draw of the provided fusion.
+	 */
 	private static long drawFusion( final long lastDraw, final ImagePlus fusion )
 	{
 		final long t = System.currentTimeMillis();
 		
-		if ( fusion != null && t - lastDraw > redrawDelay )
+		// If enough time has passed, redraw the image and return the time of the latest draw
+		if ( fusion != null && t - lastDraw > redrawDelay ) {
 			fusion.updateAndDraw();
+			return t;
+		}
 		
-		return t;
+		// As the image was not drawn, we just should still return the time of the last draw
+		return lastDraw;
 	}
 
 	public static void main( String[] args )
