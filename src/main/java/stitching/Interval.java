@@ -45,17 +45,21 @@ public class Interval {
 	}
 
 	/**
-	 * Update the start position of this interval
+	 * Update the start position of this interval. If after this setting,
+	 * {@code start > end}, sets {@code end = start}.
 	 */
 	public void setStart(final int start) {
 		this.start = start;
+		if (start > end) end = start;
 	}
 
 	/**
-	 * Update the end position of this interval
+	 * Update the end position of this interval. If after this setting,
+	 * {@code end < start}, sets {@code start = end}.
 	 */
 	public void setEnd(final int end) {
 		this.end = end;
+		if (end < start) start = end;
 	}
 
 	/**
