@@ -77,7 +77,7 @@ public class Interval {
 	}
 
 	/**
-	 * As {@link #contains(int, boolean)} with {@code ignoreOverlap = false}.
+	 * As {@link #contains(int, boolean)} with {@code exclusive = false}.
 	 * 
 	 * @return -1 if this interval is completely to the left of the point. 1 if
 	 *         this interval is completely to the right of the point. 0 if the
@@ -89,18 +89,18 @@ public class Interval {
 
 	/**
 	 * Determines if this interval contains the given point. If
-	 * {@code ignoreOverlap} is true, then this interval is considered exclusive
+	 * {@code exclusive} is true, then this interval is considered exclusive
 	 * of its start and end points.
 	 * 
 	 * @return -1 if this interval is completely to the left of the point. 1 if
 	 *         this interval is completely to the right of the point. 0 if the
 	 *         interval intersects (contains) the point.
 	 */
-	public int contains(final int point, final boolean ignoreOverlap) {
-		if (end < point || (ignoreOverlap && end == point)) {
+	public int contains(final int point, final boolean exclusive) {
+		if (end < point || (exclusive && end == point)) {
 			return -1;
 		}
-		else if (start > point || (ignoreOverlap && start == point)) {
+		else if (start > point || (exclusive && start == point)) {
 			return 1;
 		}
 		return 0;
@@ -108,7 +108,7 @@ public class Interval {
 
 	/**
 	 * As {@link #intersects(Interval, boolean)} with
-	 * {@code ignoreOverlap = false}.
+	 * {@code exclusive = false}.
 	 */
 	public boolean intersects(final Interval other) {
 		return intersects(other, false);
@@ -117,18 +117,18 @@ public class Interval {
 	/**
 	 * Determines if this interval has an intersection with another interval. This
 	 * is true if one {@link #contains} the other's start or end point. If
-	 * {@code ignoreOverlap} is true, the intervals are treated as exclusive
+	 * {@code exclusive} is true, the intervals are treated as exclusive
 	 * intervals.
 	 */
-	public boolean intersects(final Interval other, final boolean ignoreOverlap) {
+	public boolean intersects(final Interval other, final boolean exclusive) {
 		// always return true if the two intervals are the same
 		final boolean intersects = start() == other.start() && end() == other.end();
 		// For two finite, non-identical intervals to overlap, one needs to contain
 		// the start or end point of the other.
-		return intersects || contains(other.start(), ignoreOverlap) == 0 ||
-			other.contains(start(), ignoreOverlap) == 0 ||
-			contains(other.end(), ignoreOverlap) == 0 ||
-			other.contains(end(), ignoreOverlap) == 0;
+		return intersects || contains(other.start(), exclusive) == 0 ||
+			other.contains(start(), exclusive) == 0 ||
+			contains(other.end(), exclusive) == 0 ||
+			other.contains(end(), exclusive) == 0;
 	}
 
 	/**
