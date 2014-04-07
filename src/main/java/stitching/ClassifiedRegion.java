@@ -134,6 +134,19 @@ public class ClassifiedRegion {
 		return matches;
 	}
 
+	/**
+	 * Test if this region is identical to another region
+	 */
+	public boolean equalsRegion(final ClassifiedRegion other) {
+		boolean equal = size() == other.size();
+
+		for (int i=0; equal && i<size(); i++) {
+			equal = get(i).equalsInterval(other.get(i));
+		}
+
+		return equal;
+	}
+
 	@Override
 	public String toString() {
 		String s = "";

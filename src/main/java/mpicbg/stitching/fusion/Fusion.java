@@ -507,7 +507,7 @@ public class Fusion
 		Stack<ClassifiedRegion> rawTiles, ClassifiedRegion queryTile, ClassifiedRegion placedTile)
 	{
 		// First we do an explicit simple check to see if the tiles are the same:
-		if (sameTile(queryTile, placedTile)) {
+		if (queryTile.equalsRegion(placedTile)) {
 			// NB: the original place tile will be removed from the list, so we create a new tile
 			// and add all indices.
 			ClassifiedRegion newTile = new ClassifiedRegion(queryTile);
@@ -607,20 +607,6 @@ public class Fusion
 				}
 			}
 		}
-	}
-
-	/**
-	 * Helper method to check the special case when two regions are identical.
-	 */
-	private static boolean sameTile(ClassifiedRegion tile1, ClassifiedRegion tile2) {
-		boolean same = true;
-		// Check the start and end points of each dimension
-		for (int i=0; same && i<tile1.size(); i++) {
-			same =
-				tile1.get(i).start() == tile2.get(i).start() &&
-					tile1.get(i).end() == tile2.get(i).end();
-		}
-		return same;
 	}
 
 	/**

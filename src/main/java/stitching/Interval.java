@@ -131,6 +131,13 @@ public class Interval {
 			other.contains(end(), ignoreOverlap) == 0;
 	}
 
+	/**
+	 * Check to see if another interval is the same as this interval.
+	 */
+	public boolean equalsInterval(final Interval other) {
+		return start() == other.start() && end == other.end();
+	}
+
 	@Override
 	public String toString() {
 		return "[" + start + ", " + end + "]";
