@@ -296,7 +296,7 @@ public class Fusion
 				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
 				shape.addClass(i);
 			for ( int d = 0; d < numDimensions; ++d ) {
-				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)));
+				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)) - 1);
 				// Build our list of positions
 				shape.set(ival, d);
 			}
