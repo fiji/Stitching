@@ -28,19 +28,19 @@ package stitching;
  */
 public class Interval {
 
-	private int start;
-	private int end;
+	private int min;
+	private int max;
 
 	/**
 	 * Constructs a new Interval using the smallest and largest values in the
 	 * provided points.
 	 */
 	public Interval(final int... points) {
-		start = Integer.MAX_VALUE;
-		end = Integer.MIN_VALUE;
+		min = Integer.MAX_VALUE;
+		max = Integer.MIN_VALUE;
 		for (final int p : points) {
-			start = Math.min(start, p);
-			end = Math.max(end, p);
+			min = Math.min(min, p);
+			max = Math.max(max, p);
 		}
 	}
 
@@ -48,98 +48,74 @@ public class Interval {
 	 * Update the start position of this interval. If after this setting,
 	 * {@code start > end}, sets {@code end = start}.
 	 */
-	public void setStart(final int start) {
-		this.start = start;
-		if (start > end) end = start;
+	public void setMin(final int min) {
+		this.min = min;
+		if (min > max) max = min;
 	}
 
 	/**
 	 * Update the end position of this interval. If after this setting,
 	 * {@code end < start}, sets {@code start = end}.
 	 */
-	public void setEnd(final int end) {
-		this.end = end;
-		if (end < start) start = end;
+	public void setMax(final int max) {
+		this.max = max;
+		if (max < min) min = max;
 	}
 
 	/**
 	 * @return Start position for this interval
 	 */
-	public int start() {
-		return start;
+	public int min() {
+		return min;
 	}
 
 	/**
 	 * @return End position for this interval
 	 */
-	public int end() {
-		return end;
+	public int max() {
+		return max;
 	}
 
 	/**
-	 * As {@link #contains(int, boolean)} with {@code exclusive = false}.
+	 * As {@link #contains(int, boolean)} 
 	 * 
 	 * @return -1 if this interval is completely to the left of the point. 1 if
 	 *         this interval is completely to the right of the point. 0 if the
 	 *         interval intersects (contains) the point.
 	 */
 	public int contains(final int point) {
-		return contains(point, false);
-	}
-
-	/**
-	 * Determines if this interval contains the given point. If
-	 * {@code exclusive} is true, then this interval is considered exclusive
-	 * of its start and end points.
-	 * 
-	 * @return -1 if this interval is completely to the left of the point. 1 if
-	 *         this interval is completely to the right of the point. 0 if the
-	 *         interval intersects (contains) the point.
-	 */
-	public int contains(final int point, final boolean exclusive) {
-		if (end < point || (exclusive && end == point)) {
+		if (max <= point ) {
 			return -1;
 		}
-		else if (start > point || (exclusive && start == point)) {
+		else if (min >= point) {
 			return 1;
 		}
 		return 0;
 	}
 
 	/**
-	 * As {@link #intersects(Interval, boolean)} with
-	 * {@code exclusive = false}.
+	 * Determines if this interval has an intersection with another interval. 
 	 */
 	public boolean intersects(final Interval other) {
-		return intersects(other, false);
-	}
-
-	/**
-	 * Determines if this interval has an intersection with another interval. This
-	 * is true if one {@link #contains} the other's start or end point. If
-	 * {@code exclusive} is true, the intervals are treated as exclusive
-	 * intervals.
-	 */
-	public boolean intersects(final Interval other, final boolean exclusive) {
 		// always return true if the two intervals are the same
-		final boolean intersects = start() == other.start() && end() == other.end();
+		final boolean intersects = min() == other.min() && max() == other.max();
 		// For two finite, non-identical intervals to overlap, one needs to contain
 		// the start or end point of the other.
-		return intersects || contains(other.start(), exclusive) == 0 ||
-			other.contains(start(), exclusive) == 0 ||
-			contains(other.end(), exclusive) == 0 ||
-			other.contains(end(), exclusive) == 0;
+		return intersects || contains(other.min()) == 0 ||
+			other.contains(min()) == 0 ||
+			contains(other.max()) == 0 ||
+			other.contains(max()) == 0;
 	}
 
 	/**
 	 * Check to see if another interval is the same as this interval.
 	 */
 	public boolean equalsInterval(final Interval other) {
-		return start() == other.start() && end == other.end();
+		return min() == other.min() && max == other.max();
 	}
 
 	@Override
 	public String toString() {
-		return "[" + start + ", " + end + "]";
+		return "[" + min + ", " + max + "]";
 	}
 }

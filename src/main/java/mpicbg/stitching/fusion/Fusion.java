@@ -441,7 +441,9 @@ public class Fusion
 						// The intervals of the given region define the bounds of iteration
 						// So we are recursively defining a nested iteration order to cover
 						// each position of the region
-						for (int i=d.start(); i<d.end(); i++) {
+						
+						//TODO: this might be the bug
+						for (int i=d.min(); i<d.max(); i++) {
 							// The position array will be used to set the in and out positions.
 							// It specifies where we are in the output image
 							outPos[depth] = i;
@@ -520,10 +522,10 @@ public class Fusion
 		for (int i=0; i<allIntervals.length; i++) {
 			List<Integer> points = new ArrayList<Integer>();
 			List<Interval> intervals = new ArrayList<Interval>();
-			points.add(queryTile.get(i).start());
-			points.add(queryTile.get(i).end());
-			points.add(placedTile.get(i).start());
-			points.add(placedTile.get(i).end());
+			points.add(queryTile.get(i).min());
+			points.add(queryTile.get(i).max());
+			points.add(placedTile.get(i).min());
+			points.add(placedTile.get(i).max());
 			// Which tiles the points belong to doesn't matter. We just need to make intervals of the adjacent points
 			Collections.sort(points);
 			for (int j=0; j<points.size() - 1; j++) {
@@ -549,11 +551,11 @@ public class Fusion
 			// If there's an intersection in either case here, it's because the new region
 			// is a subset of one of the two parent tiles. Thus it should inherit all the
 			// index labels of the parent(s).
-			if (queryTile.intersects(newRegion, true)) {
+			if (queryTile.intersects(newRegion)) {
 				newRegion.addAllClasses(queryTile);
 				matchedQueried = true;
 			}
-			if (placedTile.intersects(newRegion, true)) {
+			if (placedTile.intersects(newRegion)) {
 				newRegion.addAllClasses(placedTile);
 				matchedPlaced = true;
 			}
@@ -590,16 +592,16 @@ public class Fusion
 					Interval primeInterval = overlappedRegion.get(i);
 					Interval secondaryInterval = region.get(i);
 					// Test the start point to ensure the two are not the same interval
-					if (primeInterval.start() != secondaryInterval.start()) {
-						if (primeInterval.start() == secondaryInterval.end()) {
+					if (primeInterval.min() != secondaryInterval.min()) {
+						if (primeInterval.max() == secondaryInterval.max()) {
 							// Move the secondary interval's end down 1, so that their border
 							// becomes owned exclusively by the prime interval
-							secondaryInterval.setEnd(secondaryInterval.end() - 1);
+							secondaryInterval.setMax(secondaryInterval.max() - 1);
 						}
-						else if (primeInterval.end() == secondaryInterval.start()) {
+						else if (primeInterval.max() == secondaryInterval.min()) {
 							// Move the secondary interval's start up 1, so that their border
 							// becomes owned exclusively by the prime interval
-							secondaryInterval.setStart(secondaryInterval.start() + 1);
+							secondaryInterval.setMin(secondaryInterval.min() + 1);
 						}
 					}
 				}

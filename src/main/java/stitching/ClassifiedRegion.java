@@ -112,24 +112,13 @@ public class ClassifiedRegion {
 	}
 
 	/**
-	 * As {@link #intersects(ClassifiedRegion, boolean)} with
-	 * {@code exclusive = false}.
+	 * Returns true if this region intersects with the provided target region.
 	 */
-	public boolean intersects(final ClassifiedRegion other) {
-		return intersects(other, false);
-	}
-
-	/**
-	 * Returns true if this region intersects with the provided target region. If
-	 * {@code exclusive} is true, both regions will be treated as sets of
-	 * exclusive intervals.
-	 */
-	public boolean intersects(final ClassifiedRegion other,
-		final boolean exclusive)
+	public boolean intersects(final ClassifiedRegion other)
 	{
 		boolean matches = true;
 		for (int i = 0; matches && i < Math.min(other.size(), size()); i++) {
-			matches = get(i).intersects(other.get(i), exclusive);
+			matches = get(i).intersects(other.get(i));
 		}
 		return matches;
 	}
