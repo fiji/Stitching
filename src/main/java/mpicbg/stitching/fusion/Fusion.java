@@ -290,14 +290,12 @@ public class Fusion
 
 		Stack<ClassifiedRegion> rawTiles = new Stack<ClassifiedRegion>();
 
-		final int[][] max = new int[ numImages ][ numDimensions ];
 		final float[][] min = new float[ numImages ][ numDimensions ];
 		for ( int i = 0; i < numImages; ++i ){
 				transform.get(i).applyInPlace(min[i]);
 				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
 				shape.addClass(i);
 			for ( int d = 0; d < numDimensions; ++d ) {
-				max[ i ][ d ] = input.get( i ).getImage().getDimension( d ) - 1;
 				Interval ival = new Interval((int) min[i][d], (int) (min[i][d] + input.get(i).getImage().getDimension(d)));
 				// Build our list of positions
 				shape.set(ival, d);
