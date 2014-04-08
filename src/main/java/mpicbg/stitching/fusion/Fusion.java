@@ -442,8 +442,7 @@ public class Fusion
 						// So we are recursively defining a nested iteration order to cover
 						// each position of the region
 						
-						//TODO: this might be the bug
-						for (int i=d.min(); i<d.max(); i++) {
+						for (int i=d.min(); i<=d.max(); i++) {
 							// The position array will be used to set the in and out positions.
 							// It specifies where we are in the output image
 							outPos[depth] = i;
