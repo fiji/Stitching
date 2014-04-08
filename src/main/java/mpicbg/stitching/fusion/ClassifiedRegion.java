@@ -19,7 +19,7 @@
  * @author Mark Hiner, Stephan Preibisch
  */
 
-package stitching;
+package mpicbg.stitching.fusion;
 
 import java.util.HashSet;
 import java.util.Set;

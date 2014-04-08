@@ -41,8 +41,6 @@ import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
 import mpicbg.imglib.type.numeric.real.FloatType;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.NoninvertibleModelException;
-import stitching.Interval;
-import stitching.ClassifiedRegion;
 import stitching.utils.CompositeImageFixer;
 
 /**

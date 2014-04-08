@@ -19,7 +19,7 @@
  * @author Mark Hiner, Stephan Preibisch
  */
 
-package stitching;
+package mpicbg.stitching.fusion;
 
 /**
  * A range on the number line with a {@link #start()} and {@link #end()} point.
