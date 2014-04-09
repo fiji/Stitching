@@ -1,7 +1,11 @@
 
 package stitching;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import mpicbg.stitching.fusion.Interval;
+
 import org.junit.Test;
 
 /**
@@ -33,26 +37,27 @@ public class IntervalTest {
 		testEnds(i, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
 		// Test setting to the same point
-		i.setEnd(0);
-		i.setStart(0);
+		i.setMax(0);
+		i.setMin(0);
 		testEnds(i, 0, 0);
 
 		// Test adjusting one point manually
-		i.setEnd(25);
+		i.setMax(25);
 		testEnds(i, 0, 25);
 
 		// If start > end, the interval should be adjusted automatically
-		i.setStart(30);
+		i.setMin(30);
 		testEnds(i, 30, 30);
 
 		// Same for if end < start
-		i.setEnd(-7);
+		i.setMax(-7);
 		testEnds(i, -7, -7);
 	}
 
 	/**
-	 * Basic testing of the {@link Interval#contains(int)} method. This is an
-	 * inclusive contains test.
+	 * Basic testing of the {@link Interval#contains(int)} method. The
+	 * {@code ignoreOverlap} flag is set to true, so this is an exclusive contains
+	 * test.
 	 */
 	@Test
 	public void testIntervalContains() {
@@ -61,97 +66,45 @@ public class IntervalTest {
 		// Interval is to the right of point
 		assertEquals(i.contains(-6), 1);
 
-		// Interval contains the start point
-		assertEquals(i.contains(-5), 0);
+		// Interval does not contain the start point
+		assertEquals(i.contains(-5), 1);
 
 		// Test a point in the range
 		assertEquals(i.contains(10), 0);
 
-		// Interval contains end point
-		assertEquals(i.contains(25), 0);
+		// Interval does not contain end point
+		assertEquals(i.contains(25), -1);
 
 		// Interval is to the left of point
 		assertEquals(i.contains(26), -1);
 	}
 
 	/**
-	 * Basic testing of the {@link Interval#contains(int, boolean)} method. The
-	 * {@code ignoreOverlap} flag is set to true, so this is an exclusive contains
-	 * test.
-	 */
-	@Test
-	public void testIntervalContainsExclusive() {
-		Interval i = new Interval(-5, 25);
-
-		// Interval is to the right of point
-		assertEquals(i.contains(-6, true), 1);
-
-		// Interval does not contain the start point
-		assertEquals(i.contains(-5, true), 1);
-
-		// Test a point in the range
-		assertEquals(i.contains(10, true), 0);
-
-		// Interval does not contain end point
-		assertEquals(i.contains(25, true), -1);
-
-		// Interval is to the left of point
-		assertEquals(i.contains(26, true), -1);
-	}
-
-	/**
-	 * Basic testing of the {@link Interval#intersects(Interval)} method. This is
-	 * an inclusive intersection test.
+	 * Basic testing of the {@link Interval#intersects(Interval)} method.
+	 * The {@code ignoreOverlap} flag is set to true, so this is an exclusive
+	 * intersection test.
 	 */
 	@Test
 	public void testIntervalIntersects() {
 		Interval base = new Interval(0, 100);
 		Interval test = new Interval(-5, -1);
 
-		testIntersect(base, test, false, false);
+		testIntersect(base, test, false);
 
-		test.setEnd(0);
-		testIntersect(base, test, false, true);
-
-		test = new Interval(-100, 42);
-		testIntersect(base, test, false, true);
-
-		test.setEnd(101);
-		testIntersect(base, test, false, true);
-
-		test.setStart(100);
-		testIntersect(base, test, false, true);
-
-		test.setStart(101);
-		testIntersect(base, test, false, false);
-	}
-
-	/**
-	 * Basic testing of the {@link Interval#intersects(Interval, boolean)} method.
-	 * The {@code ignoreOverlap} flag is set to true, so this is an exclusive
-	 * intersection test.
-	 */
-	@Test
-	public void testIntervalIntersectsExclusive() {
-		Interval base = new Interval(0, 100);
-		Interval test = new Interval(-5, -1);
-
-		testIntersect(base, test, true, false);
-
-		test.setEnd(0);
-		testIntersect(base, test, true, false);
+		test.setMax(0);
+		testIntersect(base, test, false);
 
 		test = new Interval(-100, 42);
-		testIntersect(base, test, true, true);
+		testIntersect(base, test, true);
 
-		test.setEnd(101);
-		testIntersect(base, test, true, true);
+		test.setMax(101);
+		testIntersect(base, test, true);
 
-		test.setStart(100);
-		testIntersect(base, test, true, false);
+		test.setMin(100);
+		testIntersect(base, test, false);
 
-		test.setStart(101);
-		testIntersect(base, test, true, false);
+		test.setMin(101);
+		testIntersect(base, test, false);
 	}
 
 	/**
@@ -165,8 +118,8 @@ public class IntervalTest {
 
 		assertTrue(i1.equalsInterval(i2));
 		assertFalse(i1.equals(i3));
-		i3.setStart(-5);
-		i3.setEnd(5);
+		i3.setMin(-5);
+		i3.setMax(5);
 		assertTrue(i2.equalsInterval(i3));
 	}
 
@@ -176,24 +129,23 @@ public class IntervalTest {
 	 * Verify the start and end points of an interval
 	 */
 	private void testEnds(Interval i, int start, int end) {
-		assertTrue(i.start() == start);
-		assertTrue(i.end() == end);
+		assertTrue(i.min() == start);
+		assertTrue(i.max() == end);
 	}
 
 	/**
-	 * Helper method to test {@link Interval#intersects(Interval, boolean)}. Tests
+	 * Helper method to test {@link Interval#intersects(Interval)}. Tests
 	 * both directions of intersection between the intervals, to avoid bias.
 	 */
-	private void testIntersect(Interval base, Interval test,
-		boolean ignoreOverlap, boolean expected)
+	private void testIntersect(Interval base, Interval test, boolean expected)
 	{
 		if (expected) {
-			assertTrue(base.intersects(test, ignoreOverlap));
-			assertTrue(test.intersects(base, ignoreOverlap));
+			assertTrue(base.intersects(test));
+			assertTrue(test.intersects(base));
 		}
 		else {
-			assertFalse(base.intersects(test, ignoreOverlap));
-			assertFalse(test.intersects(base, ignoreOverlap));
+			assertFalse(base.intersects(test));
+			assertFalse(test.intersects(base));
 		}
 	}
 }

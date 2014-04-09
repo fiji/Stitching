@@ -3,6 +3,8 @@ package stitching;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import mpicbg.stitching.fusion.ClassifiedRegion;
+import mpicbg.stitching.fusion.Interval;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -68,36 +70,14 @@ public class ClassifiedRegionTest {
 		assertTrue(intersectingRegions(region1, region2));
 
 		// verify no overlap
-		region2.get(0).setEnd(-10);
+		region2.get(0).setMax(-10);
 		assertFalse(intersectingRegions(region1, region2));
 
 		// Test with a region that borders the extents of the first region
 		region2 =
 			new ClassifiedRegion(new Interval(256, 260), new Interval(128, 142),
 				new Interval(10, 11));
-		assertTrue(intersectingRegions(region1, region2));
-
-		// And if one of the axes is shifted away, they no longer intersect
-		region2.get(1).setStart(129);
 		assertFalse(intersectingRegions(region1, region2));
-	}
-
-	/**
-	 * Test the {@link ClassifiedRegion#intersects(ClassifiedRegion, boolean)}
-	 * method for exclusive intersection.
-	 */
-	@Test
-	public void testIntersectExclusive() {
-		// test with no overlap
-		ClassifiedRegion region2 =
-			new ClassifiedRegion(new Interval(-10, -7), i2, i3);
-		assertFalse(intersectingRegions(region1, region2));
-
-		// Move the edge so that it shares the start of region1's edge. The two
-		// regions should now intersect, but not if we ignore overlap
-		region2.get(0).setEnd(0);
-		assertTrue(intersectingRegions(region1, region2));
-		assertFalse(region1.intersects(region2, true));
 	}
 
 	/**
@@ -124,7 +104,7 @@ public class ClassifiedRegionTest {
 
 		assertTrue(equalRegions(region1, region2));
 
-		region2.get(0).setStart(1);
+		region2.get(0).setMin(1);
 		assertFalse(equalRegions(region1, region2));
 	}
 
