@@ -22,7 +22,7 @@
 package mpicbg.stitching.fusion;
 
 /**
- * A range on the number line with a {@link #start()} and {@link #end()} point.
+ * A range on the number line with a {@link #min()} and {@link #max()} point.
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
@@ -77,8 +77,6 @@ public class Interval {
 	}
 
 	/**
-	 * As {@link #contains(int, boolean)} 
-	 * 
 	 * @return -1 if this interval is completely to the left of the point. 1 if
 	 *         this interval is completely to the right of the point. 0 if the
 	 *         interval intersects (contains) the point.
