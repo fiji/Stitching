@@ -286,59 +286,8 @@ public class Fusion
 			size *= output.getDimension(d);
 		}
 
-		Stack<ClassifiedRegion> rawTiles = new Stack<ClassifiedRegion>();
-
-		for ( int i = 0; i < numImages; ++i ){
-				final float[] min = new float[ numDimensions ];
-				transform.get(i).applyInPlace(min);
-				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
-				shape.addClass(i);
-			for ( int d = 0; d < numDimensions; ++d ) {
-				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)) - 1);
-				// Build our list of positions
-				shape.set(ival, d);
-			}
-			rawTiles.push(shape);
-		}
-
-		// Set of placed tiles. Goal is to move all of the known positions
-		// to this set, creating new regions as needed such that there is no
-		// overlap between regions. Then use this set to drive iteration and
-		// fusion.
-		final Set<ClassifiedRegion> placedTiles = new HashSet<ClassifiedRegion>();
-
-		// Process each position. We need to look through all placed regions and
-		// if we find an intersection, create a new set of regions, add them
-		// to the appropriate sets, and continue
-		while (!rawTiles.isEmpty()) {
-			// Get the next tile to process
-			ClassifiedRegion queryTile = rawTiles.pop();
-			ClassifiedRegion toRemove = null;
-			// Iterate over all placed shapes.
-			for (ClassifiedRegion placedTile : placedTiles) {
-				if (queryTile.intersects(placedTile)) {
-					// can't remove while iterating
-					toRemove = placedTile;
-					// The first time we find an overlapping between tiles, we split the
-					// two tiles into tile components and place them in the appropriate
-					// lists. Then quit this loop (as our query shape is no longer valid)
-					// and continue the process
-					splitOverlappingRegions(placedTiles, rawTiles, queryTile, placedTile);
-					break;
-				}
-			}
-			// If we found an intersection, the query tile and placed tile were broken
-			// down and should be discarded
-			if (toRemove != null) {
-				placedTiles.remove(toRemove);
-			}
-			// No intersections found, so just place the tile and continue.
-			else {
-				placedTiles.add(queryTile);
-			}
-		}
-
-		final List<ClassifiedRegion> tiles = new ArrayList<ClassifiedRegion>(placedTiles);
+		final List<ClassifiedRegion> tiles =
+			buildTileList(numImages, numDimensions, transform, input);
 
 		IJ.showProgress( 0 );
 
@@ -490,6 +439,68 @@ public class Fusion
 			});
         
         SimpleMultiThreading.startAndJoin( threads );        
+	}
+
+	/**
+	 * TODO
+	 * 
+	 */
+	private static List<ClassifiedRegion> buildTileList(int numImages,
+		int numDimensions, ArrayList<InvertibleBoundable> transform,
+		ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input)
+	{
+		Stack<ClassifiedRegion> rawTiles = new Stack<ClassifiedRegion>();
+
+		for ( int i = 0; i < numImages; ++i ){
+				final float[] min = new float[ numDimensions ];
+				transform.get(i).applyInPlace(min);
+				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
+				shape.addClass(i);
+			for ( int d = 0; d < numDimensions; ++d ) {
+				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)) - 1);
+				// Build our list of positions
+				shape.set(ival, d);
+			}
+			rawTiles.push(shape);
+		}
+
+		// Set of placed tiles. Goal is to move all of the known positions
+		// to this set, creating new regions as needed such that there is no
+		// overlap between regions. Then use this set to drive iteration and
+		// fusion.
+		final Set<ClassifiedRegion> placedTiles = new HashSet<ClassifiedRegion>();
+
+		// Process each position. We need to look through all placed regions and
+		// if we find an intersection, create a new set of regions, add them
+		// to the appropriate sets, and continue
+		while (!rawTiles.isEmpty()) {
+			// Get the next tile to process
+			ClassifiedRegion queryTile = rawTiles.pop();
+			ClassifiedRegion toRemove = null;
+			// Iterate over all placed shapes.
+			for (ClassifiedRegion placedTile : placedTiles) {
+				if (queryTile.intersects(placedTile)) {
+					// can't remove while iterating
+					toRemove = placedTile;
+					// The first time we find an overlapping between tiles, we split the
+					// two tiles into tile components and place them in the appropriate
+					// lists. Then quit this loop (as our query shape is no longer valid)
+					// and continue the process
+					splitOverlappingRegions(placedTiles, rawTiles, queryTile, placedTile);
+					break;
+				}
+			}
+			// If we found an intersection, the query tile and placed tile were broken
+			// down and should be discarded
+			if (toRemove != null) {
+				placedTiles.remove(toRemove);
+			}
+			// No intersections found, so just place the tile and continue.
+			else {
+				placedTiles.add(queryTile);
+			}
+		}
+		return new ArrayList<ClassifiedRegion>(placedTiles);
 	}
 
 	/**
@@ -743,88 +754,44 @@ public class Fusion
 		final int numImages = input.size();
 		final int numDimensions = offset.length;
 
-		// the maximal dimensions of each image
-		final int[][] max = new int[ numImages ][ numDimensions ];
-		for ( int i = 0; i < numImages; ++i )
-			for ( int d = 0; d < numDimensions; ++d )
-				max[ i ][ d ] = input.get( i ).getImage().getDimension( d ) - 1; 
+		final List<ClassifiedRegion> tiles =
+				buildTileList(numImages, numDimensions, transform, input);
 		
-		final LocalizableCursor<T> out = outputSlice.createLocalizableCursor();
+		final LocalizableByDimCursor<T> out = outputSlice.createLocalizableByDimCursor();
 		final ArrayList<Interpolator<? extends RealType<?>>> in = new ArrayList<Interpolator<? extends RealType<?>>>();
 		
 		for ( int i = 0; i < numImages; ++i )
 			in.add( input.get( i ).createInterpolator() );
 		
-		final float[][] tmp = new float[ numImages ][ numDimensions ];
 		final PixelFusion myFusion = fusion.copy();
 		
 		try 
 		{
 			final int sliceSize = outputSlice.getNumPixels();
-			
 			for ( int slice = 0; slice < numSlices; ++slice )
 			{
 				IJ.showStatus("Fusing time point: " + t + " of " + numTimePoints + ", " +
 						"channel: " + c + " of " + numChannels + ", slice: " + (slice + 1) + " of " +
 						numSlices + "...");
 				out.reset();
+				final int[] outPos = new int[ numDimensions ];
+				final float[] inPos = new float[ numDimensions ];
+				final int[] count = new int[1];
 
 				IJ.showProgress(0);
 				
-				// fill all pixels of the current slice
-				while ( out.hasNext() )
-				{
-					out.fwd();
-  					
-					// just every 10000'th pixel
-					final long j = out.getArrayIndex(); 
-					if ( j % 10000 == 0 )
-						IJ.showProgress( (double)( j + ( slice * sliceSize ) ) / (double)( numSlices * sliceSize ) );
-					
-					// get the current position in the output image
-					for ( int d = 0; d < 2; ++d )
-					{
-						final float value = out.getPosition( d ) + offset[ d ];
-						
-						for ( int i = 0; i < numImages; ++i )
-							tmp[ i ][ d ] = value;
-					}
-					
-					// if there is a third dimension, use the slice index
-					if ( numDimensions == 3 )
-					{
-						final float value = slice + offset[ 2 ];
-						
-						for ( int i = 0; i < numImages; ++i )
-							tmp[ i ][ 2 ] = value;						
-					}
-					
-					// transform and compute output value
-					myFusion.clear();
-					
-					// loop over all images for this output location
-A:		        	for ( int i = 0; i < numImages; ++i )
-		        	{
-		        		transform.get( i ).applyInverseInPlace( tmp[ i ] );
-		            	
-		        		// test if inside
-						for ( int d = 0; d < numDimensions; ++d )
-							if ( tmp[ i ][ d ] < 0 || tmp[ i ][ d ] > max[ i ][ d ] )
-								continue A;
-						
-						in.get( i ).setPosition( tmp[ i ] );			
-						myFusion.addValue( in.get( i ).getType().getRealFloat(), i, tmp[ i ] );
-					}
-					
-					// set value
-					out.getType().setReal( myFusion.getValue() );
+				// just like fuseBlock but pin to the current slice #
+				for (long tileIndex=0; tileIndex<tiles.size(); tileIndex++) {
+					ClassifiedRegion currentTile = tiles.get((int) tileIndex);
+					processTile(currentTile, 0, slice, myFusion, transform, offset, in, out, inPos, outPos, count, sliceSize, numSlices);
 				}
+				
 				
 				// write the slice
 				final ImagePlus outImp = ((ImagePlusContainer<?,?>)outputSlice.getContainer()).getImagePlus();
 				final FileSaver fs = new FileSaver( outImp );
 				fs.saveAsTiff( new File( outputDirectory, "img_t" + lz( t, numTimePoints ) + "_z" + lz( slice+1, numSlices ) + "_c" + lz( c, numChannels ) ).getAbsolutePath() );
-			}
+				}
 		} 
 		catch ( NoninvertibleModelException e ) 
 		{
@@ -836,6 +803,77 @@ A:		        	for ( int i = 0; i < numImages; ++i )
 			IJ.log( "Output image has no ImageJ type: " + e );
 			return;
 		}
+	}
+
+	/**
+	 * Helper method to fuse all the positions of a given
+	 * {@link ClassifiedRegion}. Since we do not know the dimensionality of
+	 * the region, we recurse over each position of each dimension. The tail
+	 * step of each descent iterates over all the images (classes) of the
+	 * given region, fusing the pixel values at the current position of each
+	 * associated image. This final value is then set in the output.
+	 */
+	private static <T extends RealType<T>> void processTile(ClassifiedRegion r,
+		int depth, final int slice, PixelFusion myFusion,
+		ArrayList<InvertibleBoundable> transform, float[] offset,
+		ArrayList<Interpolator<? extends RealType<?>>> in,
+		LocalizableByDimCursor<T> out, float[] inPos, int[] outPos, int[] count,
+		final int sliceSize, final int numSlices)
+		throws NoninvertibleModelException
+	{
+		// For 3D datasets, we fix the last dimension to the given slice #
+		if (r.size() > 2 && depth == r.size() - 1) {
+			outPos[depth] = slice;
+			processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
+				outPos, count, sliceSize, numSlices );
+			return;
+		}
+		else if (depth < r.size()) {
+			Interval d = r.get(depth);
+			// The intervals of the given region define the bounds of iteration
+			// So we are recursively defining a nested iteration order to cover
+			// each position of the region
+			
+			for (int i=d.min(); i<=d.max(); i++) {
+				// The position array will be used to set the in and out positions.
+				// It specifies where we are in the output image
+				outPos[depth] = i;
+				// Recurse to the next depth (dimension)
+				processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
+					outPos, count, sliceSize, numSlices );
+			}
+			return;
+		}
+
+		// compute fusion for this position
+		myFusion.clear();
+		// These are the image indices associated with this region
+		final int[] indices = r.classArray();
+
+		// Loop over the images in this region
+		for (int index=0; index<indices.length; index++) {
+			// Get the positions for the current image
+			for (int d=0; d<r.size(); d++) {
+				inPos[d] = outPos[d] + offset[d];
+			}
+			// Transform to get input position
+			transform.get(indices[index]).applyInverseInPlace(inPos);
+			in.get(indices[index]).setPosition(inPos);
+			// fuse
+			myFusion.addValue(in.get(indices[index]).getType().getRealFloat(),
+				indices[index], inPos);
+		}
+
+		// set value
+		out.setPosition(outPos);
+		out.getType().setReal(myFusion.getValue());
+
+		// Update progress if necessary
+		count[0]++;
+		if (count[0] % 10000 == 0) {
+			IJ.showProgress( (double)( count[0] + ( slice * sliceSize ) ) / (double)( numSlices * sliceSize ) );
+		}
+
 	}
 
 	private static final String lz( final int num, final int max )
