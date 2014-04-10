@@ -287,7 +287,7 @@ public class Fusion
 		}
 
 		final List<ClassifiedRegion> tiles =
-			buildTileList(numImages, numDimensions, transform, input);
+			buildTileList(numImages, numDimensions, transform, input, offset);
 
 		IJ.showProgress( 0 );
 
@@ -443,11 +443,12 @@ public class Fusion
 
 	/**
 	 * TODO
+	 * @param offset 
 	 * 
 	 */
 	private static List<ClassifiedRegion> buildTileList(int numImages,
 		int numDimensions, ArrayList<InvertibleBoundable> transform,
-		ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input)
+		ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input, float[] offset)
 	{
 		Stack<ClassifiedRegion> rawTiles = new Stack<ClassifiedRegion>();
 
@@ -457,6 +458,7 @@ public class Fusion
 				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
 				shape.addClass(i);
 			for ( int d = 0; d < numDimensions; ++d ) {
+				min[d] -= offset[d];
 				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)) - 1);
 				// Build our list of positions
 				shape.set(ival, d);
@@ -755,7 +757,7 @@ public class Fusion
 		final int numDimensions = offset.length;
 
 		final List<ClassifiedRegion> tiles =
-				buildTileList(numImages, numDimensions, transform, input);
+				buildTileList(numImages, numDimensions, transform, input, offset);
 		
 		final LocalizableByDimCursor<T> out = outputSlice.createLocalizableByDimCursor();
 		final ArrayList<Interpolator<? extends RealType<?>>> in = new ArrayList<Interpolator<? extends RealType<?>>>();
