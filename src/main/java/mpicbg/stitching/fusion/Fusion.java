@@ -442,9 +442,11 @@ public class Fusion
 	}
 
 	/**
-	 * TODO
-	 * @param offset 
-	 * 
+	 * Helper method to generate a list of all non-overlapping tiles. The
+	 * dimensions and position of each tile are based on the input and offset
+	 * parameters. From these, all overlaps are computed, and ultimately a list of
+	 * {@link ClassifiedRegion}s is created such that no region overlaps. Each
+	 * region is classified based on what source images overlapped with it.
 	 */
 	private static List<ClassifiedRegion> buildTileList(int numImages,
 		int numDimensions, ArrayList<InvertibleBoundable> transform,
