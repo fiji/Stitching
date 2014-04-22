@@ -57,6 +57,7 @@ public class ClassifiedRegion {
 	 */
 	public ClassifiedRegion(final ClassifiedRegion copy) {
 		this.intervals = copy.intervals;
+		addAllClasses(copy);
 	}
 
 	// Public API
