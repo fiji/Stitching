@@ -604,8 +604,8 @@ public class Fusion
 					Interval primeInterval = overlappedRegion.get(i);
 					Interval secondaryInterval = region.get(i);
 					// Test the start point to ensure the two are not the same interval
-					if (primeInterval.min() != secondaryInterval.min()) {
-						if (primeInterval.max() == secondaryInterval.max()) {
+					if (!primeInterval.equalsInterval(secondaryInterval)) {
+						if (primeInterval.min() == secondaryInterval.max()) {
 							// Move the secondary interval's end down 1, so that their border
 							// becomes owned exclusively by the prime interval
 							secondaryInterval.setMax(secondaryInterval.max() - 1);
