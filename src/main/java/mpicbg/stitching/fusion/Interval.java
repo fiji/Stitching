@@ -117,7 +117,7 @@ public class Interval {
 	 * Check to see if another interval is the same as this interval.
 	 */
 	public boolean equalsInterval(final Interval other) {
-		return min() == other.min() && max == other.max();
+		return min() == other.min() && max() == other.max();
 	}
 
 	@Override
