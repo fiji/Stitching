@@ -28,17 +28,17 @@ package mpicbg.stitching.fusion;
  */
 public class Interval {
 
-	private int min;
-	private int max;
+	private float min;
+	private float max;
 
 	/**
 	 * Constructs a new Interval using the smallest and largest values in the
 	 * provided points.
 	 */
-	public Interval(final int... points) {
+	public Interval(final float... points) {
 		min = Integer.MAX_VALUE;
 		max = Integer.MIN_VALUE;
-		for (final int p : points) {
+		for (final float p : points) {
 			min = Math.min(min, p);
 			max = Math.max(max, p);
 		}
@@ -56,7 +56,7 @@ public class Interval {
 	 * Update the start position of this interval. If after this setting,
 	 * {@code start > end}, sets {@code end = start}.
 	 */
-	public void setMin(final int min) {
+	public void setMin(final float min) {
 		this.min = min;
 		if (min > max) max = min;
 	}
@@ -65,7 +65,7 @@ public class Interval {
 	 * Update the end position of this interval. If after this setting,
 	 * {@code end < start}, sets {@code start = end}.
 	 */
-	public void setMax(final int max) {
+	public void setMax(final float max) {
 		this.max = max;
 		if (max < min) min = max;
 	}
@@ -73,14 +73,14 @@ public class Interval {
 	/**
 	 * @return Start position for this interval
 	 */
-	public int min() {
+	public float min() {
 		return min;
 	}
 
 	/**
 	 * @return End position for this interval
 	 */
-	public int max() {
+	public float max() {
 		return max;
 	}
 
@@ -89,7 +89,7 @@ public class Interval {
 	 *         this interval is completely to the right of the point. 0 if the
 	 *         interval intersects (contains) the point.
 	 */
-	public int contains(final int point) {
+	public int contains(final float point) {
 		if (max <= point ) {
 			return -1;
 		}

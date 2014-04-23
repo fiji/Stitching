@@ -389,10 +389,10 @@ public class Fusion
 						// So we are recursively defining a nested iteration order to cover
 						// each position of the region
 						
-						for (int i=d.min(); i<=d.max(); i++) {
+						for (float i=d.min(); i<=d.max(); i++) {
 							// The position array will be used to set the in and out positions.
 							// It specifies where we are in the output image
-							outPos[depth] = i;
+							outPos[depth] = (int)i;
 							// Recurse to the next depth (dimension)
 							processTile(r, depth+1, myFusion, transform, in, out, inPos,
 								outPos, threadNumber, count, lastDraw, fusionImp);
@@ -462,7 +462,7 @@ public class Fusion
 				shape.addClass(i);
 			for ( int d = 0; d < numDimensions; ++d ) {
 				min[d] -= offset[d];
-				Interval ival = new Interval( (int)Math.floor( min[d] ), (int)Math.floor(min[d] + input.get(i).getImage().getDimension(d)) - 1);
+				Interval ival = new Interval(  min[d], min[d] + input.get(i).getImage().getDimension(d) - 1);
 				// Build our list of positions
 				shape.set(ival, d);
 			}
@@ -533,7 +533,7 @@ public class Fusion
 		// all potential sub tiles, for each dimension.
 		List<Interval>[] allIntervals = new List[queryTile.size()];
 		for (int i=0; i<allIntervals.length; i++) {
-			List<Integer> points = new ArrayList<Integer>();
+			List<Float> points = new ArrayList<Float>();
 			List<Interval> intervals = new ArrayList<Interval>();
 			points.add(queryTile.get(i).min());
 			points.add(queryTile.get(i).max());
@@ -839,10 +839,10 @@ public class Fusion
 			// So we are recursively defining a nested iteration order to cover
 			// each position of the region
 			
-			for (int i=d.min(); i<=d.max(); i++) {
+			for (float i=d.min(); i<=d.max(); i++) {
 				// The position array will be used to set the in and out positions.
 				// It specifies where we are in the output image
-				outPos[depth] = i;
+				outPos[depth] = (int)i;
 				// Recurse to the next depth (dimension)
 				processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
 					outPos, count, sliceSize, numSlices );
