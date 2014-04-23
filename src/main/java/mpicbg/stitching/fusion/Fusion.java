@@ -462,7 +462,8 @@ public class Fusion
 				shape.addClass(i);
 			for ( int d = 0; d < numDimensions; ++d ) {
 				min[d] -= offset[d];
-				Interval ival = new Interval(  min[d], min[d] + input.get(i).getImage().getDimension(d) - 1);
+				// Sets each interval to the smallest possible, by rounding the min up and the max down
+				Interval ival = new Interval( (float)Math.ceil(min[d]), (float)Math.floor(min[d] + input.get(i).getImage().getDimension(d) - 1));
 				// Build our list of positions
 				shape.set(ival, d);
 			}
