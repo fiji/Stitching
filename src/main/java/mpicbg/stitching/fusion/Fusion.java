@@ -407,16 +407,17 @@ public class Fusion
 
 					// Loop over the images in this region
 					for (int index=0; index<indices.length; index++) {
+						final int image = indices[index];
 						// Get the positions for the current image
 						for (int d=0; d<r.size(); d++) {
 							inPos[d] = outPos[d] + offset[d];
 						}
 						// Transform to get input position
-						transform.get(indices[index]).applyInverseInPlace(inPos);
-						in.get(indices[index]).setPosition(inPos);
+						transform.get(image).applyInverseInPlace(inPos);
+						in.get(image).setPosition(inPos);
 						// fuse
-						myFusion.addValue(in.get(indices[index]).getType().getRealFloat(),
-							indices[index], inPos);
+						myFusion.addValue(in.get(image).getType().getRealFloat(),
+							image, inPos);
 					}
 
 					// set value
@@ -855,17 +856,18 @@ public class Fusion
 		final int[] indices = r.classArray();
 
 		// Loop over the images in this region
-		for (int index=0; index<indices.length; index++) {
+		for (int index = 0; index < indices.length; index++) {
+			int image = indices[index];
 			// Get the positions for the current image
-			for (int d=0; d<r.size(); d++) {
+			for (int d = 0; d < r.size(); d++) {
 				inPos[d] = outPos[d] + offset[d];
 			}
 			// Transform to get input position
-			transform.get(indices[index]).applyInverseInPlace(inPos);
-			in.get(indices[index]).setPosition(inPos);
+			transform.get(image).applyInverseInPlace(inPos);
+			in.get(image).setPosition(inPos);
 			// fuse
-			myFusion.addValue(in.get(indices[index]).getType().getRealFloat(),
-				indices[index], inPos);
+			myFusion.addValue(in.get(image).getType().getRealFloat(), image,
+				inPos);
 		}
 
 		// set value
