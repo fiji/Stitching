@@ -643,8 +643,8 @@ public class Fusion
 		// Build a new region using the current specified indices
 		ClassifiedRegion region = new ClassifiedRegion(allIntervals.length);
 
-		for (int i=0; i<allIntervals.length; i++) {
-			region.set(allIntervals[i].get(ivalIndices[i]), i);
+		for (int i = 0; i < allIntervals.length; i++) {
+			region.set(new Interval(allIntervals[i].get(ivalIndices[i])), i);
 		}
 
 		allRegions.add(region);
