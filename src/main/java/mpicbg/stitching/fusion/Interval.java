@@ -45,6 +45,14 @@ public class Interval {
 	}
 
 	/**
+	 * Copying constructor
+	 */
+	public Interval(final Interval interval) {
+		min = interval.min();
+		max = interval.max();
+	}
+
+	/**
 	 * Update the start position of this interval. If after this setting,
 	 * {@code start > end}, sets {@code end = start}.
 	 */
