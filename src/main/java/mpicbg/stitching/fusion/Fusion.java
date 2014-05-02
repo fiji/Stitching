@@ -486,6 +486,8 @@ public class Fusion
 			// Get the next tile to process
 			ClassifiedRegion queryTile = rawTiles.pop();
 			ClassifiedRegion toRemove = null;
+			//TODO instead of iterating we really should use a look up tree structure, as this
+			// is still quite slow with larger datasets.
 			// Iterate over all placed shapes.
 			for (ClassifiedRegion placedTile : placedTiles) {
 				if (queryTile.intersects(placedTile)) {
