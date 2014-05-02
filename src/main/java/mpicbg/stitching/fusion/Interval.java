@@ -90,10 +90,10 @@ public class Interval {
 	 *         interval intersects (contains) the point.
 	 */
 	public int contains(final float point) {
-		if (max <= point ) {
+		if (Float.compare(max, point) <= 0) {
 			return -1;
 		}
-		else if (min >= point) {
+		else if (Float.compare(min, point) >= 0) {
 			return 1;
 		}
 		return 0;
@@ -104,7 +104,7 @@ public class Interval {
 	 */
 	public boolean intersects(final Interval other) {
 		// always return true if the two intervals are the same
-		final boolean intersects = min() == other.min() && max() == other.max();
+		final boolean intersects = equalsInterval(other);
 		// For two finite, non-identical intervals to overlap, one needs to contain
 		// the start or end point of the other.
 		return intersects || contains(other.min()) == 0 ||
@@ -117,7 +117,8 @@ public class Interval {
 	 * Check to see if another interval is the same as this interval.
 	 */
 	public boolean equalsInterval(final Interval other) {
-		return min() == other.min() && max() == other.max();
+		return Float.compare(min(), other.min()) == 0 &&
+			Float.compare(max(), other.max()) == 0;
 	}
 
 	@Override
