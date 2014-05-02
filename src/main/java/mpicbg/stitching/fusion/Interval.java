@@ -36,8 +36,8 @@ public class Interval {
 	 * provided points.
 	 */
 	public Interval(final float... points) {
-		min = Integer.MAX_VALUE;
-		max = Integer.MIN_VALUE;
+		min = Float.POSITIVE_INFINITY;
+		max = Float.NEGATIVE_INFINITY;
 		for (final float p : points) {
 			min = Math.min(min, p);
 			max = Math.max(max, p);
