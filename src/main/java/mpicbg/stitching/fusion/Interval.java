@@ -54,20 +54,32 @@ public class Interval {
 
 	/**
 	 * Update the start position of this interval. If after this setting,
-	 * {@code start > end}, sets {@code end = start}.
+	 * {@code min > max}, sets {@code max = min}.
+	 * 
+	 * @return true if the max was also modified during this call
 	 */
-	public void setMin(final float min) {
+	public boolean setMin(final float min) {
 		this.min = min;
-		if (min > max) max = min;
+		if (Float.compare(min, max) > 0) {
+			max = min;
+			return true;
+		}
+		return false;
 	}
 
 	/**
 	 * Update the end position of this interval. If after this setting,
-	 * {@code end < start}, sets {@code start = end}.
+	 * {@code max < min}, sets {@code min = max}.
+	 * 
+	 * @return true if the min was also modified during this call
 	 */
-	public void setMax(final float max) {
+	public boolean setMax(final float max) {
 		this.max = max;
-		if (max < min) min = max;
+		if (Float.compare(max, min) < 0) {
+			min = max;
+			return true;
+		}
+		return false;
 	}
 
 	/**

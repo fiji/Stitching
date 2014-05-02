@@ -383,16 +383,19 @@ public class Fusion
 					int threadNumber, int[] count, long[] lastDraw,
 					ImagePlus fusionImp) throws NoninvertibleModelException
 				{
+					//NB: there are two process tile methods, one for in-memory fusion
+					// and one for writing to disk. They are slightly different, but
+					// if one is updated the other should be as well!
 					if (depth < r.size()) {
 						Interval d = r.get(depth);
 						// The intervals of the given region define the bounds of iteration
 						// So we are recursively defining a nested iteration order to cover
 						// each position of the region
 						
-						for (float i=d.min(); i<=d.max(); i++) {
+						for (int i=(int)Math.ceil(d.min()); i<=Math.floor(d.max()); i++) {
 							// The position array will be used to set the in and out positions.
 							// It specifies where we are in the output image
-							outPos[depth] = (int)i;
+							outPos[depth] = i;
 							// Recurse to the next depth (dimension)
 							processTile(r, depth+1, myFusion, transform, in, out, inPos,
 								outPos, threadNumber, count, lastDraw, fusionImp);
@@ -463,7 +466,7 @@ public class Fusion
 			for ( int d = 0; d < numDimensions; ++d ) {
 				min[d] -= offset[d];
 				// Sets each interval to the smallest possible, by rounding the min up and the max down
-				Interval ival = new Interval( (float)Math.ceil(min[d]), (float)Math.floor(min[d] + input.get(i).getImage().getDimension(d) - 1));
+				Interval ival = new Interval( min[d], min[d] + input.get(i).getImage().getDimension(d) - 1);
 				// Build our list of positions
 				shape.set(ival, d);
 			}
@@ -559,6 +562,8 @@ public class Fusion
 
 		// Update the classification of each sub-region. Possibilities include: 1 parent, both parents, or no parents (in which case
 		// the region is discarded)
+		final Set<ClassifiedRegion> forPlaced = new HashSet<ClassifiedRegion>();
+		final Set<ClassifiedRegion> forRaw = new HashSet<ClassifiedRegion>();
 		for (ClassifiedRegion newRegion : allRegions) {
 			boolean matchedQueried = false;
 			boolean matchedPlaced = false;
@@ -577,14 +582,14 @@ public class Fusion
 			if (!matchedQueried && matchedPlaced) {
 				// This is a sub-tile of a placed tile only. Thus we know it does not intersect
 				// with any other placed tile, so we can add it back to the placed set.
-				placedTiles.add(newRegion);
+				forPlaced.add(newRegion);
 			}
 			else if (matchedQueried) {
 				// This is either a) a new overlapping sub-tile or b) a pure queried sub-tile.
 				// In either case, since we short-circuited the query after finding our first overlap,
 				// the new tile needs to be tested against other placed tiles. So add it
 				// back to the raw list.
-				rawTiles.push(newRegion);
+				forRaw.add(newRegion);
 
 				// Only one region will be created that is overlapped by both original regions
 				// It can then be used to reduce the area of the other regions
@@ -595,6 +600,13 @@ public class Fusion
 				// Regions that didn't match either parent are discarded
 			}
 		}
+
+		// TODO this is wrong. We only need to "dislodge" bordering regions when they are on an integer,
+		// as they will affect tile iteration. However if we move tiles too much then we can interfere with
+		// intersection detection. Needs to be the largest value so that Float.equals becomes false, without crossing
+		// any boundaries with other images
+		// Distance to move bordering intervals
+		final float epsilon = 0.001f;
 
 		// Now we need to shrink all the intervals that were not overlapped by both
 		// the query and placed regions. This ensures that there will be no potential
@@ -607,20 +619,36 @@ public class Fusion
 					Interval secondaryInterval = region.get(i);
 					// Test the start point to ensure the two are not the same interval
 					if (!primeInterval.equalsInterval(secondaryInterval)) {
-						if (primeInterval.min() == secondaryInterval.max()) {
+						if (Float.compare(primeInterval.min(), secondaryInterval.max()) == 0) {
 							// Move the secondary interval's end down 1, so that their border
-							// becomes owned exclusively by the prime interval
-							secondaryInterval.setMax(secondaryInterval.max() - 1);
+							// becomes owned exclusively by the prime interval. Discard invalid regions.
+							if (secondaryInterval.setMax(primeInterval.min() - epsilon)) {
+								forPlaced.remove(region);
+								forRaw.remove(region);
+								break;
+							}
 						}
-						else if (primeInterval.max() == secondaryInterval.min()) {
+						else if (Float.compare(primeInterval.max(), secondaryInterval.min()) == 0) {
 							// Move the secondary interval's start up 1, so that their border
-							// becomes owned exclusively by the prime interval
-							secondaryInterval.setMin(secondaryInterval.min() + 1);
+							// becomes owned exclusively by the prime interval. Discard invalid regions.
+							if (secondaryInterval.setMin(primeInterval.max() + epsilon)) {
+								forPlaced.remove(region);
+								forRaw.remove(region);
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
+
+		// Add our final tiles to the appropriate list
+			for (ClassifiedRegion region : forPlaced) {
+				placedTiles.add(region);
+			}
+			for (ClassifiedRegion region : forRaw) {
+				rawTiles.push(region);
+			}
 	}
 
 	/**
@@ -827,6 +855,9 @@ public class Fusion
 		final int sliceSize, final int numSlices)
 		throws NoninvertibleModelException
 	{
+		//NB: there are two process tile methods, one for in-memory fusion
+		// and one for writing to disk. They are slightly different, but
+		// if one is updated the other should be as well!
 		// For 3D datasets, we fix the last dimension to the given slice #
 		if (r.size() > 2 && depth == r.size() - 1) {
 			outPos[depth] = slice;
@@ -840,10 +871,10 @@ public class Fusion
 			// So we are recursively defining a nested iteration order to cover
 			// each position of the region
 			
-			for (float i=d.min(); i<=d.max(); i++) {
+			for (int i=(int) Math.ceil(d.min()); i <= Math.floor(d.max()); i++) {
 				// The position array will be used to set the in and out positions.
 				// It specifies where we are in the output image
-				outPos[depth] = (int)i;
+				outPos[depth] = i;
 				// Recurse to the next depth (dimension)
 				processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
 					outPos, count, sliceSize, numSlices );
