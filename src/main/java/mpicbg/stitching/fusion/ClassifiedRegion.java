@@ -78,6 +78,13 @@ public class ClassifiedRegion {
 	}
 
 	/**
+	 * @return True iff this region contains all the classes of another region.
+	 */
+	public boolean coversClasses(final ClassifiedRegion other) {
+		return classes.containsAll(other.classes);
+	}
+
+	/**
 	 * @return A primitive array of all classes associated with this region.
 	 */
 	public int[] classArray() {
