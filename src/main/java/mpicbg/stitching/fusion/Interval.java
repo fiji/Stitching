@@ -28,17 +28,17 @@ package mpicbg.stitching.fusion;
  */
 public class Interval {
 
-	private float min;
-	private float max;
+	private int min;
+	private int max;
 
 	/**
 	 * Constructs a new Interval using the smallest and largest values in the
 	 * provided points.
 	 */
-	public Interval(final float... points) {
-		min = Float.POSITIVE_INFINITY;
-		max = Float.NEGATIVE_INFINITY;
-		for (final float p : points) {
+	public Interval(final int... points) {
+		min = Integer.MAX_VALUE;
+		max = Integer.MIN_VALUE;
+		for (final int p : points) {
 			min = Math.min(min, p);
 			max = Math.max(max, p);
 		}
@@ -58,9 +58,9 @@ public class Interval {
 	 * 
 	 * @return true if the max was also modified during this call
 	 */
-	public boolean setMin(final float min) {
+	public boolean setMin(final int min) {
 		this.min = min;
-		if (Float.compare(min, max) > 0) {
+		if (min > max) {
 			max = min;
 			return true;
 		}
@@ -73,9 +73,9 @@ public class Interval {
 	 * 
 	 * @return true if the min was also modified during this call
 	 */
-	public boolean setMax(final float max) {
+	public boolean setMax(final int max) {
 		this.max = max;
-		if (Float.compare(max, min) < 0) {
+		if (max < min) {
 			min = max;
 			return true;
 		}
@@ -85,14 +85,14 @@ public class Interval {
 	/**
 	 * @return Start position for this interval
 	 */
-	public float min() {
+	public int min() {
 		return min;
 	}
 
 	/**
 	 * @return End position for this interval
 	 */
-	public float max() {
+	public int max() {
 		return max;
 	}
 
@@ -101,11 +101,11 @@ public class Interval {
 	 *         this interval is completely to the right of the point. 0 if the
 	 *         interval intersects (contains) the point.
 	 */
-	public int contains(final float point) {
-		if (Float.compare(max, point) <= 0) {
+	public int contains(final int point) {
+		if (max < point) {
 			return -1;
 		}
-		else if (Float.compare(min, point) >= 0) {
+		else if (min > point) {
 			return 1;
 		}
 		return 0;
@@ -129,8 +129,7 @@ public class Interval {
 	 * Check to see if another interval is the same as this interval.
 	 */
 	public boolean equalsInterval(final Interval other) {
-		return Float.compare(min(), other.min()) == 0 &&
-			Float.compare(max(), other.max()) == 0;
+		return min() == other.min() && max() == other.max();
 	}
 
 	@Override

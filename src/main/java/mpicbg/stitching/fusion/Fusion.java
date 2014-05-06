@@ -392,7 +392,7 @@ public class Fusion
 						// So we are recursively defining a nested iteration order to cover
 						// each position of the region
 						
-						for (int i=(int)Math.ceil(d.min()); i<=Math.floor(d.max()); i++) {
+						for (int i=d.min(); i<=d.max(); i++) {
 							// The position array will be used to set the in and out positions.
 							// It specifies where we are in the output image
 							outPos[depth] = i;
@@ -466,7 +466,9 @@ public class Fusion
 			for ( int d = 0; d < numDimensions; ++d ) {
 				min[d] -= offset[d];
 				// Sets each interval to the smallest possible, by rounding the min up and the max down
-				Interval ival = new Interval( min[d], min[d] + input.get(i).getImage().getDimension(d) - 1);
+				Interval ival =
+					new Interval((int) Math.ceil(min[d]), (int) Math.floor(min[d] +
+						input.get(i).getImage().getDimension(d) - 1));
 				// Build our list of positions
 				shape.set(ival, d);
 			}
@@ -525,132 +527,70 @@ public class Fusion
 	private static void splitOverlappingRegions(Set<ClassifiedRegion> placedTiles,
 		Stack<ClassifiedRegion> rawTiles, ClassifiedRegion queryTile, ClassifiedRegion placedTile)
 	{
-		// First we do an explicit simple check to see if the tiles are the same:
-		if (queryTile.equalsRegion(placedTile)) {
-			// NB: the original place tile will be removed from the list, so we create a new tile
-			// and add all indices.
-			ClassifiedRegion newTile = new ClassifiedRegion(queryTile);
-			newTile.addAllClasses(placedTile);
-			placedTiles.add(newTile);
-			return;
-		}
-
 		// Tiles are different but overlapping. So we need to identify the start and end points of
 		// all potential sub tiles, for each dimension.
 		List<Interval>[] allIntervals = new List[queryTile.size()];
 		for (int i=0; i<allIntervals.length; i++) {
-			List<Float> points = new ArrayList<Float>();
 			List<Interval> intervals = new ArrayList<Interval>();
+			List<Integer> points = new ArrayList<Integer>();
 			points.add(queryTile.get(i).min());
 			points.add(queryTile.get(i).max());
 			points.add(placedTile.get(i).min());
 			points.add(placedTile.get(i).max());
 			// Which tiles the points belong to doesn't matter. We just need to make intervals of the adjacent points
 			Collections.sort(points);
-			for (int j=0; j<points.size() - 1; j++) {
-				if (!points.get(j).equals(points.get(j+1))) {
-					intervals.add(new Interval(points.get(j), points.get(j+1)));
+
+			if (points.get(0).equals(points.get(1))) {
+				// First two points are equal
+				if (points.get(2).equals(points.get(3))) {
+					// Last two points are equal. Intervals overlap exactly
+					intervals.add(new Interval(points.get(0), points.get(2)));
+				}
+				else if (points.get(1).equals(points.get(2))) {
+					// First three points are equal, but last one is different. Single point shares edge
+					intervals.add(new Interval(points.get(0)));
+					intervals.add(new Interval(points.get(0) + 1, points.get(3)));
+				}
+				else {
+					// Overlap at first point, other two are unique (partial overlap with shared edge)
+					intervals.add(new Interval(points.get(0), points.get(2)));
+					intervals.add(new Interval(points.get(2) + 1, points.get(3)));
 				}
 			}
+			else if (points.get(1).equals(points.get(2))) {
+				if (points.get(2).equals(points.get(3))) {
+					// Last three points are equal, first is different. Single point shares edge
+					intervals.add(new Interval(points.get(3)));
+					intervals.add(new Interval(points.get(0), points.get(3) - 1));
+				}
+				else {
+					// Mid 2 points are equal. Two distinct tiles share an edge.
+					intervals.add(new Interval(points.get(0), points.get(1)  - 1));
+					intervals.add(new Interval(points.get(1)));
+					intervals.add(new Interval(points.get(1) + 1, points.get(3)));
+				}
+			}
+			else if (points.get(2).equals(points.get(3))) {
+				// Last 2 points are equal, other two are unique (partial overlap with shared edge)
+				intervals.add(new Interval(points.get(0), points.get(1) - 1));
+				intervals.add(new Interval(points.get(1), points.get(3)));
+			}
+			else {
+				// Overlap, zero shared edges
+				intervals.add(new Interval(points.get(0), points.get(1) - 1));
+				intervals.add(new Interval(points.get(1), points.get(2)));
+				intervals.add(new Interval(points.get(2) + 1, points.get(3)));
+			}
+
 			allIntervals[i] = intervals;
 		}
 
 		// Now that we know our potential intervals, we need to enumerate a list of all regions constructable from those intervals
-		List<ClassifiedRegion> allRegions = new ArrayList<ClassifiedRegion>();
 		int[] pos = new int[allIntervals.length];
-		buildAllRegions(allRegions, allIntervals, pos, 0);
 
-		ClassifiedRegion overlappedRegion = null;
-
-		// Update the classification of each sub-region. Possibilities include: 1 parent, both parents, or no parents (in which case
-		// the region is discarded)
-		final Set<ClassifiedRegion> forPlaced = new HashSet<ClassifiedRegion>();
-		final Set<ClassifiedRegion> forRaw = new HashSet<ClassifiedRegion>();
-		for (ClassifiedRegion newRegion : allRegions) {
-			boolean matchedQueried = false;
-			boolean matchedPlaced = false;
-			// If there's an intersection in either case here, it's because the new region
-			// is a subset of one of the two parent tiles. Thus it should inherit all the
-			// index labels of the parent(s).
-			if (queryTile.intersects(newRegion)) {
-				newRegion.addAllClasses(queryTile);
-				matchedQueried = true;
-			}
-			if (placedTile.intersects(newRegion)) {
-				newRegion.addAllClasses(placedTile);
-				matchedPlaced = true;
-			}
-
-			if (!matchedQueried && matchedPlaced) {
-				// This is a sub-tile of a placed tile only. Thus we know it does not intersect
-				// with any other placed tile, so we can add it back to the placed set.
-				forPlaced.add(newRegion);
-			}
-			else if (matchedQueried) {
-				// This is either a) a new overlapping sub-tile or b) a pure queried sub-tile.
-				// In either case, since we short-circuited the query after finding our first overlap,
-				// the new tile needs to be tested against other placed tiles. So add it
-				// back to the raw list.
-				forRaw.add(newRegion);
-
-				// Only one region will be created that is overlapped by both original regions
-				// It can then be used to reduce the area of the other regions
-				if (matchedPlaced) {
-					overlappedRegion = newRegion;
-				}
-
-				// Regions that didn't match either parent are discarded
-			}
-		}
-
-		// TODO this is wrong. We only need to "dislodge" bordering regions when they are on an integer,
-		// as they will affect tile iteration. However if we move tiles too much then we can interfere with
-		// intersection detection. Needs to be the largest value so that Float.equals becomes false, without crossing
-		// any boundaries with other images
-		// Distance to move bordering intervals
-		final float epsilon = 0.001f;
-
-		// Now we need to shrink all the intervals that were not overlapped by both
-		// the query and placed regions. This ensures that there will be no potential
-		// overlap between the new sub-regions (so each position is claimed by a single region)
-		// and that the maximum number of classes will be applied when possible.
-		for (ClassifiedRegion region : allRegions) {
-			if (overlappedRegion != null && region != overlappedRegion) {
-				for (int i=0; i<region.size(); i++) {
-					Interval primeInterval = overlappedRegion.get(i);
-					Interval secondaryInterval = region.get(i);
-					// Test the start point to ensure the two are not the same interval
-					if (!primeInterval.equalsInterval(secondaryInterval)) {
-						if (Float.compare(primeInterval.min(), secondaryInterval.max()) == 0) {
-							// Move the secondary interval's end down 1, so that their border
-							// becomes owned exclusively by the prime interval. Discard invalid regions.
-							if (secondaryInterval.setMax(primeInterval.min() - epsilon)) {
-								forPlaced.remove(region);
-								forRaw.remove(region);
-								break;
-							}
-						}
-						else if (Float.compare(primeInterval.max(), secondaryInterval.min()) == 0) {
-							// Move the secondary interval's start up 1, so that their border
-							// becomes owned exclusively by the prime interval. Discard invalid regions.
-							if (secondaryInterval.setMin(primeInterval.max() + epsilon)) {
-								forPlaced.remove(region);
-								forRaw.remove(region);
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Add our final tiles to the appropriate list
-			for (ClassifiedRegion region : forPlaced) {
-				placedTiles.add(region);
-			}
-			for (ClassifiedRegion region : forRaw) {
-				rawTiles.push(region);
-			}
+		// Build and place all regions
+		buildAllRegions(allIntervals, pos, 0, queryTile, placedTile,
+			placedTiles, rawTiles);
 	}
 
 	/**
@@ -658,13 +598,18 @@ public class Fusion
 	 * combinations from an arbitrary number of {@link Interval} lists. One list
 	 * is required for each dimension of the final regions. The {@code allRegions}
 	 * list is then populated with these combinations.
+	 * @param rawTiles 
+	 * @param placedTiles 
 	 */
-	private static void buildAllRegions(List<ClassifiedRegion> allRegions,
-		List<Interval>[] allIntervals, int[] ivalIndices, int depth)
+	private static void buildAllRegions(List<Interval>[] allIntervals,
+		int[] ivalIndices, int depth, ClassifiedRegion queryTile,
+		ClassifiedRegion placedTile, Set<ClassifiedRegion> placedTiles,
+		Stack<ClassifiedRegion> rawTiles)
 	{
 		if (depth != ivalIndices.length) {
 			for (int i = 0; i < allIntervals[depth].size(); i++) {
-				buildAllRegions(allRegions, allIntervals, ivalIndices, depth + 1);
+				buildAllRegions(allIntervals, ivalIndices, depth + 1, queryTile,
+					placedTile, placedTiles, rawTiles);
 				// increment the index at this position in the intervals array
 				ivalIndices[depth]++;
 			}
@@ -675,11 +620,38 @@ public class Fusion
 		// Build a new region using the current specified indices
 		ClassifiedRegion region = new ClassifiedRegion(allIntervals.length);
 
-		for (int i = 0; i < allIntervals.length; i++) {
-			region.set(new Interval(allIntervals[i].get(ivalIndices[i])), i);
+		boolean inQuery = true;
+		boolean inPlaced = true;
+		boolean validIval = true;
+		for (int i = 0; validIval && i < allIntervals.length; i++)
+		{
+			Interval newIval = new Interval(allIntervals[i].get(ivalIndices[i]));
+			Interval queryIval = queryTile.get(i);
+			Interval placedIval = placedTile.get(i);
+			region.set(newIval, i);
+			// Each sub-region must be fully contained in at least one parent,
+			// otherwise it is invalid.
+			inQuery =
+				inQuery && queryIval.contains(newIval.min()) == 0 &&
+					queryIval.contains(newIval.max()) == 0;
+			inPlaced =
+				inPlaced && placedIval.contains(newIval.min()) == 0 &&
+					placedIval.contains(newIval.max()) == 0;
+			validIval = inQuery || inPlaced;
 		}
 
-		allRegions.add(region);
+		if (validIval) {
+			if (inQuery) {
+				region.addAllClasses(queryTile);
+				rawTiles.push(region);
+			}
+			if (inPlaced) {
+				region.addAllClasses(placedTile);
+				if (!inQuery) {
+					placedTiles.add(region);
+				}
+			}
+		}
 	}
 
 	/**
@@ -873,7 +845,7 @@ public class Fusion
 			// So we are recursively defining a nested iteration order to cover
 			// each position of the region
 			
-			for (int i=(int) Math.ceil(d.min()); i <= Math.floor(d.max()); i++) {
+			for (int i=d.min(); i <= d.max(); i++) {
 				// The position array will be used to set the in and out positions.
 				// It specifies where we are in the output image
 				outPos[depth] = i;

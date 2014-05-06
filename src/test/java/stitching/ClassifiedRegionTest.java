@@ -77,7 +77,7 @@ public class ClassifiedRegionTest {
 		region2 =
 			new ClassifiedRegion(new Interval(256, 260), new Interval(128, 142),
 				new Interval(10, 11));
-		assertFalse(intersectingRegions(region1, region2));
+		assertTrue(intersectingRegions(region1, region2));
 	}
 
 	/**

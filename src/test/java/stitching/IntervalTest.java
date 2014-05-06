@@ -66,14 +66,14 @@ public class IntervalTest {
 		// Interval is to the right of point
 		assertEquals(i.contains(-6), 1);
 
-		// Interval does not contain the start point
-		assertEquals(i.contains(-5), 1);
+		// Interval does contain the start point
+		assertEquals(i.contains(-5), 0);
 
 		// Test a point in the range
 		assertEquals(i.contains(10), 0);
 
-		// Interval does not contain end point
-		assertEquals(i.contains(25), -1);
+		// Interval does contain end point
+		assertEquals(i.contains(25), 0);
 
 		// Interval is to the left of point
 		assertEquals(i.contains(26), -1);
@@ -92,7 +92,7 @@ public class IntervalTest {
 		testIntersect(base, test, false);
 
 		test.setMax(0);
-		testIntersect(base, test, false);
+		testIntersect(base, test, true);
 
 		test = new Interval(-100, 42);
 		testIntersect(base, test, true);
@@ -101,7 +101,7 @@ public class IntervalTest {
 		testIntersect(base, test, true);
 
 		test.setMin(100);
-		testIntersect(base, test, false);
+		testIntersect(base, test, true);
 
 		test.setMin(101);
 		testIntersect(base, test, false);
