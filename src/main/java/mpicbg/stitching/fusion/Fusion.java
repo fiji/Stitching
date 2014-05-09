@@ -18,7 +18,6 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mpicbg.imglib.container.ImageProperties;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
@@ -905,8 +904,7 @@ public class Fusion
 						"channel: " + c + " of " + numChannels + ", slice: " + (slice + 1) + " of " +
 						numSlices + "...");
 				out.reset();
-				final int[] outPos = new int[ numDimensions ];
-				final float[] inPos = new float[ numDimensions ];
+				final float[][] inPos = new float[ numImages ][ numDimensions ];
 				final int[] count = new int[1];
 
 				IJ.showProgress(0);
@@ -914,7 +912,7 @@ public class Fusion
 				// just like fuseBlock but pin to the current slice #
 				for (long tileIndex=0; tileIndex<tiles.size(); tileIndex++) {
 					ClassifiedRegion currentTile = tiles.get((int) tileIndex);
-					writeTile(currentTile, 0, slice, myFusion, transform, offset, in, out, inPos, outPos, count, sliceSize, numSlices);
+					writeTile(currentTile, 0, slice, myFusion, transform, offset, in, out, inPos, count, sliceSize, numSlices);
 				}
 				
 				
@@ -948,7 +946,7 @@ public class Fusion
 		int depth, final int slice, PixelFusion myFusion,
 		ArrayList<InvertibleBoundable> transform, float[] offset,
 		ArrayList<Interpolator<? extends RealType<?>>> in,
-		LocalizableByDimCursor<T> out, float[] inPos, int[] outPos, int[] count,
+		LocalizableByDimCursor<T> out, float[][] inPos, int[] count,
 		final int sliceSize, final int numSlices)
 		throws NoninvertibleModelException
 	{
@@ -956,51 +954,68 @@ public class Fusion
 		// and one for writing to disk. They are slightly different, but
 		// if one is updated the other should be as well!
 		// For 3D datasets, we fix the last dimension to the given slice #
-		if (r.size() > 2 && depth == r.size() - 1) {
-			outPos[depth] = slice;
-			writeTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
-				outPos, count, sliceSize, numSlices );
-			return;
-		}
-		else if (depth < r.size()) {
+		if (depth < out.getNumDimensions()) {
 			Interval d = r.get(depth);
 			// The intervals of the given region define the bounds of iteration
 			// So we are recursively defining a nested iteration order to cover
 			// each position of the region
-			
-			for (int i=d.min(); i <= d.max(); i++) {
+			int start = d.min();
+			int end = d.max();
+
+			out.setPosition(start, depth);
+
+			for (int i=start; i < end; i++) {
 				// The position array will be used to set the in and out positions.
 				// It specifies where we are in the output image
-				outPos[depth] = i;
 				// Recurse to the next depth (dimension)
 				writeTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
-					outPos, count, sliceSize, numSlices );
+					count, sliceSize, numSlices );
+				out.fwd(depth);
 			}
+
+			writeTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
+				count, sliceSize, numSlices );
 			return;
 		}
 
 		// compute fusion for this position
 		myFusion.clear();
-		// These are the image indices associated with this region
-		final int[] indices = r.classArray();
+
+		final int[] images = r.classArray();
 
 		// Loop over the images in this region
-		for (int index = 0; index < indices.length; index++) {
-			int image = indices[index];
-			// Get the positions for the current image
-			for (int d = 0; d < r.size(); d++) {
-				inPos[d] = outPos[d] + offset[d];
+		for (int d = 0; d < out.getNumDimensions(); d++) {
+			final float value = out.getPosition(d) + offset[d];
+
+			for (int index = 0; index < images.length; index++) {
+				// Get the positions for the current image
+				inPos[images[index]][d] = value;
 			}
+		}
+
+		if (r.size() > out.getNumDimensions()) {
+			final int dim = r.size() - 1;
+			final float value = slice + offset[dim];
+			for (int index = 0; index < images.length; index++) {
+				// Get the positions for the current image
+				inPos[images[index]][dim] = value;
+			}
+		}
+
+		// Get the value at each input position
+		for (int index = 0; index < images.length; index++) {
+			final int image = images[index];
 			// Transform to get input position
-			transform.get(image).applyInverseInPlace(inPos);
-			in.get(image).setPosition(inPos);
+			transform.get(image).applyInverseInPlace(inPos[image]);
+			in.get(image).setPosition(inPos[image]);
 			// fuse
-			myFusion.addValue(in.get(image).getType().getRealFloat(), image,
-				inPos);
+			myFusion.addValue(in.get(image).getType().getRealFloat(), image, inPos[image]);
 		}
 
 		// set value
-		out.setPosition(outPos);
+		out.getType().setReal(myFusion.getValue());
+
+		// set value
 		out.getType().setReal(myFusion.getValue());
 
 		// Update progress if necessary
