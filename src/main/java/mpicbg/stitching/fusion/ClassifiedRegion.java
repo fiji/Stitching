@@ -67,6 +67,7 @@ public class ClassifiedRegion {
 	 */
 	public void addClass(final int label) {
 		classes.add(label);
+		ints = null;
 	}
 
 	/**
@@ -74,7 +75,9 @@ public class ClassifiedRegion {
 	 * region.
 	 */
 	public void addAllClasses(final ClassifiedRegion region) {
-		classes.addAll(region.classes);
+		for (int c : region.classes) {
+			addClass(c);
+		}
 	}
 
 	/**
@@ -88,12 +91,12 @@ public class ClassifiedRegion {
 	 * @return A primitive array of all classes associated with this region.
 	 */
 	public int[] classArray() {
-		if (ints == null || ints.length != classes.size()) {
+		if (ints == null) {
 			ints = new int[classes.size()];
-		}
-		int index = 0;
-		for (final Integer i : classes) {
-			ints[index++] = i;
+			int index = 0;
+			for (final Integer i : classes) {
+				ints[index++] = i;
+			}
 		}
 		return ints;
 	}
