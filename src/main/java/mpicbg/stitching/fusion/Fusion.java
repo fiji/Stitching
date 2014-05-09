@@ -18,6 +18,7 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import mpicbg.imglib.container.ImageProperties;
 import mpicbg.imglib.container.array.ArrayContainerFactory;
 import mpicbg.imglib.container.imageplus.ImagePlusContainer;
 import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
@@ -291,158 +292,73 @@ public class Fusion
 
 		IJ.showProgress( 0 );
 
-		
-		// run multithreaded
-		final AtomicInteger ai = new AtomicInteger(0);					
-        final Thread[] threads = SimpleMultiThreading.newThreads();
+		final ImagePlus[] fusionImp = new ImagePlus[1];
 
-        final Vector<Chunk> threadChunks = SimpleMultiThreading.divideIntoChunks( tiles.size(), threads.length );
-        final long positionsPerThread = size / threadChunks.size();
-        
-        for (int ithread = 0; ithread < threads.length; ++ithread)
-            threads[ithread] = new Thread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                	// Thread ID
-                	final int threadNumber = ai.getAndIncrement();
-        
-                	// only the first thread does preview and update the status bar
-                	// this requires no synchronized stuff
-            		long[] lastDraw = new long[1];
-            		ImagePlus fusionImp = null;
+		if (displayFusion) {
+			try {
+				fusionImp[0] =
+					((ImagePlusContainer<?, ?>) output.getContainer())
+						.getImagePlus();
+				fusionImp[0].setTitle("fusing...");
+				fusionImp[0].show();
+			}
+			catch (ImgLibException e) {
+				IJ.log("Output image has no ImageJ type: " + e);
+			}
+		}
 
-                	if ( displayFusion && threadNumber == 0 )
-                	{
-                		try
-            			{
-            				fusionImp = ((ImagePlusContainer<?, ?>) output.getContainer()).getImagePlus();
-            				fusionImp.setTitle( "fusing..." );
-            				fusionImp.show();
-            			}
-            			catch ( ImgLibException e )
-            			{
-            				IJ.log( "Output image has no ImageJ type: " + e );
-            			}                		
-                	}
+    final Thread[] threads = SimpleMultiThreading.newThreads();
+		final TileProcessor<T>[] processors = new TileProcessor[threads.length];
+		final List<ArrayList<Interpolator<? extends RealType<?>>>> interpolators =
+				new ArrayList<ArrayList<Interpolator<? extends RealType<?>>>>();
+		final long positionsPerThread = size / threads.length;
 
-                	// get chunk of pixels to process
-                	final Chunk myChunk = threadChunks.get( threadNumber );
-                	final long startPos = myChunk.getStartPosition();
-                	final long loopSize = myChunk.getLoopSize();
-                	
-            		final ArrayList<Interpolator<? extends RealType<?>>> in = new ArrayList<Interpolator<? extends RealType<?>>>();
-            		
-            		for ( int i = 0; i < numImages; ++i )
-            			in.add( input.get( i ).createInterpolator() );
-            		
-            		final int[] outPos = new int[ output.getNumDimensions() ];
-            		final float[] inPos = new float[ output.getNumDimensions() ];
-            		final int[] count = new int[1];
-            		final PixelFusion myFusion = fusion.copy();
-            		LocalizableByDimCursor<T> out = output.createLocalizableByDimCursor();
-            		
-            		try 
-            		{
-						// Process each tile index assigned to this thread
-						for (long tileIndex = startPos; tileIndex < startPos + loopSize; tileIndex++)
-						{
-							//TODO we're using integer indices... might need to use floats + step values for subpixel accuracy?
-							// Current tile
-							ClassifiedRegion tile = tiles.get((int) tileIndex);
-							// For each position in this tile, fuse its pixels across the appropriate images
-							// NB: recursion is necessary because there are an arbitrary number of dimensions in the tile
-							processTile(tile, 0, myFusion, transform, in, out, inPos, outPos,
-								threadNumber, count, lastDraw, fusionImp);
+		// These fields need to be used within each thread, but modified from
+    // the outer loop. Thus the use of arrays/vectors.
+		final int[] count = new int[1]; // positions processed
+		final ClassifiedRegion[] currentTile = new ClassifiedRegion[1]; // current region being processed
+		final Vector<Chunk> threadChunks = new Vector<Chunk>(); // work divisions for current region
+		final int[] loopDim = new int[1]; // Dimension to split up work on
 
-						}
-            		} 
-            		catch ( NoninvertibleModelException e ) 
-            		{
-            			IJ.log( "Cannot invert model, qutting." );
-            			return;
-            		}
+		// Initialize the TileProcessors. These will be reused by each thread.
+		for (int i = 0; i < threads.length; ++i) {
+			processors[i] =
+				new TileProcessor<T>(i, interpolators, input, threadChunks, numImages,
+					output, fusion, currentTile, transform, fusionImp, count,
+					positionsPerThread, offset, loopDim);
+		}
 
-                    if ( fusionImp != null )
-                    	fusionImp.hide();
-                }
+		// Process each tile
+		for (int tileIndex = 0; tileIndex < tiles.size(); tileIndex++) {
+			currentTile[0] = tiles.get(tileIndex);
 
-				/**
-				 * Helper method to fuse all the positions of a given
-				 * {@link ClassifiedRegion}. Since we do not know the dimensionality of
-				 * the region, we recurse over each position of each dimension. The tail
-				 * step of each descent iterates over all the images (classes) of the
-				 * given region, fusing the pixel values at the current position of each
-				 * associated image. This final value is then set in the output.
-				 */
-				private void processTile(ClassifiedRegion r, int depth, PixelFusion myFusion,
-					ArrayList<InvertibleBoundable> transform,
-					ArrayList<Interpolator<? extends RealType<?>>> in,
-					LocalizableByDimCursor<T> out, float[] inPos, int[] outPos,
-					int threadNumber, int[] count, long[] lastDraw,
-					ImagePlus fusionImp) throws NoninvertibleModelException
-				{
-					//NB: there are two process tile methods, one for in-memory fusion
-					// and one for writing to disk. They are slightly different, but
-					// if one is updated the other should be as well!
-					if (depth < r.size()) {
-						Interval d = r.get(depth);
-						// The intervals of the given region define the bounds of iteration
-						// So we are recursively defining a nested iteration order to cover
-						// each position of the region
-						
-						for (int i=d.min(); i<=d.max(); i++) {
-							// The position array will be used to set the in and out positions.
-							// It specifies where we are in the output image
-							outPos[depth] = i;
-							// Recurse to the next depth (dimension)
-							processTile(r, depth+1, myFusion, transform, in, out, inPos,
-								outPos, threadNumber, count, lastDraw, fusionImp);
-						}
-						return;
-					}
+			// Initialize each thread for this tile
+			for (int threadID = 0; threadID < threads.length; ++threadID) {
+				threads[threadID] = new Thread(processors[threadID]);
+			}
 
-					// compute fusion for this position
-					myFusion.clear();
-					// These are the image indices associated with this region
-					final int[] indices = r.classArray();
-
-					// Loop over the images in this region
-					for (int index=0; index<indices.length; index++) {
-						final int image = indices[index];
-						// Get the positions for the current image
-						for (int d=0; d<r.size(); d++) {
-							inPos[d] = outPos[d] + offset[d];
-						}
-						// Transform to get input position
-						transform.get(image).applyInverseInPlace(inPos);
-						in.get(image).setPosition(inPos);
-						// fuse
-						myFusion.addValue(in.get(image).getType().getRealFloat(),
-							image, inPos);
-					}
-
-					// set value
-					out.setPosition(outPos);
-					out.getType().setReal(myFusion.getValue());
-					count[0]++;
-
-					// Display progress if on thread 0
-  				if ( threadNumber == 0 )
-  				{
-  					// just every 10000'th pixel
-  					if ( count[0] % 10000 == 0 )
-  					{
-          				lastDraw[0] = drawFusion( lastDraw[0], fusionImp );
-  						IJ.showProgress( (double)count[0] / (double)positionsPerThread );
-  					}
-  				}
+			// Decide which dimension to use to split up work for each thread.
+			// We want to pick the largest dimension as this gives us the best chance
+			// of evenly dividing work when using multiple threads
+			int dimensionSize = -1;
+			for (int d=0; d<currentTile[0].size(); d++) {
+				int tmpSize = currentTile[0].get(d).max() - currentTile[0].get(d).min() + 1;
+				if (tmpSize > dimensionSize) {
+					dimensionSize = tmpSize;
+					loopDim[0] = d;
 				}
+			}
 
-			});
-        
-        SimpleMultiThreading.startAndJoin( threads );        
+			// Specify the loop ranges for each thread
+			threadChunks.clear();
+			threadChunks.addAll(SimpleMultiThreading.divideIntoChunks(dimensionSize,
+				threads.length));
+
+			// Start the work for this tile
+			SimpleMultiThreading.startAndJoin(threads);
+		}
+
+		if (fusionImp[0] != null) fusionImp[0].hide();
 	}
 
 	/**
@@ -593,6 +509,213 @@ public class Fusion
 			placedTiles, rawTiles);
 	}
 
+	/**
+	 * Helper class to perform tile processing (iteration through a region, fusion
+	 * of input pixels, and population of output pixels). Array fields allow one
+	 * to be created per thread, then have values modified externally.
+	 */
+	private static class TileProcessor<T extends RealType<T>> implements Runnable {
+
+			private int loopOffset;
+			private int loopSize;
+			private final int[] loopDim;
+
+			private Vector<Chunk> threadChunks;
+			private final int threadNumber; // thread id
+			private ClassifiedRegion[] currentTile;
+			private ArrayList<InvertibleBoundable> transform;
+			private ImagePlus[] fusionImp;
+			private int[] count;
+			private double positionsPerThread;
+			private float[] offset;
+			private long[] lastDraw = new long[1];
+			private final ArrayList<Interpolator<? extends RealType<?>>> in;
+			private final float[][] inPos;
+			private final PixelFusion myFusion;
+			private final LocalizableByDimCursor<T> out;
+
+		public TileProcessor(int threadNumber,
+			List<ArrayList<Interpolator<? extends RealType<?>>>> interpolators,
+			ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input,
+			Vector<Chunk> threadChunks, int numImages, Image<T> output,
+			PixelFusion fusion, ClassifiedRegion[] currentTile,
+			ArrayList<InvertibleBoundable> transform, ImagePlus[] fusionImp,
+			int[] count, double positionsPerThread, float[] offset, int[] loopDim)
+		{
+			this.threadNumber = threadNumber;
+			this.threadChunks = threadChunks;
+			this.currentTile = currentTile;
+			this.transform = transform;
+			this.fusionImp = fusionImp;
+			this.count = count;
+			this.positionsPerThread = positionsPerThread;
+			this.offset = offset;
+			this.loopDim = loopDim;
+
+			in = getThreadInterpolators(interpolators, threadNumber, input, numImages);
+			inPos = new float[numImages][output.getNumDimensions()];
+			myFusion = fusion.copy();
+			out = output.createLocalizableByDimCursor();
+		}
+
+			@Override
+			public void run() {
+
+				// get chunk of pixels to process
+				final Chunk myChunk = threadChunks.get(threadNumber);
+				loopOffset = (int) myChunk.getStartPosition();
+				loopSize = (int) myChunk.getLoopSize();
+
+				try {
+					// Process each tile index assigned to this thread
+					// For each position in this tile, fuse its pixels across the
+					// appropriate images
+					// NB: recursion is necessary because there are an arbitrary
+					// number of dimensions in the tile
+					processTile(currentTile[0], 0, myFusion, transform, in, out, inPos,
+						threadNumber, count, lastDraw, fusionImp[0]);
+				}
+				catch (NoninvertibleModelException e) {
+					IJ.log("Cannot invert model, qutting.");
+					return;
+				}
+
+			}
+
+			/**
+		 * Helper method to lazily initialize the input image interpolators,
+		 * creating one list per thread.
+		 */
+			private
+				ArrayList<Interpolator<? extends RealType<?>>>
+				getThreadInterpolators(
+					List<ArrayList<Interpolator<? extends RealType<?>>>> interpolators,
+					int threadNumber,
+					ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input,
+					int numImages)
+			{
+				ArrayList<Interpolator<? extends RealType<?>>> in = null;
+				if (threadNumber >= interpolators.size()) {
+					in = new ArrayList<Interpolator<? extends RealType<?>>>();
+					for (int i = 0; i < numImages; ++i) {
+						in.add(input.get(i).createInterpolator());
+					}
+					interpolators.add(in);
+				}
+				else {
+					in = interpolators.get(threadNumber);
+				}
+				return in;
+			}
+
+			/**
+			 * Intermediate helper method to delegate to
+			 * {@link #processTile(ClassifiedRegion, int[], int, PixelFusion, ArrayList, ArrayList, LocalizableByDimCursor, float[], int[], int, int[], long[], ImagePlus)}
+			 */
+		private void processTile(ClassifiedRegion r, int depth,
+			PixelFusion myFusion, ArrayList<InvertibleBoundable> transform,
+			ArrayList<Interpolator<? extends RealType<?>>> in,
+			LocalizableByDimCursor<T> out, float[][] inPos,
+			int threadNumber, int[] count, long[] lastDraw, ImagePlus fusionImp)
+			throws NoninvertibleModelException
+		{
+			processTile(r, r.classArray(), depth, myFusion, transform, in, out,
+				inPos, threadNumber, count, lastDraw, fusionImp);
+		}
+
+		/**
+		 * Helper method to fuse all the positions of a given
+		 * {@link ClassifiedRegion}. Since we do not know the dimensionality of the
+		 * region, we recurse over each position of each dimension. The tail step of
+		 * each descent iterates over all the images (classes) of the given region,
+		 * fusing the pixel values at the current position of each associated image.
+		 * This final value is then set in the output.
+		 */
+		private void processTile(ClassifiedRegion r, int[] images, int depth,
+			PixelFusion myFusion, ArrayList<InvertibleBoundable> transform,
+			ArrayList<Interpolator<? extends RealType<?>>> in,
+			LocalizableByDimCursor<T> out, float[][] inPos,
+			int threadNumber, int[] count, long[] lastDraw, ImagePlus fusionImp)
+			throws NoninvertibleModelException
+		{
+			// NB: there are two process tile methods, one for in-memory fusion
+			// and one for writing to disk. They are slightly different, but
+			// if one is updated the other should be as well!
+			if (depth < r.size()) {
+				Interval d = r.get(depth);
+
+				// The intervals of the given region define the bounds of
+				// iteration
+				// So we are recursively defining a nested iteration order to
+				// cover each position of the region
+				int start = d.min();
+				int end = d.max();
+
+				// If this is the dimension being split up for multi-threading we
+				// need to update the iteration bounds.
+				if (depth == loopDim[0]) {
+					start += loopOffset;
+					end = start + loopSize - 1;
+				}
+
+				out.setPosition(start, depth);
+
+				// NB: can't make this loop inclusive since we don't want the out.fwd
+				// call to go out of bounds, and we can't setPosition (-1) or we
+				// get AIOOB exceptions. So we loop 1 time less than desired, then
+				// do a straight read after the loop.
+				for (int i = start; i < end; i++) {
+					// Recurse to the next depth (dimension)
+					processTile(r, images, depth + 1, myFusion, transform, in, out,
+						inPos, threadNumber, count, lastDraw, fusionImp);
+					// move forward
+					out.fwd(depth);
+				}
+
+				// Need to read the final position.
+				processTile(r, images, depth + 1, myFusion, transform, in, out,
+					inPos, threadNumber, count, lastDraw, fusionImp);
+				return;
+			}
+
+			// compute fusion for this position
+			myFusion.clear();
+
+			// Loop over the images in this region
+			for (int d = 0; d < r.size(); d++) {
+				final float value = out.getPosition(d) + offset[d];
+
+				for (int index = 0; index < images.length; index++) {
+					// Get the positions for the current image
+					inPos[images[index]][d] = value;
+				}
+			}
+
+			// Get the value at each input position
+			for (int index = 0; index < images.length; index++) {
+				final int image = images[index];
+				// Transform to get input position
+				transform.get(image).applyInverseInPlace(inPos[image]);
+				in.get(image).setPosition(inPos[image]);
+				// fuse
+				myFusion.addValue(in.get(image).getType().getRealFloat(), image, inPos[image]);
+			}
+
+			// set value
+			out.getType().setReal(myFusion.getValue());
+
+			// Display progress if on thread 0
+			if (threadNumber == 0) {
+				count[0]++;
+				// just every 10000'th pixel
+				if (count[0] % 10000 == 0) {
+					lastDraw[0] = drawFusion(lastDraw[0], fusionImp);
+					IJ.showProgress(count[0] / positionsPerThread);
+				}
+			}
+		}
+	}
+	
 	/**
 	 * Recursive method to construct all possible {@link ClassifiedRegion}
 	 * combinations from an arbitrary number of {@link Interval} lists. One list
@@ -791,7 +914,7 @@ public class Fusion
 				// just like fuseBlock but pin to the current slice #
 				for (long tileIndex=0; tileIndex<tiles.size(); tileIndex++) {
 					ClassifiedRegion currentTile = tiles.get((int) tileIndex);
-					processTile(currentTile, 0, slice, myFusion, transform, offset, in, out, inPos, outPos, count, sliceSize, numSlices);
+					writeTile(currentTile, 0, slice, myFusion, transform, offset, in, out, inPos, outPos, count, sliceSize, numSlices);
 				}
 				
 				
@@ -821,7 +944,7 @@ public class Fusion
 	 * given region, fusing the pixel values at the current position of each
 	 * associated image. This final value is then set in the output.
 	 */
-	private static <T extends RealType<T>> void processTile(ClassifiedRegion r,
+	private static <T extends RealType<T>> void writeTile(ClassifiedRegion r,
 		int depth, final int slice, PixelFusion myFusion,
 		ArrayList<InvertibleBoundable> transform, float[] offset,
 		ArrayList<Interpolator<? extends RealType<?>>> in,
@@ -835,7 +958,7 @@ public class Fusion
 		// For 3D datasets, we fix the last dimension to the given slice #
 		if (r.size() > 2 && depth == r.size() - 1) {
 			outPos[depth] = slice;
-			processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
+			writeTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
 				outPos, count, sliceSize, numSlices );
 			return;
 		}
@@ -850,7 +973,7 @@ public class Fusion
 				// It specifies where we are in the output image
 				outPos[depth] = i;
 				// Recurse to the next depth (dimension)
-				processTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
+				writeTile(r, depth+1, slice, myFusion, transform, offset, in, out, inPos,
 					outPos, count, sliceSize, numSlices );
 			}
 			return;
