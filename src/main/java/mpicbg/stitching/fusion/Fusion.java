@@ -135,6 +135,10 @@ public class Fusion
 					else
 						fusion = new MinPixelFusion();	
 				}
+				else if ( fusionType == 5 )
+				{
+					fusion = new OverlapFusion();
+				}
 				
 				// extract the complete blockdata
 				if ( subpixelResolution )
