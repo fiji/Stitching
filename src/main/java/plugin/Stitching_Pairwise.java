@@ -439,12 +439,12 @@ public class Stitching_Pairwise implements PlugIn
 		images.add( imp1 );
 		images.add( imp2 );
 		
-		if ( params.fusionMethod < 5 )
+		if ( params.fusionMethod < 6 )
 		{
 			ImagePlus imp = Fusion.fuse( targetType, images, models, params.dimensionality, params.subpixelAccuracy, params.fusionMethod, null, false, params.ignoreZeroValuesFusion, params.displayFusion );
 			return imp;
 		}
-		else if ( params.fusionMethod == 5 ) // overlay
+		else if ( params.fusionMethod == 6 ) // overlay
 		{
 			// images are always the same, we just trigger different timepoints
 			final InterpolatorFactory< FloatType > factory;
