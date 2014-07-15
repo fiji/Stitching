@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>fiji-lib</artifactId>
-			<version>${fiji.version}</version>
+			<version>${fiji-lib.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.imagej</groupId>
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>
-			<version>${fiji.version}</version>
+			<version>${legacy-imglib1.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>mpicbg</groupId>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>Fiji_Plugins</artifactId>
-			<version>${fiji.version}</version>
+			<version>${Fiji_Plugins.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
