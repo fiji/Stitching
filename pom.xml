@@ -52,7 +52,7 @@
 			<artifactId>Fiji_Plugins</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
+			<groupId>ome</groupId>
 			<artifactId>bio-formats_plugins</artifactId>
 			<!-- NB: Bio-Formats 5.0.0 erroneously depends on the obsolete
 			         gov.nih.imagej:imagej artifact, which causes a name
@@ -65,19 +65,19 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
+			<groupId>ome</groupId>
 			<artifactId>formats-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
+			<groupId>ome</groupId>
 			<artifactId>formats-bsd</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
+			<groupId>ome</groupId>
 			<artifactId>formats-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
+			<groupId>ome</groupId>
 			<artifactId>ome-xml</artifactId>
 		</dependency>
 	</dependencies>
