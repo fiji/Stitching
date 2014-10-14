@@ -8,7 +8,7 @@ public class BlendingPixelFusion implements PixelFusion
 	
 	final int numDimensions;
 	final int numImages;
-	final int[][] dimensions;
+	final long[][] dimensions;
 	final float percentScaling;
 	final float[] border;
 	
@@ -36,13 +36,13 @@ public class BlendingPixelFusion implements PixelFusion
 		this.images = images;
 		this.percentScaling = fractionBlended;
 		
-		this.numDimensions = images.get( 0 ).getImage().getNumDimensions();
+		this.numDimensions = images.get( 0 ).getImg().numDimensions();
 		this.numImages = images.size();
-		this.dimensions = new int[ numImages ][ numDimensions ];
+		this.dimensions = new long[ numImages ][ numDimensions ];
 		
 		for ( int i = 0; i < numImages; ++i )
 			for ( int d = 0; d < numDimensions; ++d )
-				dimensions[ i ][ d ] = images.get( i ).getImage().getDimension( d ) - 1; 
+				dimensions[ i ][ d ] = images.get( i ).getImg().dimension( d ) - 1; 
 
 		this.border = new float[ numDimensions ];
 
@@ -85,7 +85,7 @@ public class BlendingPixelFusion implements PixelFusion
 	 * @param percentScaling
 	 * @return
 	 */
-	final public static double computeWeight( final float[] location, final int[] dimensions, final float[] border, final float percentScaling )
+	final public static double computeWeight( final float[] location, final long[] dimensions, final float[] border, final float percentScaling )
 	{		
 		// compute multiplicative distance to the respective borders [0...1]
 		double minDistance = 1;
