@@ -14,16 +14,18 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mpicbg.imglib.interpolation.InterpolatorFactory;
-import mpicbg.imglib.interpolation.linear.LinearInterpolatorFactory;
-import mpicbg.imglib.interpolation.nearestneighbor.NearestNeighborInterpolatorFactory;
-import mpicbg.imglib.multithreading.SimpleMultiThreading;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyValueFactory;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.integer.UnsignedByteType;
-import mpicbg.imglib.type.numeric.integer.UnsignedShortType;
-import mpicbg.imglib.type.numeric.real.FloatType;
-import mpicbg.imglib.util.Util;
+import net.imglib2.RandomAccessible;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
+import net.imglib2.multithreading.SimpleMultiThreading;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imglib2.type.numeric.integer.UnsignedShortType;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Util;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.Model;
 import mpicbg.models.TranslationModel2D;
@@ -433,7 +435,7 @@ public class Stitching_Pairwise implements PlugIn
 		IJ.log( "Finished ... (" + (System.currentTimeMillis() - start) + " ms)");
 	}
 	
-	protected static < T extends RealType< T > > ImagePlus fuse( final T targetType, final ImagePlus imp1, final ImagePlus imp2, final ArrayList<InvertibleBoundable> models, final StitchingParameters params )
+	protected static < T extends RealType< T > & NativeType< T > > ImagePlus fuse( final T targetType, final ImagePlus imp1, final ImagePlus imp2, final ArrayList<InvertibleBoundable> models, final StitchingParameters params )
 	{
 		final ArrayList<ImagePlus> images = new ArrayList< ImagePlus >();
 		images.add( imp1 );
@@ -447,12 +449,12 @@ public class Stitching_Pairwise implements PlugIn
 		else if ( params.fusionMethod == 6 ) // overlay
 		{
 			// images are always the same, we just trigger different timepoints
-			final InterpolatorFactory< FloatType > factory;
+			final InterpolatorFactory< FloatType, RandomAccessible< FloatType > > factory;
 			
 			if ( params.subpixelAccuracy )
-				factory  = new LinearInterpolatorFactory<FloatType>( new OutOfBoundsStrategyValueFactory<FloatType>() );
+				factory  = new NLinearInterpolatorFactory<FloatType>();
 			else
-				factory  = new NearestNeighborInterpolatorFactory<FloatType>( new OutOfBoundsStrategyValueFactory<FloatType>() );
+				factory  = new NearestNeighborInterpolatorFactory< FloatType >();
 		
 			// fuses the first timepoint but estimates the boundaries for all timepoints as it gets all models
 			final CompositeImage timepoint0 = OverlayFusion.createOverlay( targetType, images, models, params.dimensionality, 1, factory );
