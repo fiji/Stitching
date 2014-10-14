@@ -21,11 +21,14 @@ public class ImageInterpolation< T extends RealType< T > >
 	final RealRandomAccessible< T > interpolated;
 	final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory;
 	
-	public ImageInterpolation( final Img< T > image, final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory )
+	public ImageInterpolation( final Img< T > image, final InterpolatorFactory< T, RandomAccessible< T > > interpolatorFactory, final boolean mirror )
 	{
 		this.image = image;
 		this.interpolatorFactory = interpolatorFactory;
-		this.interpolated = Views.interpolate( Views.extendZero( image ), interpolatorFactory );
+		if ( mirror )
+			this.interpolated = Views.interpolate( Views.extendMirrorSingle( image ), interpolatorFactory );
+		else
+			this.interpolated = Views.interpolate( Views.extendZero( image ), interpolatorFactory );
 	}
 	
 	public Img< T > getImg() { return image; }
