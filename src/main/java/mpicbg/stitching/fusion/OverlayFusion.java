@@ -11,21 +11,24 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import mpicbg.imglib.container.imageplus.ImagePlusContainer;
-import mpicbg.imglib.container.imageplus.ImagePlusContainerFactory;
-import mpicbg.imglib.cursor.LocalizableCursor;
-import mpicbg.imglib.exception.ImgLibException;
-import mpicbg.imglib.image.Image;
-import mpicbg.imglib.image.ImageFactory;
-import mpicbg.imglib.image.display.imagej.ImageJFunctions;
-import mpicbg.imglib.interpolation.Interpolator;
-import mpicbg.imglib.interpolation.InterpolatorFactory;
-import mpicbg.imglib.interpolation.linear.LinearInterpolatorFactory;
-import mpicbg.imglib.multithreading.Chunk;
-import mpicbg.imglib.multithreading.SimpleMultiThreading;
-import mpicbg.imglib.outofbounds.OutOfBoundsStrategyValueFactory;
-import mpicbg.imglib.type.numeric.RealType;
-import mpicbg.imglib.type.numeric.real.FloatType;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessible;
+import net.imglib2.RealRandomAccess;
+import net.imglib2.RealRandomAccessible;
+import net.imglib2.exception.ImgLibException;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.img.imageplus.ImagePlusImg;
+import net.imglib2.img.imageplus.ImagePlusImgFactory;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.multithreading.Chunk;
+import net.imglib2.multithreading.SimpleMultiThreading;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.InvertibleCoordinateTransform;
 import mpicbg.models.NoninvertibleModelException;
@@ -33,7 +36,7 @@ import stitching.utils.CompositeImageFixer;
 
 public class OverlayFusion 
 {
-	protected static <T extends RealType<T>> CompositeImage createOverlay( final T targetType, final ImagePlus imp1, final ImagePlus imp2, final InvertibleBoundable finalModel1, final InvertibleBoundable finalModel2, final int dimensionality ) 
+	protected static < T extends RealType< T > & NativeType< T > > CompositeImage createOverlay( final T targetType, final ImagePlus imp1, final ImagePlus imp2, final InvertibleBoundable finalModel1, final InvertibleBoundable finalModel2, final int dimensionality ) 
 	{
 		final ArrayList< ImagePlus > images = new ArrayList<ImagePlus>();
 		images.add( imp1 );
@@ -43,10 +46,10 @@ public class OverlayFusion
 		models.add( finalModel1 );
 		models.add( finalModel2 );
 		
-		return createOverlay( targetType, images, models, dimensionality, 1, new LinearInterpolatorFactory<FloatType>( new OutOfBoundsStrategyValueFactory<FloatType>() ) );
+		return createOverlay( targetType, images, models, dimensionality, 1, new NLinearInterpolatorFactory<FloatType>() );
 	}
 	
-	public static <T extends RealType<T>> ImagePlus createReRegisteredSeries( final T targetType, final ImagePlus imp, final ArrayList<InvertibleBoundable> models, final int dimensionality )
+	public static < T extends RealType< T > & NativeType< T > > ImagePlus createReRegisteredSeries( final T targetType, final ImagePlus imp, final ArrayList<InvertibleBoundable> models, final int dimensionality )
 	{
 		final int numImages = imp.getNFrames();
 
@@ -69,7 +72,7 @@ public class OverlayFusion
 		Fusion.estimateBounds( offset, size, imgSizes, models, dimensionality );
 				
 		// for output
-		final ImageFactory<T> f = new ImageFactory<T>( targetType, new ImagePlusContainerFactory() );
+		final ImgFactory< T > f = new ImagePlusImgFactory< T >();
 		// the composite
 		final ImageStack stack = new ImageStack( size[ 0 ], size[ 1 ] );
 
@@ -77,12 +80,15 @@ public class OverlayFusion
 		{
 			for ( int c = 1; c <= imp.getNChannels(); ++c )
 			{
-				final Image<T> out = f.createImage( size );
-				fuseChannel( out, ImageJFunctions.convertFloat( Hyperstack_rearranger.getImageChunk( imp, c, t ) ), offset, models.get( t - 1 ), new LinearInterpolatorFactory<FloatType>( new OutOfBoundsStrategyValueFactory<FloatType>() ) );
-				try 
+				final Img<T> out = f.create( size, targetType );
+				final Img< FloatType > in = ImageJFunctions.convertFloat( Hyperstack_rearranger.getImageChunk( imp, c, t ) );
+
+				fuseChannel( out, Views.interpolate( Views.extendZero( in ), new NLinearInterpolatorFactory< FloatType >() ), offset, models.get( t - 1 ) );
+
+				try
 				{
-					final ImagePlus outImp = ((ImagePlusContainer<?,?>)out.getContainer()).getImagePlus();
-					for ( int z = 1; z <= out.getDimension( 2 ); ++z )
+					final ImagePlus outImp = ((ImagePlusImg<?,?>)out).getImagePlus();
+					for ( int z = 1; z <= out.dimension( 2 ); ++z )
 						stack.addSlice( imp.getTitle(), outImp.getStack().getProcessor( z ) );
 				} 
 				catch (ImgLibException e) 
@@ -112,7 +118,13 @@ public class OverlayFusion
 		return result;
 	}
 	
-	public static <T extends RealType<T>> CompositeImage createOverlay( final T targetType, final ArrayList<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality, final int timepoint, final InterpolatorFactory< FloatType > factory )
+	public static <T extends RealType<T> & NativeType<T>> CompositeImage createOverlay(
+			final T targetType,
+			final ArrayList<ImagePlus> images,
+			final ArrayList<InvertibleBoundable> models,
+			final int dimensionality,
+			final int timepoint,
+			final InterpolatorFactory< FloatType, RandomAccessible< FloatType > > factory )
 	{	
 		final int numImages = images.size();
 		
@@ -125,7 +137,7 @@ public class OverlayFusion
 		Fusion.estimateBounds( offset, size, images, models, dimensionality );
 		
 		// for output
-		final ImageFactory<T> f = new ImageFactory<T>( targetType, new ImagePlusContainerFactory() );
+		final ImgFactory<T> f = new ImagePlusImgFactory< T >();
 		// the composite
 		final ImageStack stack = new ImageStack( size[ 0 ], size[ 1 ] );
 		
@@ -139,12 +151,14 @@ public class OverlayFusion
 			// loop over all channels
 			for ( int c = 1; c <= imp.getNChannels(); ++c )
 			{
-				final Image<T> out = f.createImage( size );
-				fuseChannel( out, ImageJFunctions.convertFloat( Hyperstack_rearranger.getImageChunk( imp, c, timepoint ) ), offset, models.get( i + (timepoint - 1) * numImages ), factory );
+				final Img<T> out = f.create( size, targetType );
+				final Img< FloatType > in = ImageJFunctions.convertFloat( Hyperstack_rearranger.getImageChunk( imp, c, timepoint ) );
+				
+				fuseChannel( out, Views.interpolate( Views.extendZero( in ), factory), offset, models.get( i + (timepoint - 1) * numImages ) );
 				try 
 				{
-					final ImagePlus outImp = ((ImagePlusContainer<?,?>)out.getContainer()).getImagePlus();
-					for ( int z = 1; z <= out.getDimension( 2 ); ++z )
+					final ImagePlus outImp = ((ImagePlusImg<?,?>)out).getImagePlus();
+					for ( int z = 1; z <= out.dimension( 2 ); ++z )
 						stack.addSlice( imp.getTitle(), outImp.getStack().getProcessor( z ) );
 				} 
 				catch (ImgLibException e) 
@@ -181,13 +195,13 @@ public class OverlayFusion
 	 * @param input - FloatType, because of Interpolation that needs to be done
 	 * @param transform - the transformation
 	 */
-	protected static <T extends RealType<T>> void fuseChannel( final Image<T> output, final Image<FloatType> input, final float[] offset, final InvertibleCoordinateTransform transform, final InterpolatorFactory< FloatType > factory )
+	protected static <T extends RealType<T>> void fuseChannel( final Img<T> output, final RealRandomAccessible<FloatType> input, final float[] offset, final InvertibleCoordinateTransform transform )
 	{
-		final int dims = output.getNumDimensions();
-		long imageSize = output.getDimension( 0 );
+		final int dims = output.numDimensions();
+		long imageSize = output.dimension( 0 );
 		
-		for ( int d = 1; d < output.getNumDimensions(); ++d )
-			imageSize *= output.getDimension( d );
+		for ( int d = 1; d < output.numDimensions(); ++d )
+			imageSize *= output.dimension( d );
 
 		// run multithreaded
 		final AtomicInteger ai = new AtomicInteger(0);					
@@ -209,15 +223,15 @@ public class OverlayFusion
                 	final long startPos = myChunk.getStartPosition();
                 	final long loopSize = myChunk.getLoopSize();
                 	
-            		final LocalizableCursor<T> out = output.createLocalizableCursor();
-            		final Interpolator<FloatType> in = input.createInterpolator( factory );
+            		final Cursor<T> out = output.localizingCursor();
+            		final RealRandomAccess<FloatType> in = input.realRandomAccess();
             		
-            		final float[] tmp = new float[ input.getNumDimensions() ];
+            		final float[] tmp = new float[ input.numDimensions() ];
             		
             		try 
             		{
                 		// move to the starting position of the current thread
-            			out.fwd( startPos );
+            			out.jumpFwd( startPos );
             			
                 		// do as many pixels as wanted by this thread
                         for ( long j = 0; j < loopSize; ++j )
@@ -225,12 +239,12 @@ public class OverlayFusion
             				out.fwd();
             				
             				for ( int d = 0; d < dims; ++d )
-            					tmp[ d ] = out.getPosition( d ) + offset[ d ];
+            					tmp[ d ] = out.getFloatPosition( d ) + offset[ d ];
             				
             				transform.applyInverseInPlace( tmp );
             	
-            				in.setPosition( tmp );			
-            				out.getType().setReal( in.getType().get() );
+            				in.setPosition( tmp );
+            				out.get().setReal( in.get().get() );
             			}
             		} 
             		catch (NoninvertibleModelException e) 
