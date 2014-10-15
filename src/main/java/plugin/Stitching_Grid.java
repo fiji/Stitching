@@ -78,7 +78,7 @@ public class Stitching_Grid implements PlugIn
 	public static boolean defaultInvertX = false;
 	public static boolean defaultInvertY = false;
 	public static boolean defaultIgnoreZStage = false;
-	public static boolean defaultSubpixelAccuracy = true;
+	public static boolean defaultSubpixelAccuracy = false;
 	public static boolean defaultDownSample = false;
 	public static boolean defaultDisplayFusion = false;
 	public static boolean writeOnlyTileConfStatic = false;

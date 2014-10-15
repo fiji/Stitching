@@ -55,7 +55,7 @@ public class Stitching_Pairwise implements PlugIn
 	public static int defaultFusionMethod = 0;
 	public static boolean defaultIgnoreZeroValues = false;
 	public static boolean defaultComputeOverlap = true;
-	public static boolean defaultSubpixelAccuracy = true;
+	public static boolean defaultSubpixelAccuracy = false;
 	public static int defaultCheckPeaks = 5;
 	public static double defaultxOffset = 0, defaultyOffset = 0, defaultzOffset = 0;
 
