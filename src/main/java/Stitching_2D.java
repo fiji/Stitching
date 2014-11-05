@@ -8,18 +8,6 @@ import static stitching.CommonFunctions.methodList;
 import static stitching.CommonFunctions.quicksort;
 import static stitching.CommonFunctions.startTask;
 import static stitching.CommonFunctions.zeroPadImages;
-
-import java.awt.Choice;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import stitching.CrossCorrelationResult2D;
-import stitching.FloatArray2D;
-import stitching.ImageInformation;
-import stitching.Point2D;
 /**
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License 2
@@ -45,10 +33,20 @@ import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.MultiLineLabel;
 import ij.gui.Roi;
-
 import ij.plugin.PlugIn;
-
 import ij.process.ImageProcessor;
+
+import java.awt.Choice;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import stitching.CrossCorrelationResult2D;
+import stitching.FloatArray2D;
+import stitching.ImageInformation;
+import stitching.Point2D;
 
 public class Stitching_2D implements PlugIn
 {

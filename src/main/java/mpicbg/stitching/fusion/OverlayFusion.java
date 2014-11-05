@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import mpicbg.models.InvertibleBoundable;
+import mpicbg.models.InvertibleCoordinateTransform;
+import mpicbg.models.NoninvertibleModelException;
 import net.imglib2.Cursor;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RealRandomAccess;
@@ -29,9 +32,6 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import mpicbg.models.InvertibleBoundable;
-import mpicbg.models.InvertibleCoordinateTransform;
-import mpicbg.models.NoninvertibleModelException;
 import stitching.utils.CompositeImageFixer;
 
 public class OverlayFusion 
