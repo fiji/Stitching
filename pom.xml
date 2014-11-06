@@ -18,10 +18,29 @@
 	<name>plugins/Stitching_.jar</name>
 	<description></description>
 
+	<scm>
+		<connection>scm:git:git://github.com/fiji/Stitching</connection>
+		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
+		<tag>HEAD</tag>
+		<url>https://github.com/fiji/Stitching</url>
+	</scm>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://jenkins.imagej.net/job/Stitching/</url>
+	</ciManagement>
+
 	<properties>
 		<!-- Prevent the plugin from being copied to ./plugins/ by default -->
 		<imagej.app.directory>path/to/Fiji.app/</imagej.app.directory>
 	</properties>
+
+	<repositories>
+		<!-- NB: for project parent -->
+		<repository>
+			<id>imagej.public</id>
+			<url>http://maven.imagej.net/content/groups/public</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<!-- FIXME: SNAPSHOT dependencies -->
@@ -85,25 +104,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/Stitching/</url>
-	</ciManagement>
-
-	<scm>
-		<connection>scm:git:git://github.com/fiji/Stitching</connection>
-		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
-		<tag>HEAD</tag>
-		<url>https://github.com/fiji/Stitching</url>
-	</scm>
-
-	<repositories>
-		<!-- NB: for project parent -->
-		<repository>
-			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
-		</repository>
-	</repositories>
 
 </project>
