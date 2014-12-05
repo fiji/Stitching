@@ -73,6 +73,7 @@ public class Stitching_Grid implements PlugIn
 	
 	public static String defaultFileNames = "tile_{ii}.tif";
 	public static String defaultTileConfiguration = "TileConfiguration.txt";
+	public static String defaultPathListFile = "TilePath.txt";
 	public static boolean defaultAddTilesAsRois = false;
 	public static boolean defaultComputeOverlap = true;
 	public static boolean defaultInvertX = false;
@@ -157,9 +158,12 @@ public class Stitching_Grid implements PlugIn
 		else
 		{
 			gd.addDirectoryField( "Directory", defaultDirectory, 50 );
+
+			if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 1 )
+				gd.addFileField( "Path_list_textfile_name", defaultPathListFile, 50);
 		
 			// Modified by John Lapage: copying the general setup for Unknown Positions option 
-			if ( gridType == 5 || gridType == 7)
+			if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 0 )
 				gd.addCheckbox( "Confirm_files", defaultConfirmFiles );
 			
 			if ( gridType < 5 )			
@@ -255,7 +259,7 @@ public class Stitching_Grid implements PlugIn
 			overlapX = overlapY = 0;
 		}
 		
-		String directory, outputFile, seriesFile;
+		String directory, pathListFile, outputFile, seriesFile;
 		final boolean confirmFiles;
 		final String filenames;
 		
@@ -264,6 +268,7 @@ public class Stitching_Grid implements PlugIn
 			seriesFile = defaultSeriesFile = gd.getNextString();
 			outputFile = null;
 			directory = null;
+			pathListFile = null;
 			filenames = null;
 			confirmFiles = false;
 		}
@@ -271,9 +276,14 @@ public class Stitching_Grid implements PlugIn
 		{
 			directory = defaultDirectory = gd.getNextString();
 			seriesFile = null;
+
+			if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 1 )
+				pathListFile = defaultPathListFile = gd.getNextString();
+			else
+				pathListFile = null;
 				
 			// Modified by John Lapage: copying the general setup for Unknown Positions option 
-			if ( gridType == 5 || gridType == 7)
+			if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 0 )
 				confirmFiles = defaultConfirmFiles = gd.getNextBoolean();
 			else
 				confirmFiles = false;
@@ -383,8 +393,10 @@ public class Stitching_Grid implements PlugIn
 		if ( gridType < 5 )
 			elements = getGridLayout( grid, gridSizeX, gridSizeY, overlapX, overlapY, directory, filenames, startI, startX, startY, params.virtual, ds );
 		//John Lapage modified this: copying setup for Unknown Positions
-		else if ( gridType == 5 || gridType == 7)
+		else if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 0 )
 			elements = getAllFilesInDirectory( directory, confirmFiles );
+		else if ( ( gridType == 5 || gridType == 7 ) && gridOrder == 1 )
+			elements = getAllFilesFromPathList( directory, pathListFile );
 		else if ( gridType == 6 && gridOrder == 1 )
 			elements = getLayoutFromMultiSeriesFile( seriesFile, increaseOverlap, ignoreCalibration, invertX, invertY, ignoreZStage, ds );
 		else if ( gridType == 6 )
@@ -1184,6 +1196,33 @@ public class Stitching_Grid implements PlugIn
 		return elements;
 	}
 	
+	protected ArrayList< ImageCollectionElement > getAllFilesFromPathList( final String directory, final String pathListFile )
+	{
+		final List< String > paths = readPathListFile( directory, pathListFile );
+
+		if ( null == paths )
+		{
+			IJ.log( "Cannot parse pathlist file '" + pathListFile + "'" );
+			return null;
+		}
+
+		if ( paths.size() < 2 )
+		{
+			IJ.log( "Only " + paths.size() + " paths defined, you need at least 2 - stop." );
+			return null ;
+		}
+
+		final ArrayList< ImageCollectionElement > elements = new ArrayList< ImageCollectionElement >();
+		int index = 0;
+
+		for ( String path : paths )
+		{
+			elements.add( new ImageCollectionElement( new File( path ), index++ ) );
+		}
+
+		return elements;
+	}
+
 	protected ArrayList< ImageCollectionElement > getGridLayout( final GridType grid, final int gridSizeX, final int gridSizeY, final double overlapX, final double overlapY, final String directory, final String filenames, 
 			final int startI, final int startX, final int startY, final boolean virtual, final Downsampler ds )
 	{
@@ -1391,6 +1430,63 @@ public class Stitching_Grid implements PlugIn
 	int snakeDirectionX = 0; 
 	int snakeDirectionY = 0; 
 	
+	protected List< String > readPathListFile( final String directory, final String pathListFile )
+	{
+		// attempt to load the input file relative to the directory, unless specified as an absolute path
+		// ('directory' is required for TileConfiguration.txt output, but TilePath.txt may point to a separate location)
+		final File file;
+		final File fileNameOrPath = new File( pathListFile );
+		if ( fileNameOrPath.isAbsolute() )
+			file = new File( pathListFile );
+		else
+			file = new File( directory, pathListFile );
+
+		if ( !file.isFile() || !file.canRead() )
+		{
+			IJ.log( "'" + file.getAbsolutePath() + "' is missing or not readable. stop.");
+			return null;
+		}
+
+		IJ.log( "Loading pathslist from: " + file.getAbsolutePath() );
+
+		final List< String > paths = new ArrayList< String >();
+		int lineNo = 0;
+
+		try
+		{
+			final BufferedReader in = TextFileAccess.openFileRead( file );
+
+			if ( in == null )
+			{
+				IJ.log( "Cannot load pathlist file '" + file.getAbsolutePath() + "'" );
+				return null;
+			}
+
+			while ( in.ready() )
+			{
+				String line = in.readLine().trim();
+				lineNo++;
+
+				if ( !line.startsWith( "#" ) && !line.isEmpty() )
+				{
+					final File tilePath = new File( line );
+
+					if ( tilePath.isAbsolute() && tilePath.isFile() )
+					    paths.add( line );
+				}
+			}
+		}
+		catch ( IOException e )
+		{
+			IJ.log( "Stitching_Grid.readPathListFile: " + e );
+			return null;
+		}
+
+		IJ.log( "Found " + paths.size() + " paths in " + lineNo + " lines (we ignore directories and relative paths)." );
+
+		return paths;
+	}
+
 	protected void writeTileConfiguration( final File file, final ArrayList< ImageCollectionElement > elements )
 	{
     	// write the initial tileconfiguration
