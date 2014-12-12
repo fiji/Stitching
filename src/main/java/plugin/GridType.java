@@ -54,16 +54,18 @@ public class GridType
 		images[ 4 ] = new ImageIcon[ 1 ];
 		images[ 4 ][ 0 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/position.png" ) );
 		
-		images[ 5 ] = new ImageIcon[ 1 ];
+		images[ 5 ] = new ImageIcon[ 2 ];
 		images[ 5 ][ 0 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/unknown.png" ) );
+		images[ 5 ][ 1 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/unknown.png" ) );
 
 		images[ 6 ] = new ImageIcon[ 2 ];
 		images[ 6 ][ 0 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/fromFile.png" ) );
 		images[ 6 ][ 1 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/fromFile.png" ) );
 		
 		// John Lapage added this: use the correct image if sequential images is selected
-		images[ 7 ] = new ImageIcon[ 1 ];
+		images[ 7 ] = new ImageIcon[ 2 ];
 		images[ 7 ][ 0 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/sequential.png" ) );
+		images[ 7 ][ 1 ] = GenericDialogPlus.createImageIcon( getClass().getResource( "/images/sequential.png" ) );
 
 		final GenericDialogPlus gd = new GenericDialogPlus( "Grid/Collection stitching" );
 		gd.addChoice( "Type", choose1, choose1[ Stitching_Grid.defaultGridChoice1 ] );
@@ -118,7 +120,7 @@ public class GridType
 			final int tmp = gd.getNextChoiceIndex();
 			
 			// position
-			if ( tmp == 11 )
+			if ( tmp == 10 || tmp == 12 || tmp == 14 )
 				order = 1;
 			else if ( tmp >= 8 )
 				order = 0;
@@ -139,14 +141,14 @@ public class GridType
 		choose2[ 2 ] = new String[]{ "Right & Down                ", "Left & Down", "Right & Up", "Left & Up" };
 		choose2[ 3 ] = new String[]{ "Down & Right                ", "Down & Left", "Up & Right", "Up & Left" };
 		choose2[ 4 ] = new String[]{ "Defined by filename         " };
-		choose2[ 5 ] = new String[]{ "All files in directory" };
+		choose2[ 5 ] = new String[]{ "All files in directory", "All files from path list" };
 		choose2[ 6 ] = new String[]{ "Defined by TileConfiguration", "Defined by image metadata" };
 		// Added by John Lapage: same option as with Unknown Positions
-		choose2[ 7 ] = new String[]{ "All files in directory" };
+		choose2[ 7 ] = new String[]{ "All files in directory", "All files from path list" };
 
 		// the interactive changing is not compatible with the macro language, 
 		// thats why we show all possible options and figure out what was meant
-		allChoices = new String[ 12 ];
+		allChoices = new String[ 15 ];
 		allChoices[ 0 ] = choose2[ 0 ][ 0 ];
 		allChoices[ 1 ] = choose2[ 0 ][ 1 ];
 		allChoices[ 2 ] = choose2[ 0 ][ 2 ];
@@ -157,8 +159,11 @@ public class GridType
 		allChoices[ 7 ] = choose2[ 1 ][ 3 ];
 		allChoices[ 8 ] = choose2[ 4 ][ 0 ];		
 		allChoices[ 9 ] = choose2[ 5 ][ 0 ];		
-		allChoices[ 10 ] = choose2[ 6 ][ 0 ];
-		allChoices[ 11 ] = choose2[ 6 ][ 1 ];
+		allChoices[ 10 ] = choose2[ 5 ][ 1 ];
+		allChoices[ 11 ] = choose2[ 6 ][ 0 ];
+		allChoices[ 12 ] = choose2[ 6 ][ 1 ];
+		allChoices[ 13 ] = choose2[ 7 ][ 0 ];
+		allChoices[ 14 ] = choose2[ 7 ][ 1 ];
 	}
 	
 	protected final void imageSwitch( final Choice choice1, final Choice choice2, final ImageIcon[][] images, final ImageIcon display, final JLabel label )
