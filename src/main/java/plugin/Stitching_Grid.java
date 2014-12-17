@@ -263,8 +263,11 @@ public class Stitching_Grid implements PlugIn
 		// "Positions from file" + "Defined by metadata"
 		{
 			seriesFile = defaultSeriesFile = gd.getNextString();
-			outputFile = null;
-			directory = null;
+			outputFile = defaultTileConfiguration;
+			// derive directory from the file (the dialog doesn't provide one)
+			directory = seriesFile.trim();
+			directory = directory.replace('\\', '/');
+			directory = directory.split("/[^/]*$")[0];  // remove the file part
 			filenames = null;
 			confirmFiles = false;
 		}
@@ -515,6 +518,7 @@ public class Stitching_Grid implements PlugIn
 			IJ.log( imt.getImagePlus().getTitle() + ": " + imt.getModel() );
 		
     	// write the file tileconfiguration
+        // NOTE: outputFile should never be null anyway!
 		if ( params.computeOverlap && outputFile != null )
 		{
 			if ( outputFile.endsWith( ".txt" ) )
