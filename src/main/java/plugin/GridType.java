@@ -17,7 +17,17 @@ public class GridType
 	final private String paperURL = "http://bioinformatics.oxfordjournals.org/cgi/content/abstract/btp184";
 
 	// Modified by John Lapage: added the 'Sequential Images' option. 	
-	final public static String[] choose1 = new String[]{ "Grid: row-by-row", "Grid: column-by-column", "Grid: snake by rows", "Grid: snake by columns", "Filename defined position", "Unknown position", "Positions from file" , "Sequential Images" };
+    // This defines the value returned by getType() later:
+	final public static String[] choose1 = new String[]{
+        "Grid: row-by-row",           // 0
+        "Grid: column-by-column",     // 1
+        "Grid: snake by rows",        // 2
+        "Grid: snake by columns",     // 3
+        "Filename defined position",  // 4
+        "Unknown position",           // 5
+        "Positions from file",        // 6
+        "Sequential Images"           // 7
+    };
 	final public static String[][] choose2 = new String[ choose1.length ][];
 	final public static String[] allChoices;
 	
@@ -132,16 +142,24 @@ public class GridType
 	public int getType() { return type; }
 	public int getOrder() { return order; }
 	
+    // order options definitions:
 	static
 	{
+        // 0: Grid: row-by-row
 		choose2[ 0 ] = new String[]{ "Right & Down                ", "Left & Down", "Right & Up", "Left & Up" };
+        // 1: Grid: column-by-column
 		choose2[ 1 ] = new String[]{ "Down & Right                ", "Down & Left", "Up & Right", "Up & Left" };
+        // 2: Grid: snake by rows
 		choose2[ 2 ] = new String[]{ "Right & Down                ", "Left & Down", "Right & Up", "Left & Up" };
+        // 3: Grid: snake by columns
 		choose2[ 3 ] = new String[]{ "Down & Right                ", "Down & Left", "Up & Right", "Up & Left" };
+        // 4: Filename defined position
 		choose2[ 4 ] = new String[]{ "Defined by filename         " };
+        // 5: Unknown position
 		choose2[ 5 ] = new String[]{ "All files in directory" };
+        // 6: Positions from file
 		choose2[ 6 ] = new String[]{ "Defined by TileConfiguration", "Defined by image metadata" };
-		// Added by John Lapage: same option as with Unknown Positions
+        // 7: Sequential Images
 		choose2[ 7 ] = new String[]{ "All files in directory" };
 
 		// the interactive changing is not compatible with the macro language, 
