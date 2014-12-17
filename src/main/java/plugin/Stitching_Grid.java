@@ -1415,7 +1415,7 @@ public class Stitching_Grid implements PlugIn
 
 	protected void writeRegisteredTileConfiguration( final File file, final ArrayList< ImageCollectionElement > elements )
 	{
-    	// write the initial tileconfiguration
+		// write the tileconfiguration using the translation model
 		final PrintWriter out = TextFileAccess.openFileWrite( file );
 		final int dimensionality = elements.get( 0 ).getDimensionality();
 		
