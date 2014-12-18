@@ -260,6 +260,7 @@ public class Stitching_Grid implements PlugIn
 		final String filenames;
 		
 		if ( gridType == 6 && gridOrder == 1 )
+		// "Positions from file" + "Defined by metadata"
 		{
 			seriesFile = defaultSeriesFile = gd.getNextString();
 			outputFile = null;
@@ -385,9 +386,10 @@ public class Stitching_Grid implements PlugIn
 		//John Lapage modified this: copying setup for Unknown Positions
 		else if ( gridType == 5 || gridType == 7)
 			elements = getAllFilesInDirectory( directory, confirmFiles );
-		else if ( gridType == 6 && gridOrder == 1 )
-			elements = getLayoutFromMultiSeriesFile( seriesFile, increaseOverlap, ignoreCalibration, invertX, invertY, ignoreZStage, ds );
-		else if ( gridType == 6 )
+		else if ( gridType == 6 && gridOrder == 1 )  // positions from file metadata
+			elements = getLayoutFromMultiSeriesFile( seriesFile, increaseOverlap,
+				ignoreCalibration, invertX, invertY, ignoreZStage, ds );
+		else if ( gridType == 6 )  // positions from tile configuration file
 			elements = getLayoutFromFile( directory, outputFile, ds );
 		else
 			elements = null;
@@ -957,7 +959,7 @@ public class Stitching_Grid implements PlugIn
 			for ( int series = 0; series < elements.size(); ++series )
 			{
 				final ImageCollectionElement element = elements.get( series );
-				element.setImagePlus( imps[ series ] );
+				element.setImagePlus( imps[ series ] );  // assign the sub-series to the elements list
 				
 				if ( element.getDimensionality() == 2 )
 					IJ.log( "series " + series + ": position = (" + element.getOffset( 0 ) + "," + element.getOffset( 1 ) + ") [px], " +
@@ -993,11 +995,8 @@ public class Stitching_Grid implements PlugIn
 				IJ.log( "Cannot find tileconfiguration file '" + new File( directory, layoutFile ).getAbsolutePath() + "'" );
 				return null;
 			}
-			
 			int lineNo = 0;
-			
-			while ( in.ready() )
-			{
+			while ( in.ready() ) {
 				String line = in.readLine().trim();
 				lineNo++;
 				if ( !line.startsWith( "#" ) && line.length() > 3 )
@@ -1076,7 +1075,7 @@ public class Stitching_Grid implements PlugIn
 						
 						ImageCollectionElement element = new ImageCollectionElement( new File( directory, imageName ), index++ );
 						element.setDimensionality( dim );
-								
+						
 						if ( dim == 3 )
 							element.setModel( new TranslationModel3D() );
 						else
