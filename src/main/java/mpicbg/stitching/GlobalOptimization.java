@@ -99,7 +99,7 @@ public class GlobalOptimization
 				
 				return imageInformationList;
 			}						
-
+			
 			/*
 			// trash everything but the largest graph			
 			final ArrayList< Set< Tile< ? > > > graphs = Tile.identifyConnectedGraphs( tiles );
@@ -151,7 +151,6 @@ public class GlobalOptimization
 			//IJ.log(" tiles size =" + tiles.size());
 			//IJ.log(" tc.getTiles() size =" + tc.getTiles().size());
 
-			
 			try
 			{
 				//::dip
@@ -222,7 +221,7 @@ public class GlobalOptimization
 			{ 
 				IJ.log( "Cannot compute global optimization: " + e ); 
 				e.printStackTrace(); 
-			}			
+			}
 		}
 		while(redo);
 		
