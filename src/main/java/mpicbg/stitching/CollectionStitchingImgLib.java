@@ -29,7 +29,7 @@ public class CollectionStitchingImgLib
 		{
 			// find overlapping tiles
 			final Vector< ComparePair > pairs = findOverlappingTiles( elements, params );
-				
+			
 			if ( pairs == null || pairs.size() == 0 )
 			{
 				IJ.log( "No overlapping tiles could be found given the approximate layout." );
