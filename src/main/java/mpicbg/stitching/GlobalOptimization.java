@@ -22,6 +22,11 @@ public class GlobalOptimization
 	{
 		boolean redo;
 		TileConfigurationStitching tc;
+		//::dip Change (12.01.2015)
+		// Store model of 1st fixed image for restoration of original coordinates
+		float xOrig=0, yOrig=0;
+		//::dip end of Change (12.01.2015)
+
 		do
 		{
 			redo = false;
@@ -94,7 +99,7 @@ public class GlobalOptimization
 				
 				return imageInformationList;
 			}						
-			
+
 			/*
 			// trash everything but the largest graph			
 			final ArrayList< Set< Tile< ? > > > graphs = Tile.identifyConnectedGraphs( tiles );
@@ -124,6 +129,10 @@ public class GlobalOptimization
 			if ( fixedImage.getConnectedTiles().size() > 0 )
 			{
 				tc.fixTile( fixedImage );
+				//::dip Change (12.01.2015)
+				xOrig = fixedImage.getElement().getOffset(0);
+				yOrig = fixedImage.getElement().getOffset(1);
+				//::dip end of Change (12.01.2015)
 			}
 			else
 			{
@@ -131,14 +140,25 @@ public class GlobalOptimization
 					if ( tiles.get( i ).getConnectedTiles().size() > 0 )
 					{
 						tc.fixTile( tiles.get( i ) );
+						//::dip Change (12.01.2015)
+						ImagePlusTimePoint btile = (ImagePlusTimePoint)tiles.get( i );
+						xOrig = btile.getElement().getOffset(0);
+						yOrig = btile.getElement().getOffset(1);
+						//::dip end of Change (12.01.2015)
 						break;
 					}
 			}
 			//IJ.log(" tiles size =" + tiles.size());
 			//IJ.log(" tc.getTiles() size =" + tc.getTiles().size());
 
+			
 			try
 			{
+				//::dip
+				// What is the meaning of preAlign() ?
+				// preAlign() will never reach the fit,
+				// since always only 1 ConnectingPointMatches is available (with Grid/collection stitching, positions from file)
+				// but number of ConnectingPointMatches must be >1.
 				tc.preAlign();
 				tc.optimize( 10, 1000, 200 );
 
@@ -202,10 +222,20 @@ public class GlobalOptimization
 			{ 
 				IJ.log( "Cannot compute global optimization: " + e ); 
 				e.printStackTrace(); 
-			}
+			}			
 		}
 		while(redo);
 		
+
+		//::dip Change (12.01.2015)
+		// Shift all tiles
+		TranslationModel2D newModel = new TranslationModel2D();
+		newModel.set(xOrig, yOrig);
+		for ( Tile< ? > t : tc.getTiles() ){
+			((TranslationModel2D)t.getModel()).concatenate(newModel);
+			t.apply();
+		}
+		//::dip end of Change (12.01.2015)
 		
 		// create a list of image informations containing their positions			
 		ArrayList< ImagePlusTimePoint > imageInformationList = new ArrayList< ImagePlusTimePoint >();
