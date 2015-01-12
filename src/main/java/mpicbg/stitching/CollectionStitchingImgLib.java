@@ -29,7 +29,7 @@ public class CollectionStitchingImgLib
 		{
 			// find overlapping tiles
 			final Vector< ComparePair > pairs = findOverlappingTiles( elements, params );
-						
+				
 			if ( pairs == null || pairs.size() == 0 )
 			{
 				IJ.log( "No overlapping tiles could be found given the approximate layout." );
@@ -140,7 +140,7 @@ public class CollectionStitchingImgLib
 				optimized.add( imt );
 			}
 			
-		}		
+		}
 		
 		return optimized;
 	}
@@ -177,8 +177,6 @@ public class CollectionStitchingImgLib
 		return new Roi( new Rectangle( start[ 0 ], start[ 1 ], end[ 0 ] - start[ 0 ], end[ 1 ] - start[ 1 ] ) );
 	}
 
-
-	
 	protected static Vector< ComparePair > findOverlappingTiles( final ArrayList< ImageCollectionElement > elements, final StitchingParameters params )
 	{		
 		for ( final ImageCollectionElement element : elements )
