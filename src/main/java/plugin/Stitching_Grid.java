@@ -1031,6 +1031,7 @@ public class Stitching_Grid implements PlugIn
 		final ArrayList< ImageCollectionElement > elements = new ArrayList< ImageCollectionElement >();
 		int dim = -1;
 		int index = 0;
+		boolean multiSeries = false;
 		String pfx = "Stitching_Grid.getLayoutFromFile: ";
 		try {
 			final BufferedReader in = TextFileAccess.openFileRead( new File( directory, layoutFile ) );
@@ -1082,6 +1083,12 @@ public class Stitching_Grid implements PlugIn
 							return null;						
 						}
 						
+						String imageSeries = entries[1].trim();  // sub-volume (series nr)
+						if (imageSeries.length() > 0) {
+							logger(pfx + lineNo + ": Found sub-volume (series): " + imageSeries);
+							multiSeries = true;
+						}
+
 						String point = entries[2].trim();  // coordinates
 						if (!point.startsWith("(") || !point.endsWith(")")) {
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
