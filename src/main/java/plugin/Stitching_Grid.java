@@ -1044,7 +1044,7 @@ public class Stitching_Grid implements PlugIn
 				String line = in.readLine().trim();
 				lineNo++;
 				if ( !line.startsWith( "#" ) && line.length() > 3 ) {
-					if ( line.startsWith( "dim" ) ) {
+					if ( line.startsWith( "dim" ) ) {  // dimensionality parsing
 						String entries[] = line.split( "=" );
 						if ( entries.length != 2 ) {
 							logger(pfx + lineNo + " does not look like [ dim = n ]: " + line);
@@ -1058,7 +1058,7 @@ public class Stitching_Grid implements PlugIn
 							logger(pfx + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
-					} else {
+					} else {  // body parsing (tiles + coordinates)
 						if ( dim < 0 ) {
 							logger(pfx + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							return null;							
@@ -1083,13 +1083,13 @@ public class Stitching_Grid implements PlugIn
 							return null;						
 						}
 						
-						String point = entries[2].trim();
+						String point = entries[2].trim();  // coordinates
 						if (!point.startsWith("(") || !point.endsWith(")")) {
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							return null;
 						}
 						
-						point = point.substring(1, point.length() - 1);
+						point = point.substring(1, point.length() - 1);  // crop enclosing braces
 						String points[] = point.split(",");
 						if (points.length != dim) {
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
