@@ -790,6 +790,42 @@ public class Stitching_Grid implements PlugIn
 
 		return in;
 	}
+	
+	protected ImagePlus[] openBF( String multiSeriesFileName, boolean splitC,
+			boolean splitT, boolean splitZ, boolean autoScale, boolean crop,
+			boolean allSeries )
+	{
+		ImporterOptions options;
+		ImagePlus[] imps = null;
+		try
+		{
+			options = new ImporterOptions();
+			options.setId( new File( multiSeriesFileName ).getAbsolutePath() );
+			options.setSplitChannels( splitC );
+			options.setSplitTimepoints( splitT );
+			options.setSplitFocalPlanes( splitZ );
+			options.setAutoscale( autoScale );
+			options.setStackFormat(ImporterOptions.VIEW_HYPERSTACK);
+			options.setStackOrder(ImporterOptions.ORDER_XYCZT);
+			options.setCrop( crop );
+			
+			options.setOpenAllSeries( allSeries );
+			
+			imps = BF.openImagePlus( options );
+		}
+		catch (Exception e)
+		{
+			IJ.log( "Cannot open multiseries file: " + e );
+			e.printStackTrace();
+			return null;
+		}
+		return imps;
+	}
+	
+	protected ImagePlus[] openBFDefault( String multiSeriesFileName )
+	{
+		return openBF(multiSeriesFileName, false, false, false, false, false, true);
+	}
 
 	protected ArrayList< ImageCollectionElement > getLayoutFromMultiSeriesFile( final String multiSeriesFile, final double increaseOverlap, final boolean ignoreCalibration, final boolean invertX, final boolean invertY, final boolean ignoreZStage, final Downsampler ds )
 	{
