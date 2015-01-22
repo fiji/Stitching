@@ -1031,6 +1031,7 @@ public class Stitching_Grid implements PlugIn
 		final ArrayList< ImageCollectionElement > elements = new ArrayList< ImageCollectionElement >();
 		int dim = -1;
 		int index = 0;
+		String pfx = "Stitching_Grid.getLayoutFromFile: ";
 		
 		try
 		{
@@ -1038,10 +1039,11 @@ public class Stitching_Grid implements PlugIn
 			
 			if ( in == null )
 			{
-				IJ.log( "Cannot find tileconfiguration file '" + new File( directory, layoutFile ).getAbsolutePath() + "'" );
+				logger(pfx + "Cannot find tileconfiguration file '" + new File( directory, layoutFile ).getAbsolutePath() + "'");
 				return null;
 			}
 			int lineNo = 0;
+			pfx += "Line ";
 			while ( in.ready() ) {
 				String line = in.readLine().trim();
 				lineNo++;
@@ -1052,8 +1054,7 @@ public class Stitching_Grid implements PlugIn
 						String entries[] = line.split( "=" );
 						if ( entries.length != 2 )
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
+							logger(pfx + lineNo + " does not look like [ dim = n ]: " + line);
 							return null;						
 						}
 						
@@ -1063,8 +1064,7 @@ public class Stitching_Grid implements PlugIn
 						}
 						catch ( NumberFormatException e )
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
+							logger(pfx + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
 					}
@@ -1072,15 +1072,13 @@ public class Stitching_Grid implements PlugIn
 					{
 						if ( dim < 0 )
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
+							logger(pfx + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							return null;							
 						}
 						
 						if ( dim < 2 || dim > 3 )
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
+							logger(pfx + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							return null;							
 						}
 						
@@ -1088,8 +1086,7 @@ public class Stitching_Grid implements PlugIn
 						String entries[] = line.split(";");
 						if (entries.length != 3)
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
+							logger(pfx + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							return null;						
 						}
 						String imageName = entries[0].trim();
@@ -1097,16 +1094,14 @@ public class Stitching_Grid implements PlugIn
 						
 						if (imageName.length() == 0 && imp.length() == 0)
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
+							logger(pfx + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							return null;						
 						}
 						
 						String point = entries[2].trim();
 						if (!point.startsWith("(") || !point.endsWith(")"))
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
+							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							return null;
 						}
 						
@@ -1114,8 +1109,7 @@ public class Stitching_Grid implements PlugIn
 						String points[] = point.split(",");
 						if (points.length != dim)
 						{
-							System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,..), dim = " + dim + ": " + point);
-							IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
+							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
 							return null;
 						}
 						
@@ -1136,8 +1130,7 @@ public class Stitching_Grid implements PlugIn
 							}
 							catch (NumberFormatException e)
 							{
-								System.out.println( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
-								IJ.log( "Stitching_Grid.getLayoutFromFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
+								logger(pfx + lineNo + ": Cannot parse number: " + points[i].trim());
 								return null;							
 							}
 						}
@@ -1150,8 +1143,7 @@ public class Stitching_Grid implements PlugIn
 		}
 		catch ( IOException e )
 		{
-			System.out.println( "Stitch_Grid.getLayoutFromFile: " + e );
-			IJ.log( "Stitching_Grid.getLayoutFromFile: " + e );
+			logger( "Stitching_Grid.getLayoutFromFile: " + e );
 			return null;
 		}
 		
