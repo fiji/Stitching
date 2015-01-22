@@ -1464,6 +1464,8 @@ public class Stitching_Grid implements PlugIn
 		final PrintWriter out = TextFileAccess.openFileWrite( file );
 		final int dimensionality = elements.get( 0 ).getDimensionality();
 		
+		logger( "Writing registered TileConfiguration: " + file );
+
 		out.println( "# Define the number of dimensions we are working on" );
         out.println( "dim = " + dimensionality );
         out.println( "" );
