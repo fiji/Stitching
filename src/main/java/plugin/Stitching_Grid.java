@@ -634,6 +634,12 @@ public class Stitching_Grid implements PlugIn
     		element.close();
 	}
 
+	void logger (final String message)
+	{
+		System.out.println(message);
+		IJ.log(message);
+	}
+
 	/**
 	 * Generates a ROI for each tile in the list of optimized images. The
 	 * fusedImage is the resultant on which the ROIs will be drawn. The offset
