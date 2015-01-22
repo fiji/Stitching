@@ -1032,13 +1032,9 @@ public class Stitching_Grid implements PlugIn
 		int dim = -1;
 		int index = 0;
 		String pfx = "Stitching_Grid.getLayoutFromFile: ";
-		
-		try
-		{
+		try {
 			final BufferedReader in = TextFileAccess.openFileRead( new File( directory, layoutFile ) );
-			
-			if ( in == null )
-			{
+			if ( in == null ) {
 				logger(pfx + "Cannot find tileconfiguration file '" + new File( directory, layoutFile ).getAbsolutePath() + "'");
 				return null;
 			}
@@ -1047,68 +1043,55 @@ public class Stitching_Grid implements PlugIn
 			while ( in.ready() ) {
 				String line = in.readLine().trim();
 				lineNo++;
-				if ( !line.startsWith( "#" ) && line.length() > 3 )
-				{
-					if ( line.startsWith( "dim" ) )
-					{
+				if ( !line.startsWith( "#" ) && line.length() > 3 ) {
+					if ( line.startsWith( "dim" ) ) {
 						String entries[] = line.split( "=" );
-						if ( entries.length != 2 )
-						{
+						if ( entries.length != 2 ) {
 							logger(pfx + lineNo + " does not look like [ dim = n ]: " + line);
 							return null;						
 						}
 						
-						try
-						{
+						try {
 							dim = Integer.parseInt( entries[1].trim() );
 						}
-						catch ( NumberFormatException e )
-						{
+						catch ( NumberFormatException e ) {
 							logger(pfx + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
-					}
-					else
-					{
-						if ( dim < 0 )
-						{
+					} else {
+						if ( dim < 0 ) {
 							logger(pfx + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							return null;							
 						}
 						
-						if ( dim < 2 || dim > 3 )
-						{
+						if ( dim < 2 || dim > 3 ) {
 							logger(pfx + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							return null;							
 						}
 						
 						// read image tiles
 						String entries[] = line.split(";");
-						if (entries.length != 3)
-						{
+						if (entries.length != 3) {
 							logger(pfx + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							return null;						
 						}
 						String imageName = entries[0].trim();
 						String imp = entries[1].trim();
 						
-						if (imageName.length() == 0 && imp.length() == 0)
-						{
+						if (imageName.length() == 0 && imp.length() == 0) {
 							logger(pfx + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							return null;						
 						}
 						
 						String point = entries[2].trim();
-						if (!point.startsWith("(") || !point.endsWith(")"))
-						{
+						if (!point.startsWith("(") || !point.endsWith(")")) {
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							return null;
 						}
 						
 						point = point.substring(1, point.length() - 1);
 						String points[] = point.split(",");
-						if (points.length != dim)
-						{
+						if (points.length != dim) {
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
 							return null;
 						}
@@ -1122,14 +1105,11 @@ public class Stitching_Grid implements PlugIn
 							element.setModel( new TranslationModel2D() );
 
 						final float[] offset = new float[ dim ];
-						for ( int i = 0; i < dim; i++ )
-						{
-							try
-							{
+						for ( int i = 0; i < dim; i++ ) {
+							try {
 								offset[ i ] = Float.parseFloat( points[i].trim() ); 
 							}
-							catch (NumberFormatException e)
-							{
+							catch (NumberFormatException e) {
 								logger(pfx + lineNo + ": Cannot parse number: " + points[i].trim());
 								return null;							
 							}
@@ -1141,8 +1121,7 @@ public class Stitching_Grid implements PlugIn
 				}
 			}
 		}
-		catch ( IOException e )
-		{
+		catch ( IOException e ) {
 			logger( "Stitching_Grid.getLayoutFromFile: " + e );
 			return null;
 		}
