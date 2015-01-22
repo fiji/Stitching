@@ -1032,6 +1032,13 @@ public class Stitching_Grid implements PlugIn
 		int dim = -1;
 		int index = 0;
 		boolean multiSeries = false;
+		// A HashMap using the filename as the key is used to access the
+		// individual tiles of a multiSeriesFile. This way it's very easy to
+		// check if a file has already been opened. Note that the map doesn't
+		// get used in the case of single series files below!
+		// TODO: check performance on large datasets! Use an array for the
+		// ImagePlus'es otherwise and store the index number in the hash map!
+		Map<String, ImagePlus[]> multiSeriesMap = new HashMap<String, ImagePlus[]>();
 		String pfx = "Stitching_Grid.getLayoutFromFile: ";
 		try {
 			final BufferedReader in = TextFileAccess.openFileRead( new File( directory, layoutFile ) );
@@ -1059,6 +1066,11 @@ public class Stitching_Grid implements PlugIn
 							logger(pfx + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
+
+					} else if ( line.startsWith( "multiseries" ) )  {
+						multiSeries = true;
+						logger(pfx + lineNo + ": parsing MultiSeries configuration.");
+
 					} else {  // body parsing (tiles + coordinates)
 						if ( dim < 0 ) {
 							logger(pfx + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
@@ -1083,10 +1095,21 @@ public class Stitching_Grid implements PlugIn
 							return null;						
 						}
 						
-						String imageSeries = entries[1].trim();  // sub-volume (series nr)
-						if (imageSeries.length() > 0) {
-							logger(pfx + lineNo + ": Found sub-volume (series): " + imageSeries);
-							multiSeries = true;
+						int seriesNr = -1;
+						if (multiSeries) {
+							String imageSeries = entries[1].trim();  // sub-volume (series nr)
+							if (imageSeries.length() == 0) {
+								logger(pfx + lineNo + ": Series index required [fileName; series; (x,y,...)" );
+							} else {
+								try {
+									seriesNr = Integer.parseInt( imageSeries );
+									logger(pfx + lineNo + ": Series nr (sub-volume): " + seriesNr);
+								}
+								catch ( NumberFormatException e ) {
+									logger(pfx + lineNo + ": Cannot parse series nr: " + imageSeries);
+									return null;
+								}
+							}
 						}
 
 						String point = entries[2].trim();  // coordinates
@@ -1101,8 +1124,6 @@ public class Stitching_Grid implements PlugIn
 							logger(pfx + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
 							return null;
 						}
-						
-
 						final float[] offset = new float[ dim ];
 						for ( int i = 0; i < dim; i++ ) {
 							try {
@@ -1123,6 +1144,15 @@ public class Stitching_Grid implements PlugIn
 						else
 							element.setModel( new TranslationModel2D() );
 						element.setOffset( offset );
+
+						if (multiSeries) {
+							if (multiSeriesMap.get(imageName) == null) {
+								logger(pfx + lineNo + ": Loading MultiSeries file: " + element.getFile().getAbsolutePath());
+								multiSeriesMap.put(imageName, openBFDefault(element.getFile().getAbsolutePath()));
+							}
+							element.setImagePlus(multiSeriesMap.get(imageName)[seriesNr]);
+						}
+
 						elements.add( element );
 					}
 				}
