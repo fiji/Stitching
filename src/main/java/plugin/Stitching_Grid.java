@@ -1095,13 +1095,6 @@ public class Stitching_Grid implements PlugIn
 							return null;
 						}
 						
-						ImageCollectionElement element = new ImageCollectionElement( new File( directory, imageName ), index++ );
-						element.setDimensionality( dim );
-						
-						if ( dim == 3 )
-							element.setModel( new TranslationModel3D() );
-						else
-							element.setModel( new TranslationModel2D() );
 
 						final float[] offset = new float[ dim ];
 						for ( int i = 0; i < dim; i++ ) {
@@ -1114,6 +1107,14 @@ public class Stitching_Grid implements PlugIn
 							}
 						}
 						
+						// now we can assemble the ImageCollectionElement:
+						ImageCollectionElement element = new ImageCollectionElement(
+								new File( directory, imageName ), index++ );
+						element.setDimensionality( dim );
+						if ( dim == 3 )
+							element.setModel( new TranslationModel3D() );
+						else
+							element.setModel( new TranslationModel2D() );
 						element.setOffset( offset );
 						elements.add( element );
 					}
