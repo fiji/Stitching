@@ -1075,11 +1075,10 @@ public class Stitching_Grid implements PlugIn
 							logger(pfx + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							return null;						
 						}
+
 						String imageName = entries[0].trim();
-						String imp = entries[1].trim();
-						
-						if (imageName.length() == 0 && imp.length() == 0) {
-							logger(pfx + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
+						if (imageName.length() == 0) {
+							logger(pfx + lineNo + ": You have to give a filename [fileName; ; (x,y,...)]: " + line);
 							return null;						
 						}
 						
