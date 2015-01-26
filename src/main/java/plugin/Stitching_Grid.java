@@ -1032,10 +1032,10 @@ public class Stitching_Grid implements PlugIn
 		int dim = -1;
 		int index = 0;
 		boolean multiSeries = false;
-		// A HashMap using the filename as the key is used to access the
-		// individual tiles of a multiSeriesFile. This way it's very easy to
-		// check if a file has already been opened. Note that the map doesn't
-		// get used in the case of single series files below!
+		// A HashMap using the filename (including the full path) as the key is
+		// used to access the individual tiles of a multiSeriesFile. This way
+		// it's very easy to check if a file has already been opened. Note that
+		// the map doesn't get used in the case of single series files below!
 		// TODO: check performance on large datasets! Use an array for the
 		// ImagePlus'es otherwise and store the index number in the hash map!
 		Map<String, ImagePlus[]> multiSeriesMap = new HashMap<String, ImagePlus[]>();
@@ -1154,11 +1154,12 @@ public class Stitching_Grid implements PlugIn
 						element.setOffset( offset );
 
 						if (multiSeries) {
-							if (multiSeriesMap.get(imageName) == null) {
-								logger(pfx + lineNo + ": Loading MultiSeries file: " + element.getFile().getAbsolutePath());
-								multiSeriesMap.put(imageName, openBFDefault(element.getFile().getAbsolutePath()));
+							final String imageNameFull = element.getFile().getAbsolutePath();
+							if (multiSeriesMap.get(imageNameFull) == null) {
+								logger(pfx + lineNo + ": Loading MultiSeries file: " + imageNameFull);
+								multiSeriesMap.put(imageNameFull, openBFDefault(imageNameFull));
 							}
-							element.setImagePlus(multiSeriesMap.get(imageName)[seriesNr]);
+							element.setImagePlus(multiSeriesMap.get(imageNameFull)[seriesNr]);
 						}
 
 						elements.add( element );
