@@ -1068,8 +1068,16 @@ public class Stitching_Grid implements PlugIn
 						}
 
 					} else if ( line.startsWith( "multiseries" ) )  {
-						multiSeries = true;
-						logger(pfx + lineNo + ": parsing MultiSeries configuration.");
+						String entries[] = line.split( "=" );
+						if ( entries.length != 2 ) {
+							logger(pfx + lineNo + " does not look like [ multiseries = (true|false) ]: " + line);
+							return null;
+						}
+
+						if (entries[1].trim() == "true") {
+							multiSeries = true;
+							logger(pfx + lineNo + ": parsing MultiSeries configuration.");
+						}
 
 					} else {  // body parsing (tiles + coordinates)
 						if ( dim < 0 ) {
