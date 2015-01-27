@@ -1093,7 +1093,7 @@ public class Stitching_Grid implements PlugIn
 						// read image tiles
 						String entries[] = line.split(";");
 						if (entries.length != 3) {
-							logger(pfx + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
+							logger(pfx + lineNo + " does not have 3 entries! [fileName; seriesNr; (x,y,...)]");
 							return null;						
 						}
 
