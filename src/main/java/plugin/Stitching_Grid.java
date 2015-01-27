@@ -1074,7 +1074,7 @@ public class Stitching_Grid implements PlugIn
 							return null;
 						}
 
-						if (entries[1].trim() == "true") {
+						if (entries[1].trim().equals("true")) {
 							multiSeries = true;
 							logger(pfx + lineNo + ": parsing MultiSeries configuration.");
 						}
