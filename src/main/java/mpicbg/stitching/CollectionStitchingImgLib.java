@@ -29,7 +29,7 @@ public class CollectionStitchingImgLib
 		{
 			// find overlapping tiles
 			final Vector< ComparePair > pairs = findOverlappingTiles( elements, params );
-			
+						
 			if ( pairs == null || pairs.size() == 0 )
 			{
 				IJ.log( "No overlapping tiles could be found given the approximate layout." );
@@ -112,7 +112,7 @@ public class CollectionStitchingImgLib
 	        }
 			
 			Collections.sort( optimized );
-			//::dip end of Change (12.01.2015)			
+			//::dip end of Change (12.01.2015)
 			
 			IJ.log( "Finished registration process (" + (System.currentTimeMillis() - time) + " ms)." );
 		}
@@ -140,7 +140,7 @@ public class CollectionStitchingImgLib
 				optimized.add( imt );
 			}
 			
-		}
+		}		
 		
 		return optimized;
 	}
@@ -276,24 +276,33 @@ public class CollectionStitchingImgLib
 		return pairsOut;
 	}
 
-	//::dip Change (12.01.2015): New function
+	//::dip Change (29.01.2015): New function
 	protected static Vector< ComparePair > findIsletList( final Vector< ComparePair > pairs, final StitchingParameters params )
 	{		
 		boolean connected = false;
+		boolean redo;
 		final Vector< ComparePair > isletPairs = new Vector< ComparePair >();
 		
 		isletPairs.add( pairs.get( 0 ) );
 		
-		for ( int i = 1; i < pairs.size(); i++ ){
-			connected = false;
-			for ( int n = 0; n < isletPairs.size(); n++ ){
-				connected |= isPairConnected(pairs.get(i), isletPairs.get(n));
-				if (connected)
-					break;
+		do {
+			redo = false;
+			for ( int i = 1; i < pairs.size(); i++ ){
+				connected = false;
+				for ( int n = 0; n < isletPairs.size(); n++ ){
+					connected |= isPairConnected(pairs.get(i), isletPairs.get(n));
+					if (connected)
+						break;
+				}
+				if ( connected ){
+					if ( !isletPairs.contains( pairs.get( i ) ) ){
+						isletPairs.add( pairs.get( i ) );
+						redo = true;
+					}
+				}
 			}
-			if ( connected )
-				isletPairs.add( pairs.get( i ) );
-		}	
+		}
+		while (redo);
 		return isletPairs;
 	}
 
@@ -328,7 +337,7 @@ public class CollectionStitchingImgLib
 		return true;
 	}
 	
-	
+	/*
 	//::dip Change (12.01.2015): New function
 	protected static Vector< ComparePair > findIsletTiles( final ArrayList< ImageCollectionElement > elements, final StitchingParameters params )
 	{		
@@ -378,5 +387,5 @@ public class CollectionStitchingImgLib
 			}
 		return isletTiles;
 	}
-	
+	*/
 }
