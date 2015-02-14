@@ -826,11 +826,11 @@ public class Fusion
                 	final int[] translation = new int[ numDimensions ];
                 	
                 	final InvertibleBoundable t = transform.get( myImage );
-            		final float[] tmp = new float[ numDimensions ];
+            		final double[] tmp = new double[ numDimensions ];
             		t.applyInPlace( tmp );
  
             		for ( int d = 0; d < numDimensions; ++d )
-            			translation[ d ] = Math.round( tmp[ d ] );
+            			translation[ d ] = (int) Math.round( tmp[ d ] );
 
             		final Cursor< ? extends RealType<?> > cursor = image.localizingCursor();
             		final RandomAccess< ? extends RealType<?> > randomAccess = output.randomAccess();
