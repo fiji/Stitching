@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import ome.units.quantity.Length;
 import loci.formats.ChannelSeparator;
 import loci.formats.FormatException;
 import loci.formats.FormatTools;
@@ -1122,7 +1123,7 @@ public class CommonFunctions
 		// CTR HACK: Recover gracefully when StageLabel element is missing.
 		// This avoids a problem with the OMEXMLMetadataImpl implementation,
 		// which currently does not check for null on the StageLabel object.
-		Double stageLabelX = null, stageLabelY = null, stageLabelZ = null;
+		Length stageLabelX = null, stageLabelY = null, stageLabelZ = null;
 		try
 		{
 			stageLabelX = retrieve.getStageLabelX( series );
@@ -1146,15 +1147,15 @@ public class CommonFunctions
 		return new double[] { locationX, locationY, locationZ };
 	}
 
-	private static double getPosition( final Double planePos, final Double stageLabel, final boolean invert )
+	private static double getPosition( final Length planePos, final Length stageLabel, final boolean invert )
 	{
 		// check plane position
 		if ( planePos != null )
-			return invert ? -planePos : planePos;
+			return invert ? -planePos.value().doubleValue() : planePos.value().doubleValue();
 
 		// check global stage label
 		if ( stageLabel != null )
-			return invert ? -stageLabel : stageLabel;
+			return invert ? -stageLabel.value().doubleValue() : stageLabel.value().doubleValue();
 
 		return 0;
 	}
