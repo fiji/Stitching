@@ -261,7 +261,7 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		catch (Exception e)
 		{
-			IJ.log("Cannot write registered configuration file: " + e );
+			Log.error("Cannot write registered configuration file: " + e );
 		}
 	}
 	
@@ -710,9 +710,9 @@ public class Stitch_Image_Collection implements PlugIn
 		else
 			if ( !cal.equals(newOne) )
 			{
-				IJ.log( "Calibration mismatch: " );
-				IJ.log( "  First   image: " + cal.toString() );
-				IJ.log( "  Current image: " + newOne.toString() );						
+				Log.error( "Calibration mismatch: " );
+				Log.error( "  First   image: " + cal.toString() );
+				Log.error( "  Current image: " + newOne.toString() );						
 			}
 		
 		return cal;
@@ -1038,7 +1038,7 @@ public class Stitch_Image_Collection implements PlugIn
 			
 			if( tiles.size() == 0 )
 			{
-				IJ.log("Error: No correlated tiles found, setting the first tile to (0,0,0).");
+				Log.error("Error: No correlated tiles found, setting the first tile to (0,0,0).");
 				
 				for ( int d = 0; d < firstImage.position.length; ++d )
 					firstImage.position[ d ] = 0;
@@ -1329,7 +1329,7 @@ public class Stitch_Image_Collection implements PlugIn
 			
 			if (iI.imp == null)
 			{
-				IJ.log("Cannot load " + iI.imageName + " ignoring.");
+				IJ.error("Cannot load " + iI.imageName + " ignoring.");
 				iI.invalid = true;
 				continue;
 			}

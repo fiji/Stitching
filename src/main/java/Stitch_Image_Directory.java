@@ -41,6 +41,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
@@ -168,7 +169,7 @@ public class Stitch_Image_Directory implements PlugIn
         		
         		if (imp == null)
         		{
-        			IJ.log("Cannot read: " + file + ", trying next one...");
+        			Log.error("Cannot read: " + file + ", trying next one...");
         			continue;
         		}
         		

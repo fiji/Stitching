@@ -77,13 +77,13 @@ public class GlobalOptimization
 				
 				if ( params.dimensionality == 3 )
 				{
-					IJ.log( "Error: No correlated tiles found, setting the first tile to (0, 0, 0)." );
+					Log.error( "Error: No correlated tiles found, setting the first tile to (0, 0, 0)." );
 					TranslationModel3D model = (TranslationModel3D)fixedImage.getModel();
 					model.set( 0, 0, 0 );
 				}
 				else
 				{
-					IJ.log( "Error: No correlated tiles found, setting the first tile to (0, 0)." );
+					Log.error( "Error: No correlated tiles found, setting the first tile to (0, 0)." );
 					TranslationModel2D model = (TranslationModel2D)fixedImage.getModel();
 					model.set( 0, 0 );					
 				}

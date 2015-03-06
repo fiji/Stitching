@@ -10,6 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import stitching.utils.Log;
+
 
 public class DeltaVision_Converter implements PlugIn
 {
@@ -102,7 +104,7 @@ public class DeltaVision_Converter implements PlugIn
 
 			if ( t > 1 )
 			{
-				IJ.log( "Cannot handle more than one timepoint" );
+				Log.error( "Cannot handle more than one timepoint" );
 				return;
 			}
 			

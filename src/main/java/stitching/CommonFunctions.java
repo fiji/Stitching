@@ -216,7 +216,7 @@ public class CommonFunctions
 			
 			if (!(pixelType == FormatTools.UINT8 || pixelType == FormatTools.UINT16))
 			{
-				IJ.log("PixelType " + pixelTypeString + " not supported yet, returning. ");
+				Log.error("PixelType " + pixelTypeString + " not supported yet, returning. ");
 				return null;
 			}
 			

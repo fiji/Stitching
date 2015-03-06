@@ -82,7 +82,7 @@ public class ImageCollectionElement
 		{
 			if ( !file.exists() )
 			{
-				IJ.log( "Cannot find file: '" + file + "' - abort stitching." );
+				Log.error( "Cannot find file: '" + file + "' - abort stitching." );
 				return null;
 			}
 			
@@ -103,7 +103,7 @@ public class ImageCollectionElement
 			
 			if ( imp.length > 1 )
 			{
-				IJ.log( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
+				Log.error( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
 				
 				for ( ImagePlus i : imp )
 					i.close();

@@ -170,7 +170,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 	{
 		if ( filename == null || filename.length() == 0 )
 		{
-			IJ.log( "Filename is empty!" );
+			Log.error( "Filename is empty!" );
 			return null;
 		}
 		
@@ -193,7 +193,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 			
 			if ( numSeries == 1 )
 			{
-				IJ.log( "File contains only one tile: " + filename );
+				Log.error( "File contains only one tile: " + filename );
 				return null;
 			}
 			

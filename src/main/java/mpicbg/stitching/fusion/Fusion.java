@@ -43,6 +43,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 /**
  * Manages the fusion for all types except the overlayfusion
@@ -237,7 +238,7 @@ public class Fusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}				
 			}
 		}
@@ -303,7 +304,7 @@ public class Fusion
 				fusionImp[0].show();
 			}
 			catch (ImgLibException e) {
-				IJ.log("Output image has no ImageJ type: " + e);
+				Log.error("Output image has no ImageJ type: " + e);
 			}
 		}
 
@@ -576,7 +577,7 @@ public class Fusion
 						threadNumber, count, lastDraw, fusionImp[0]);
 				}
 				catch (NoninvertibleModelException e) {
-					IJ.log("Cannot invert model, qutting.");
+					Log.error("Cannot invert model, qutting.");
 					return;
 				}
 
@@ -818,7 +819,7 @@ public class Fusion
             			}
             			catch ( ImgLibException e )
             			{
-            				IJ.log( "Output image has no ImageJ type: " + e );
+            				Log.error( "Output image has no ImageJ type: " + e );
             			}                		
                 	}
 
@@ -925,12 +926,12 @@ public class Fusion
 		} 
 		catch ( NoninvertibleModelException e ) 
 		{
-			IJ.log( "Cannot invert model, qutting." );
+			Log.error( "Cannot invert model, qutting." );
 			return;
 		} 
 		catch ( ImgLibException e ) 
 		{
-			IJ.log( "Output image has no ImageJ type: " + e );
+			Log.error( "Output image has no ImageJ type: " + e );
 			return;
 		}
 	}
