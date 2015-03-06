@@ -39,6 +39,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import stitching.CommonFunctions;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 
 public class Stitching_Pairwise implements PlugIn 
@@ -248,9 +249,9 @@ public class Stitching_Pairwise implements PlugIn
 		
 		if ( !params.computeOverlap && params.timeSelect > 0 )
 		{
-			IJ.log( "WARNING: You chose to not compute overlap, ignoring the option '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'!" );
+			Log.warn( "You chose to not compute overlap, ignoring the option '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'!" );
 			params.timeSelect = defaultTimeSelect = 0;
-			IJ.log( "WARNING: Instead we will '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'" );
+			Log.warn( "Instead we will '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'" );
 		}
 		
 		if ( params.timeSelect > 0 )

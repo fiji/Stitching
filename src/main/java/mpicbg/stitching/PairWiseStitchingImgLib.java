@@ -597,7 +597,7 @@ public class PairWiseStitchingImgLib
 		// we can only do rectangular rois
 		if ( roi != null && roi.getType() != Roi.RECTANGLE )
 		{
-			Log.error( "WARNING: roi for " + imp.getTitle() + " is not a rectangle, we have to ignore it." );
+			Log.warn( "roi for " + imp.getTitle() + " is not a rectangle, we have to ignore it." );
 			roi = null;
 		}
 

@@ -15,6 +15,11 @@ public final class Log {
 		IJ.log(message);
 	}
 
+	/** Issues a warning message to the ImageJ log window. */
+	public static void warn(final String message) {
+		IJ.log("WARNING: " + message);
+	}
+
 	/**
 	 * Issues an error message to the ImageJ log window.
 	 * 

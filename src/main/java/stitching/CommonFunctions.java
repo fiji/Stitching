@@ -202,11 +202,11 @@ public class CommonFunctions
 			//final String dimensionOrder = r.getDimensionOrder();
 			
 			if (timepoints > 1)
-				IJ.log("More than one timepoint. Not implemented yet. Returning first timepoint");
+				Log.warn("More than one timepoint. Not implemented yet. Returning first timepoint");
 			
 			if (r.getSizeC() > 3)
 			{
-				IJ.log("More than three channels. ImageJ supports only 3 channels, returning the first three channels.");
+				Log.warn("More than three channels. ImageJ supports only 3 channels, returning the first three channels.");
 				channels = 3;
 			}
 			else

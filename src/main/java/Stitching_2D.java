@@ -214,7 +214,7 @@ public class Stitching_2D implements PlugIn
 
 			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && method.equals(methodList[RED_CYAN]))
 			{
-				IJ.log("Warning: Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
+				Log.warn("Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
 			}
 		}
 		

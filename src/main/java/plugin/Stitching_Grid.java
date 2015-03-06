@@ -332,11 +332,11 @@ public class Stitching_Grid implements PlugIn
 		
 		if ( params.virtual )
 		{
-			IJ.log( "WARNING: Using virtual input images. This will save a lot of RAM, but will also be slower ... \n" );
+			Log.warn( "Using virtual input images. This will save a lot of RAM, but will also be slower ... \n" );
 			
 			if ( params.subpixelAccuracy && params.fusionMethod != CommonFunctions.fusionMethodListGrid.length - 1 )
 			{
-				IJ.log( "WARNING: You combine subpixel-accuracy with virtual input images, fusion will take 2-times longer ... \n" );
+				Log.warn( "You combine subpixel-accuracy with virtual input images, fusion will take 2-times longer ... \n" );
 			}
 		}
 		
