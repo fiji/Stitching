@@ -166,7 +166,7 @@ public class Stitch_Image_Collection implements PlugIn
 	
 	public ImagePlus work(ArrayList<ImageInformation> imageInformationList, boolean createPreview, boolean computeOverlap, String fusionMethod, String handleRGB, String fileName, boolean showImage)
 	{	
-		Log.info("(" + new Date(System.currentTimeMillis()) + "): Stitching the following files:");
+		Log.timestamp("Stitching the following files:");
 		for (ImageInformation iI : imageInformationList)
 			Log.info("" + iI);	
 		
@@ -197,7 +197,7 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		
 		// output the final positions
-		Log.info("(" + new Date(System.currentTimeMillis()) + "): Final image positions in the fused image:");
+		Log.timestamp("Final image positions in the fused image:");
 		for (ImageInformation i: newImageInformationList)
 		{
 			if (dim == 3)
@@ -212,15 +212,15 @@ public class Stitch_Image_Collection implements PlugIn
 		// getMax and set minimum coordinates to 0,0,0
 		float[] max = getAndApplyMinMax(newImageInformationList, dim);		
 		if (dim == 3)
-			Log.info("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
+			Log.timestamp("Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
 		else
-			Log.info("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1]);
+			Log.timestamp("Size of bounding box for output image: " + max[0] + ", " + max[1]);
 		
 		// fuse the images
 		ImagePlus fused = fuseImages(newImageInformationList, max, "Stitched Image", fusionMethod, rgbOrder, dim, alpha, showImage );
 		if ( showImage )
 			fused.show();
-		Log.info("(" + new Date(System.currentTimeMillis()) + "): Finished Stitching.");
+		Log.timestamp("Finished Stitching.");
 
 		return fused;
 	}

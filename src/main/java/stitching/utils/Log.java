@@ -2,6 +2,8 @@ package stitching.utils;
 
 import ij.IJ;
 
+import java.util.Date;
+
 /**
  * Utility class to deal with logging.
  *
@@ -23,6 +25,11 @@ public final class Log {
 	/** Issues an informational message to the ImageJ log window. */
 	public static void info(final String message) {
 		IJ.log(message);
+	}
+
+	/** Issues an informational message with timestamp to the ImageJ log window. */
+	public static void timestamp(final String message) {
+		info("(" + new Date(System.currentTimeMillis()) + "): " + message);
 	}
 
 	/**
