@@ -40,6 +40,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /* from Curtis
  * 
@@ -418,7 +419,7 @@ public class Stitch_Image_Grid implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("CreateGridLayout.openFileWrite(): " + e);
+		Log.error("CreateGridLayout.openFileWrite(): " + e);
 		outputFile = null;
 	  }
 	  return(outputFile);

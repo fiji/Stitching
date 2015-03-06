@@ -1489,7 +1489,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String entries[] = line.split("=");
 						if (entries.length != 2)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
 							return null;						
 						}
@@ -1500,7 +1500,7 @@ public class Stitch_Image_Collection implements PlugIn
 						}
 						catch (NumberFormatException e)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
@@ -1509,14 +1509,14 @@ public class Stitch_Image_Collection implements PlugIn
 					{
 						if (dim < 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							return null;							
 						}
 						
 						if (dim < 2 || dim > 3)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							return null;							
 						}
@@ -1525,7 +1525,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String entries[] = line.split(";");
 						if (entries.length != 3)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							return null;						
 						}
@@ -1534,7 +1534,7 @@ public class Stitch_Image_Collection implements PlugIn
 						
 						if (imageName.length() == 0 && imp.length() == 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							return null;						
 						}
@@ -1542,7 +1542,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String point = entries[2].trim();
 						if (!point.startsWith("(") || !point.endsWith(")"))
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							return null;
 						}
@@ -1551,7 +1551,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String points[] = point.split(",");
 						if (points.length != dim)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,..), dim = " + dim + ": " + point);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,..), dim = " + dim + ": " + point);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
 							return null;
 						}
@@ -1583,7 +1583,7 @@ public class Stitch_Image_Collection implements PlugIn
 						
 						if (imageInformation.imp == null && imp.length() > 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
 							return null;						
 						}
@@ -1597,7 +1597,7 @@ public class Stitch_Image_Collection implements PlugIn
 							}
 							catch (NumberFormatException e)
 							{
-								System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
+								Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
 								IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
 								return null;							
 							}
@@ -1609,7 +1609,7 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		catch (IOException e)
 		{
-			System.err.println("Stitch_Many_Cubes.readLayoutFile: " + e);
+			Log.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			IJ.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			return null;
 		}
@@ -1626,7 +1626,7 @@ public class Stitch_Image_Collection implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("Stitch_Many_Cubes.openFileRead(): " + e);
+		Log.error("Stitch_Many_Cubes.openFileRead(): " + e);
 		inputFile = null;
 	  }
 	  return(inputFile);

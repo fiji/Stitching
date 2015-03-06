@@ -243,7 +243,7 @@ public class Stitch_Image_Directory implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("CreateGridLayout.openFileWrite(): " + e);
+		IJ.error("CreateGridLayout.openFileWrite(): " + e);
 		outputFile = null;
 	  }
 	  return(outputFile);

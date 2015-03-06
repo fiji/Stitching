@@ -1284,7 +1284,7 @@ public class Stitching_2D implements PlugIn
 
 			if (rgbType == -1)
 			{
-				System.err.println("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
+				Log.warn("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
 				rgbType = colorList.length - 1;
 			}
 		}
@@ -1362,7 +1362,7 @@ public class Stitching_2D implements PlugIn
 
 			if (rgbType == -1)
 			{
-				System.err.println("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
+				Log.warn("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
 				rgbType = colorList.length - 1;
 			}
 		}
