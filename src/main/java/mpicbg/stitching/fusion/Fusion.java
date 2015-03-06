@@ -1223,6 +1223,6 @@ public class Fusion
 		}
 		
 		ImageJFunctions.show( img );
-		System.out.println( "done" );
+		Log.debug( "done" );
 	}
 }

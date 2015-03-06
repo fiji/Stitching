@@ -1269,7 +1269,7 @@ public class Stitching_2D implements PlugIn
 
 		if (ip == null )
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 
@@ -1294,7 +1294,7 @@ public class Stitching_2D implements PlugIn
 
 		if (width * height == 0)
 		{
-			System.out.println("Image is empty.");
+			Log.error("Image is empty.");
 			return null;
 		}
 
@@ -1347,7 +1347,7 @@ public class Stitching_2D implements PlugIn
 
 		if (ip == null )
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 
@@ -1372,7 +1372,7 @@ public class Stitching_2D implements PlugIn
 
 		if (width * height == 0)
 		{
-			System.out.println("Image is empty.");
+			Log.error("Image is empty.");
 			return null;
 		}
 

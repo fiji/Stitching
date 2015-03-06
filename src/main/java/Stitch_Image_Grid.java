@@ -51,7 +51,7 @@ public class ChooseFile {
   public static void main(String[] args) {
     String s = args[0];
     FilePattern fp = new FilePattern(new Location(s));
-    System.out.println("pattern = " + fp.getPattern());
+    Log.debug("pattern = " + fp.getPattern());
 
     String[] prefixes = fp.getPrefixes();
     int[] count = fp.getCount();
@@ -63,7 +63,7 @@ public class ChooseFile {
       letter++;
     }
     sb.append(fp.getSuffix());
-    System.out.println("Steffi's pattern = " + sb.toString());
+    Log.debug("Steffi's pattern = " + sb.toString());
   }
 }
 [8:04:38 PM] Curtis Rueden: That's how you generate a pattern for the Stitcher like you need.

@@ -1237,7 +1237,7 @@ public class Stitching_3D implements PlugIn
 
 		if (imageStack == null || imageStack.length == 0)
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 
@@ -1314,7 +1314,7 @@ public class Stitching_3D implements PlugIn
 
 		if (imageStack == null || imageStack.length == 0)
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 

@@ -147,7 +147,7 @@ public class DeltaVision_Converter implements PlugIn
 		}
 		catch ( Exception e )
 		{
-			System.out.println( "Cannot open file '" + dvLogFile + "': " + e );
+			Log.error( "Cannot open file '" + dvLogFile + "': " + e );
 			return;
 		}
 		

@@ -227,8 +227,8 @@ public abstract class Model implements CoordinateTransform
 				if ( m.getDistance() < t )
 					inliers.add( m );
 			}
-			//System.out.println( ( num_inliers - inliers.size() ) + " candidates with e > " + t + " removed by iterative robust regression." );
-			//System.out.println( inliers.size() + " inliers remaining." );
+			//Log.debug( ( num_inliers - inliers.size() ) + " candidates with e > " + t + " removed by iterative robust regression." );
+			//Log.debug( inliers.size() + " inliers remaining." );
 			
 			model.cost = observer.mean;
 		}

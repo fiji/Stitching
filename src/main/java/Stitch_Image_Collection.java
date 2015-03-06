@@ -1443,8 +1443,8 @@ public class Stitch_Image_Collection implements PlugIn
 		// create the preview
 		if (createPreview)
 		{
-			System.out.println("startX: " + startX + " startY: " + startY);
-			System.out.println("endX: " + endX + " endY: " + endY);
+			Log.debug("startX: " + startX + " startY: " + startY);
+			Log.debug("endX: " + endX + " endY: " + endY);
 			
 			final FloatProcessor out = new FloatProcessor(endX - startX, endY - startY);
 			

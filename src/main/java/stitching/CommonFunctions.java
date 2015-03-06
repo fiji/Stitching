@@ -234,16 +234,16 @@ public class CommonFunctions
 					end = to;
 			}
 			
-			/*System.out.println("width: " + width);
-			System.out.println("height: " + height);
-			System.out.println("depth: " + depth);
-			System.out.println("timepoints: " + timepoints);
-			System.out.println("channels: " + channels);
-			System.out.println("images: " + num);
-			System.out.println("image format: " + formatType);
-			System.out.println("bytes per pixel: " + bytesPerPixel);
-			System.out.println("pixel type: " + pixelTypeString);			
-			System.out.println("dimensionOrder: " + dimensionOrder);*/
+			/*Log.debug("width: " + width);
+			Log.debug("height: " + height);
+			Log.debug("depth: " + depth);
+			Log.debug("timepoints: " + timepoints);
+			Log.debug("channels: " + channels);
+			Log.debug("images: " + num);
+			Log.debug("image format: " + formatType);
+			Log.debug("bytes per pixel: " + bytesPerPixel);
+			Log.debug("pixel type: " + pixelTypeString);			
+			Log.debug("dimensionOrder: " + dimensionOrder);*/
 
 			final ImageStack stack = new ImageStack(width, height);	
 			final int t = 0;			
@@ -256,7 +256,7 @@ public class CommonFunctions
 				{
 					final int index = r.getIndex(z, c, t);
 					r.openBytes(index, b[c]);					
-					//System.out.println(index);
+					//Log.debug(index);
 				}
 				
 				if (channels == 1)
