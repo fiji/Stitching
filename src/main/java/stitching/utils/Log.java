@@ -20,6 +20,11 @@ public final class Log {
 		IJ.log("WARNING: " + message);
 	}
 
+	/** Issues an informational message to the ImageJ log window. */
+	public static void info(final String message) {
+		IJ.log(message);
+	}
+
 	/**
 	 * Issues an error message to the ImageJ log window.
 	 * 

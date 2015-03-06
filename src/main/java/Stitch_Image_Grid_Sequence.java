@@ -244,7 +244,7 @@ public class Stitch_Image_Grid_Sequence implements PlugIn
 			
 			final String outputFusedPath = outputDirectory + System.getProperty("file.separator") + fusedImage.getTitle() 
 								+ "_" + Stitch_Image_Grid.getLeadingZeros(numZValues, zs) + ".tif"; 
-			IJ.log("Saving " + outputFusedPath +  " ... ");
+			Log.info("Saving " + outputFusedPath +  " ... ");
 			try 
 			{
 				new FileSaver(fusedImage).saveAsTiff(outputFusedPath);
@@ -254,7 +254,7 @@ public class Stitch_Image_Grid_Sequence implements PlugIn
 				Log.error("Error while saving " + outputFusedPath, e);
 				return;
 			}
-			IJ.log("Saved");
+			Log.info("Saved");
 			
 			startI += gridSize;
 			

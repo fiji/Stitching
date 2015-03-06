@@ -130,12 +130,12 @@ public class Stitch_Image_Directory implements PlugIn
 			File file = new File( dir, fileName );
 			if ( file.isFile() && !file.isHidden() )
 			{
-				IJ.log( file.getPath() );
+				Log.info( file.getPath() );
 				files.add( fileName );
 			}
 		}
 		
-		IJ.log("Found " + files.size() + " files.");
+		Log.info("Found " + files.size() + " files.");
 		
 		if( files.size() < 2 )
 		{

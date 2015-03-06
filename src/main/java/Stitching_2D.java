@@ -382,13 +382,13 @@ public class Stitching_2D implements PlugIn
 
 		if (doLogging)
 		{
-			IJ.log("Translation Parameters:");
-			IJ.log("(second stack relative to first stack)");
+			Log.info("Translation Parameters:");
+			Log.info("(second stack relative to first stack)");
 			
 			if ( this.translation == null )
-				IJ.log("x= " + shift.x + " y= " + shift.y + " R= " + result[0].R);
+				Log.info("x= " + shift.x + " y= " + shift.y + " R= " + result[0].R);
 			else
-				IJ.log("x= " + shift.x + " y= " + shift.y);
+				Log.info("x= " + shift.x + " y= " + shift.y);
 		}
 	}
 
@@ -855,7 +855,7 @@ public class Stitching_2D implements PlugIn
 
 		if (doLogging)
 			for (int i = 0; i < result.length; i++)
-				IJ.log("x:" + result[i].shift.x + " y:" + result[i].shift.y + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
+				Log.info("x:" + result[i].shift.x + " y:" + result[i].shift.y + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
 
 		return result;
 	}
@@ -922,7 +922,7 @@ public class Stitching_2D implements PlugIn
 		// if less than 1% is overlapping
 		if (count <= (Math.min(w1, w2) * Math.min(h1, h2)) * 0.01)
 		{
-			//IJ.log("lower than 1%");
+			//Log.info("lower than 1%");
 			result.R = 0;
 			result.SSQ = Float.MAX_VALUE;
 			result.overlappingPixels = count;

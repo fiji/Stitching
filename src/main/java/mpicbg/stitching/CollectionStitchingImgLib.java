@@ -80,7 +80,7 @@ public class CollectionStitchingImgLib
 	            				
 	            				pair.setCrossCorrelation( result.getCrossCorrelation() );
 	
-	            				IJ.log( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
+	            				Log.info( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
 	            						Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
 	                    	}
 	                    }
@@ -92,7 +92,7 @@ public class CollectionStitchingImgLib
 	        
 	        // get the final positions of all tiles
 			optimized = GlobalOptimization.optimize( pairs, pairs.get( 0 ).getTile1(), params );
-			IJ.log( "Finished registration process (" + (System.currentTimeMillis() - time) + " ms)." );
+			Log.info( "Finished registration process (" + (System.currentTimeMillis() - time) + " ms)." );
 		}
 		else
 		{

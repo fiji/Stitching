@@ -111,7 +111,7 @@ public class Stitching_Grid implements PlugIn
 	@Override
 	public void run( String arg0 ) 
 	{
-		IJ.log( "Stitching internal version: " + Stitching_Grid.version );
+		Log.info( "Stitching internal version: " + Stitching_Grid.version );
 
 		final GridType grid = new GridType();
 		
@@ -416,9 +416,9 @@ public class Stitching_Grid implements PlugIn
 			if ( gridType >=5 )
 			{
 				if ( params.virtual )
-					IJ.log( "Opening VIRTUAL: " + element.getFile().getAbsolutePath() + " ... " );
+					Log.info( "Opening VIRTUAL: " + element.getFile().getAbsolutePath() + " ... " );
 				else
-					IJ.log( "Loading: " + element.getFile().getAbsolutePath() + " ... " );
+					Log.info( "Loading: " + element.getFile().getAbsolutePath() + " ... " );
 			}
 				
 			
@@ -446,13 +446,13 @@ public class Stitching_Grid implements PlugIn
 			if ( imp.getNSlices() > 1 )
 			{
 				if ( gridType >=5 )
-					IJ.log( "" + imp.getWidth() + "x" + imp.getHeight() + "x" + imp.getNSlices() + "px, channels=" + numChannels + ", timepoints=" + numTimePoints + " (" + time + " ms)" );
+					Log.info( "" + imp.getWidth() + "x" + imp.getHeight() + "x" + imp.getNSlices() + "px, channels=" + numChannels + ", timepoints=" + numTimePoints + " (" + time + " ms)" );
 				is3d = true;					
 			}
 			else
 			{
 				if ( gridType >=5 )
-					IJ.log( "" + imp.getWidth() + "x" + imp.getHeight() + "px, channels=" + numChannels + ", timepoints=" + numTimePoints + " (" + time + " ms)" );
+					Log.info( "" + imp.getWidth() + "x" + imp.getHeight() + "px, channels=" + numChannels + ", timepoints=" + numTimePoints + " (" + time + " ms)" );
 				is2d = true;
 			}
 			
@@ -516,7 +516,7 @@ public class Stitching_Grid implements PlugIn
     	
     	// output the result
 		for ( final ImagePlusTimePoint imt : optimized )
-			IJ.log( imt.getImagePlus().getTitle() + ": " + imt.getModel() );
+			Log.info( imt.getImagePlus().getTitle() + ": " + imt.getModel() );
 		
     	// write the file tileconfiguration
         // NOTE: outputFile should never be null anyway!
@@ -536,9 +536,9 @@ public class Stitching_Grid implements PlugIn
 			long time = System.currentTimeMillis();
 			
 			if ( params.outputDirectory == null )
-				IJ.log( "Fuse & Display ..." );
+				Log.info( "Fuse & Display ..." );
 			else
-				IJ.log( "Fuse & Write to disk (into directory '" + new File( params.outputDirectory, "" ).getAbsolutePath() + "') ..." );
+				Log.info( "Fuse & Write to disk (into directory '" + new File( params.outputDirectory, "" ).getAbsolutePath() + "') ..." );
 			IJ.showStatus("Fusing stitched image...");
 			
 			// first prepare the models and get the targettype
@@ -586,7 +586,7 @@ public class Stitching_Grid implements PlugIn
 				noOverlap = defaultQuickFusion = gd3.getNextBoolean();
 				
 				if ( noOverlap )
-					IJ.log( "There is no overlap between any of the tiles, using faster fusion algorithm." );
+					Log.info( "There is no overlap between any of the tiles, using faster fusion algorithm." );
 			}
 			
 			if ( is32bit )
@@ -598,8 +598,8 @@ public class Stitching_Grid implements PlugIn
 			else
 				Log.error( "Unknown image type for fusion." );
 			
-			IJ.log( "Finished fusion (" + (System.currentTimeMillis() - time) + " ms)");
-			IJ.log( "Finished ... (" + (System.currentTimeMillis() - startTime) + " ms)");
+			Log.info( "Finished fusion (" + (System.currentTimeMillis() - time) + " ms)");
+			Log.info( "Finished ... (" + (System.currentTimeMillis() - startTime) + " ms)");
 			
 			if ( imp != null )
 			{
@@ -637,12 +637,6 @@ public class Stitching_Grid implements PlugIn
     	// close all images
     	for ( final ImageCollectionElement element : elements )
     		element.close();
-	}
-
-	void logger (final String message)
-	{
-		System.out.println(message);
-		IJ.log(message);
 	}
 
 	/**
@@ -737,7 +731,7 @@ public class Stitching_Grid implements PlugIn
 			Log.error("Failed to close Bio-Formats reader.");
 		}
 
-		IJ.log("Adding ROIs...");
+		Log.info("Adding ROIs...");
 
 		List<Integer> keys = new ArrayList<Integer>(roisBySlice.keySet());
 		Collections.sort(keys);
@@ -751,7 +745,7 @@ public class Stitching_Grid implements PlugIn
 				rm.add((ImagePlus)null, roi, 0);
 		}
 
-		IJ.log("ROIs generated.");
+		Log.info("ROIs generated.");
 	}
 
 	/**
@@ -764,7 +758,7 @@ public class Stitching_Grid implements PlugIn
 	 */
 	protected IFormatReader initializeReader(IFormatReader in, final String file)
 	{
-		IJ.log("Initializing Bio-Formats reader...");
+		Log.info("Initializing Bio-Formats reader...");
 		if (in == null || !file.equalsIgnoreCase(in.getCurrentFile())) {
 			if (in != null) {
 				try {
@@ -999,10 +993,10 @@ public class Stitching_Grid implements PlugIn
 				element.setImagePlus( imps[ series ] );  // assign the sub-series to the elements list
 				
 				if ( element.getDimensionality() == 2 )
-					IJ.log( "series " + series + ": position = (" + element.getOffset( 0 ) + "," + element.getOffset( 1 ) + ") [px], " +
+					Log.info( "series " + series + ": position = (" + element.getOffset( 0 ) + "," + element.getOffset( 1 ) + ") [px], " +
 							"size = (" + element.getDimension( 0 ) + "," + element.getDimension( 1 ) + ")" );
 				else
-					IJ.log( "series " + series + ": position = (" + element.getOffset( 0 ) + "," + element.getOffset( 1 ) + "," + element.getOffset( 2 ) + ") [px], " +
+					Log.info( "series " + series + ": position = (" + element.getOffset( 0 ) + "," + element.getOffset( 1 ) + "," + element.getOffset( 2 ) + ") [px], " +
 							"size = (" + element.getDimension( 0 ) + "," + element.getDimension( 1 ) + "," + element.getDimension( 2 ) + ")" );
 			}
 			
@@ -1066,7 +1060,7 @@ public class Stitching_Grid implements PlugIn
 
 						if (entries[1].trim().equals("true")) {
 							multiSeries = true;
-							logger(pfx + lineNo + ": parsing MultiSeries configuration.");
+							Log.info(pfx + lineNo + ": parsing MultiSeries configuration.");
 						}
 
 					} else {  // body parsing (tiles + coordinates)
@@ -1097,11 +1091,11 @@ public class Stitching_Grid implements PlugIn
 						if (multiSeries) {
 							String imageSeries = entries[1].trim();  // sub-volume (series nr)
 							if (imageSeries.length() == 0) {
-								logger(pfx + lineNo + ": Series index required [fileName; series; (x,y,...)" );
+								Log.info(pfx + lineNo + ": Series index required [fileName; series; (x,y,...)" );
 							} else {
 								try {
 									seriesNr = Integer.parseInt( imageSeries );
-									logger(pfx + lineNo + ": Series nr (sub-volume): " + seriesNr);
+									Log.info(pfx + lineNo + ": Series nr (sub-volume): " + seriesNr);
 								}
 								catch ( NumberFormatException e ) {
 									Log.error(pfx + lineNo + ": Cannot parse series nr: " + imageSeries);
@@ -1146,7 +1140,7 @@ public class Stitching_Grid implements PlugIn
 						if (multiSeries) {
 							final String imageNameFull = element.getFile().getAbsolutePath();
 							if (multiSeriesMap.get(imageNameFull) == null) {
-								logger(pfx + lineNo + ": Loading MultiSeries file: " + imageNameFull);
+								Log.info(pfx + lineNo + ": Loading MultiSeries file: " + imageNameFull);
 								multiSeriesMap.put(imageNameFull, openBFDefault(imageNameFull));
 							}
 							element.setImagePlus(multiSeriesMap.get(imageNameFull)[seriesNr]);
@@ -1188,12 +1182,12 @@ public class Stitching_Grid implements PlugIn
 			
 			if ( file.isFile() && !file.isHidden() && !fileName.endsWith( ".txt" ) && !fileName.endsWith( ".TXT" ) )
 			{
-				IJ.log( file.getPath() );
+				Log.info( file.getPath() );
 				files.add( fileName );
 			}
 		}
 		
-		IJ.log( "Found " + files.size() + " files (we ignore hidden and .txt files)." );
+		Log.info( "Found " + files.size() + " files (we ignore hidden and .txt files)." );
 		
 		if ( files.size() < 2 )
 		{
@@ -1340,9 +1334,9 @@ public class Stitching_Grid implements PlugIn
 			for ( int x = 0; x < gridSizeX; ++x )
 			{
 				if ( virtual )
-					IJ.log( "Opening VIRTUAL (" + x + ", " + y + "): " + gridLayout[ x ][ y ].getFile().getAbsolutePath() + " ... " );
+					Log.info( "Opening VIRTUAL (" + x + ", " + y + "): " + gridLayout[ x ][ y ].getFile().getAbsolutePath() + " ... " );
 				else
-					IJ.log( "Loading (" + x + ", " + y + "): " + gridLayout[ x ][ y ].getFile().getAbsolutePath() + " ... " );			
+					Log.info( "Loading (" + x + ", " + y + "): " + gridLayout[ x ][ y ].getFile().getAbsolutePath() + " ... " );			
 				
 				long time = System.currentTimeMillis();
 				final ImagePlus imp = gridLayout[ x ][ y ].open( virtual );
@@ -1359,19 +1353,19 @@ public class Stitching_Grid implements PlugIn
 				
 				if ( imp.getNSlices() > 1 )
 				{
-					IJ.log( "" + imp.getWidth() + "x" + imp.getHeight() + "x" + imp.getNSlices() + "px, channels=" + imp.getNChannels() + ", timepoints=" + imp.getNFrames() + " (" + time + " ms)" );
+					Log.info( "" + imp.getWidth() + "x" + imp.getHeight() + "x" + imp.getNSlices() + "px, channels=" + imp.getNChannels() + ", timepoints=" + imp.getNFrames() + " (" + time + " ms)" );
 					is3d = true;					
 				}
 				else
 				{
-					IJ.log( "" + imp.getWidth() + "x" + imp.getHeight() + "px, channels=" + imp.getNChannels() + ", timepoints=" + imp.getNFrames() + " (" + time + " ms)" );
+					Log.info( "" + imp.getWidth() + "x" + imp.getHeight() + "px, channels=" + imp.getNChannels() + ", timepoints=" + imp.getNFrames() + " (" + time + " ms)" );
 					is2d = true;
 				}
 				
 				// test validity of images
 				if ( is2d && is3d )
 				{
-					IJ.log( "Some images are 2d, some are 3d ... cannot proceed" );
+					Log.info( "Some images are 2d, some are 3d ... cannot proceed" );
 					return null;
 				}
 
@@ -1471,7 +1465,7 @@ public class Stitching_Grid implements PlugIn
 		final PrintWriter out = TextFileAccess.openFileWrite( file );
 		final int dimensionality = elements.get( 0 ).getDimensionality();
 		
-		logger( "Writing registered TileConfiguration: " + file );
+		Log.info( "Writing registered TileConfiguration: " + file );
 
 		out.println( "# Define the number of dimensions we are working on" );
         out.println( "dim = " + dimensionality );

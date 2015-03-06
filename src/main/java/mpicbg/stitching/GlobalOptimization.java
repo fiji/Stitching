@@ -91,7 +91,7 @@ public class GlobalOptimization
 				ArrayList< ImagePlusTimePoint > imageInformationList = new ArrayList< ImagePlusTimePoint >();
 				imageInformationList.add( fixedImage );
 				
-				IJ.log(" number of tiles = " + imageInformationList.size() );
+				Log.info(" number of tiles = " + imageInformationList.size() );
 				
 				return imageInformationList;
 			}						
@@ -99,14 +99,14 @@ public class GlobalOptimization
 			/*
 			// trash everything but the largest graph			
 			final ArrayList< Set< Tile< ? > > > graphs = Tile.identifyConnectedGraphs( tiles );
-			IJ.log( "Number of tile graphs = " + graphs.size() );
+			Log.info( "Number of tile graphs = " + graphs.size() );
 			
 			int largestGraphSize = 0;
 			int largestGraphId = -1;
 			
 			for ( int i = 0; i < graphs.size(); ++i )
 			{
-				IJ.log( "Graph " + i + ": size = " + graphs.get( i ).size() );
+				Log.info( "Graph " + i + ": size = " + graphs.get( i ).size() );
 				if ( graphs.get( i ).size() > largestGraphSize )
 				{
 					largestGraphSize = graphs.get( i ).size();
@@ -135,8 +135,8 @@ public class GlobalOptimization
 						break;
 					}
 			}
-			//IJ.log(" tiles size =" + tiles.size());
-			//IJ.log(" tc.getTiles() size =" + tc.getTiles().size());
+			//Log.info(" tiles size =" + tiles.size());
+			//Log.info(" tc.getTiles() size =" + tc.getTiles().size());
 
 			try
 			{
@@ -171,11 +171,11 @@ public class GlobalOptimization
 					float longestDisplacement = 0;
 					PointMatch worstMatch = null;
 					
-					//IJ.log( "worstTile: " + ((ImagePlusTimePoint)worstTile).getImagePlus().getTitle() );
+					//Log.info( "worstTile: " + ((ImagePlusTimePoint)worstTile).getImagePlus().getTitle() );
 
 					for (PointMatch p : matches)
 					{
-						//IJ.log( "distance: " + p.getDistance() + " to " + ((PointMatchStitching)p).getPair().getImagePlus2().getTitle() );
+						//Log.info( "distance: " + p.getDistance() + " to " + ((PointMatchStitching)p).getPair().getImagePlus2().getTitle() );
 
 						if (p.getDistance() > longestDisplacement)
 						{
@@ -186,7 +186,7 @@ public class GlobalOptimization
 					*/
 					final ComparePair pair = ((PointMatchStitching)worstMatch).getPair();
 					
-					IJ.log( "Identified link between " + pair.getImagePlus1().getTitle() + "[" + pair.getTile1().getTimePoint() + "] and " + 
+					Log.info( "Identified link between " + pair.getImagePlus1().getTitle() + "[" + pair.getTile1().getTimePoint() + "] and " + 
 							pair.getImagePlus2().getTitle() + "[" + pair.getTile2().getTimePoint() + "] (R=" + pair.getCrossCorrelation() +") to be bad. Reoptimizing.");
 					
 					((PointMatchStitching)worstMatch).getPair().setIsValidOverlap( false );

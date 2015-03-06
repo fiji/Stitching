@@ -341,10 +341,10 @@ public class Stitching_3D implements PlugIn
 		}
 		
 		if (doLogging)
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "):Starting");
+			Log.info("(" + new Date(System.currentTimeMillis()) + "):Starting");
 		work();
 		if (doLogging)
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "):Finished");
+			Log.info("(" + new Date(System.currentTimeMillis()) + "):Finished");
 	}
 
 	private final void enableChannelChoice(final Choice controller, final Choice target, final int[] stackIDs)
@@ -601,13 +601,13 @@ public class Stitching_3D implements PlugIn
 
 		if (doLogging)
 		{
-			IJ.log("Translation Parameters:");
-			IJ.log("(second stack relative to first stack)");
+			Log.info("Translation Parameters:");
+			Log.info("(second stack relative to first stack)");
 			
 			if ( this.translation == null )
-				IJ.log("x=" + shift.x + " y=" + shift.y + " z=" + shift.z + " R=" + result[0].R);
+				Log.info("x=" + shift.x + " y=" + shift.y + " z=" + shift.z + " R=" + result[0].R);
 			else
-				IJ.log("x=" + shift.x + " y=" + shift.y + " z=" + shift.z );				
+				Log.info("x=" + shift.x + " y=" + shift.y + " z=" + shift.z );				
 		}
 	}
 
@@ -755,7 +755,7 @@ public class Stitching_3D implements PlugIn
 
 		if (doLogging)
 			for (int i = 0; i < result.length; i++)
-				IJ.log("x:" + result[i].shift.x + " y:" + result[i].shift.y + " z:" + result[i].shift.z + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
+				Log.info("x:" + result[i].shift.x + " y:" + result[i].shift.y + " z:" + result[i].shift.z + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
 
 		return result;
 	}
@@ -854,7 +854,7 @@ public class Stitching_3D implements PlugIn
 		// if less than 1% is overlapping
 		if (count <= (Math.min(w1 * h1 * d1, w2 * h2 * d2)) * minOverlap)
 		{
-			// IJ.log("lower than 1%");
+			// Log.info("lower than 1%");
 			result.R = 0;
 			result.SSQ = Float.MAX_VALUE;
 			result.overlappingPixels = count;
@@ -936,7 +936,7 @@ public class Stitching_3D implements PlugIn
 		result.overlappingPixels = count;
 		result.shift = shift;
 
-		// IJ.log("returning result");
+		// Log.info("returning result");
 
 		return result;
 	}

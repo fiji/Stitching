@@ -262,9 +262,9 @@ public class Fusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		//IJ.log( "ch: " + imp.getNChannels() );
-		//IJ.log( "slices: " + imp.getNSlices() );
-		//IJ.log( "frames: " + imp.getNFrames() );
+		//Log.info( "ch: " + imp.getNChannels() );
+		//Log.info( "slices: " + imp.getNSlices() );
+		//Log.info( "frames: " + imp.getNFrames() );
 		result.setDimensions( numChannels, 1, numTimePoints );
 		
 		if ( numChannels > 1 || numTimePoints > 1 )
@@ -1106,8 +1106,8 @@ public class Fusion
 				max[ i ] = new float[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ], imgSizes[ i % numImages ][ 2 ] };
 		}
 		
-		//IJ.log( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
-		//IJ.log( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
+		//Log.info( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
+		//Log.info( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
 
 		// casts of the models
 		final ArrayList<InvertibleBoundable> boundables = new ArrayList<InvertibleBoundable>();
@@ -1117,12 +1117,12 @@ public class Fusion
 			final InvertibleBoundable boundable = models.get( i ); 
 			boundables.add( boundable );
 			
-			//IJ.log( "i: " + boundable );
+			//Log.info( "i: " + boundable );
 			
 			boundable.estimateBounds( min[ i ], max[ i ] );
 		}
-		//IJ.log( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
-		//IJ.log( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
+		//Log.info( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
+		//Log.info( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
 		
 		// dimensions of the final image
 		final float[] minImg = new float[ dimensionality ];
@@ -1152,7 +1152,7 @@ public class Fusion
 				}
 			}
 		}
-		//IJ.log( "output: " + Util.printCoordinates( minImg ) + " -> " + Util.printCoordinates( maxImg ) );
+		//Log.info( "output: " + Util.printCoordinates( minImg ) + " -> " + Util.printCoordinates( maxImg ) );
 
 		// the size of the new image
 		//final int[] size = new int[ dimensionality ];
@@ -1165,8 +1165,8 @@ public class Fusion
 			offset[ d ] = minImg[ d ];			
 		}
 		
-		//IJ.log( "size: " + Util.printCoordinates( size ) );
-		//IJ.log( "offset: " + Util.printCoordinates( offset ) );		
+		//Log.info( "size: " + Util.printCoordinates( size ) );
+		//Log.info( "offset: " + Util.printCoordinates( offset ) );		
 	}
 
 	/**

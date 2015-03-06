@@ -166,9 +166,9 @@ public class Stitch_Image_Collection implements PlugIn
 	
 	public ImagePlus work(ArrayList<ImageInformation> imageInformationList, boolean createPreview, boolean computeOverlap, String fusionMethod, String handleRGB, String fileName, boolean showImage)
 	{	
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Stitching the following files:");
+		Log.info("(" + new Date(System.currentTimeMillis()) + "): Stitching the following files:");
 		for (ImageInformation iI : imageInformationList)
-			IJ.log("" + iI);	
+			Log.info("" + iI);	
 		
 		// make max intensity projection and find overlapping tiles
 		ArrayList<OverlapProperties> overlappingTiles = findOverlappingTiles(imageInformationList, createPreview, fusionMethod);
@@ -197,13 +197,13 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		
 		// output the final positions
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Final image positions in the fused image:");
+		Log.info("(" + new Date(System.currentTimeMillis()) + "): Final image positions in the fused image:");
 		for (ImageInformation i: newImageInformationList)
 		{
 			if (dim == 3)
-				IJ.log("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1] + ", " + i.position[2]);
+				Log.info("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1] + ", " + i.position[2]);
 			else
-				IJ.log("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1]);
+				Log.info("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1]);
 		}
 		
 		// write the new tile configuration
@@ -212,15 +212,15 @@ public class Stitch_Image_Collection implements PlugIn
 		// getMax and set minimum coordinates to 0,0,0
 		float[] max = getAndApplyMinMax(newImageInformationList, dim);		
 		if (dim == 3)
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
+			Log.info("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
 		else
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1]);
+			Log.info("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1]);
 		
 		// fuse the images
 		ImagePlus fused = fuseImages(newImageInformationList, max, "Stitched Image", fusionMethod, rgbOrder, dim, alpha, showImage );
 		if ( showImage )
 			fused.show();
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Finished Stitching.");
+		Log.info("(" + new Date(System.currentTimeMillis()) + "): Finished Stitching.");
 
 		return fused;
 	}
@@ -278,17 +278,17 @@ public class Stitch_Image_Collection implements PlugIn
 		else type = AVG; // fusionMethod.equals("Average")
 		
 		if (type == AVG)
-			IJ.log("Average Fusion started.");
+			Log.info("Average Fusion started.");
 		else if (type == MAX)
-			IJ.log("Maximum Fusion started.");
+			Log.info("Maximum Fusion started.");
 		else if (type == MIN)
-			IJ.log("Minimum Fusion started.");
+			Log.info("Minimum Fusion started.");
 		else if (type == LIN_BLEND)
-			IJ.log("Linear Blending Fusion started.");
+			Log.info("Linear Blending Fusion started.");
 		else if (type == RED_CYAN)
-			IJ.log("Red-Cyan Fusion started.");
+			Log.info("Red-Cyan Fusion started.");
 		else if (type == CommonFunctions.NONE)
-			IJ.log("Overlapping (non fusion) started.");
+			Log.info("Overlapping (non fusion) started.");
 
 		final int imageType = imageInformationList.get(0).imageType; 
 		final int imgW = Math.round(max[0]);
@@ -1034,7 +1034,7 @@ public class Stitch_Image_Collection implements PlugIn
 						tiles.add( t2 );				
 				}
 			}
-			IJ.log("Tile size: " + tiles.size());
+			Log.info("Tile size: " + tiles.size());
 			
 			if( tiles.size() == 0 )
 			{
@@ -1046,27 +1046,27 @@ public class Stitch_Image_Collection implements PlugIn
 				ArrayList<ImageInformation> imageInformationList = new ArrayList<ImageInformation>();
 				imageInformationList.add( firstImage );
 				
-				IJ.log(" image information list size =" + imageInformationList.size());
+				Log.info(" image information list size =" + imageInformationList.size());
 				
 				return imageInformationList;
 			}						
 			
 			// trash everything but the largest graph			
 			final ArrayList< ArrayList< Tile > > graphs = Tile.identifyConnectedGraphs( tiles );
-			IJ.log("Number of tile graphs = " + graphs.size());
+			Log.info("Number of tile graphs = " + graphs.size());
 			
 			/*
 			for ( final ArrayList< Tile > graph : graphs )
 			{
-				IJ.log("graph size = " + graph.size());
+				Log.info("graph size = " + graph.size());
 				if ( graph.size() < 30 )
 				{
 					tiles.removeAll( graph );
-					IJ.log("-removed");
+					Log.info("-removed");
 				}
 				else
 				{
-					IJ.log("-kept");
+					Log.info("-kept");
 					tc.fixTile( graph.get( 0 ) );
 				}
 			}
@@ -1081,14 +1081,14 @@ public class Stitch_Image_Collection implements PlugIn
 					largestGraph = graph;
 				}
 				
-				//IJ.log("graph size = " + graph.size());
+				//Log.info("graph size = " + graph.size());
 			}
 			
 			for ( final ArrayList< Tile > graph : graphs )
 				if ( graph != largestGraph )
 				{
 					tiles.removeAll( graph );
-					//IJ.log(" Removed graph of size " + graph.size());
+					//Log.info(" Removed graph of size " + graph.size());
 				}
 			/*
 			for ( final ArrayList< Tile > graph : graphs )
@@ -1100,8 +1100,8 @@ public class Stitch_Image_Collection implements PlugIn
 			tc.addTiles( tiles );
 			tc.fixTile( tiles.get( 0 ) );						
 			
-			//IJ.log(" tiles size =" + tiles.size());
-			//IJ.log(" tc.getTiles() size =" + tc.getTiles().size());
+			//Log.info(" tiles size =" + tiles.size());
+			//Log.info(" tc.getTiles() size =" + tc.getTiles().size());
 			
 			try
 			{
@@ -1112,7 +1112,7 @@ public class Stitch_Image_Collection implements PlugIn
 				
 				if ( (avgError*thresholdDisplacementRelative < maxError && maxError > 0.75) || avgError > thresholdDisplacementAbsolute)
 				{
-					IJ.log("maxError more than " + thresholdDisplacementRelative + " times bigger than avgerror.");
+					Log.info("maxError more than " + thresholdDisplacementRelative + " times bigger than avgerror.");
 					Tile worstTile = tc.getWorstError();
 					ArrayList< PointMatch > matches = worstTile.getMatches();
 					
@@ -1126,7 +1126,7 @@ public class Stitch_Image_Collection implements PlugIn
 							worstMatch = p;
 						}
 					
-					IJ.log("Identified link between " + worstMatch.o.i1.imageName + " and " + worstMatch.o.i2.imageName + " (R=" + worstMatch.o.R +") to be bad. Reoptimizing.");
+					Log.info("Identified link between " + worstMatch.o.i1.imageName + " and " + worstMatch.o.i2.imageName + " (R=" + worstMatch.o.R +") to be bad. Reoptimizing.");
 					worstMatch.o.validOverlap = false;
 					redo = true;
 					
@@ -1153,7 +1153,7 @@ public class Stitch_Image_Collection implements PlugIn
 		Collections.sort(imageInformationList);
 		
 		
-		IJ.log(" image information list size =" + imageInformationList.size());
+		Log.info(" image information list size =" + imageInformationList.size());
 		
 		return imageInformationList;
 	}
@@ -1224,7 +1224,7 @@ public class Stitch_Image_Collection implements PlugIn
 					o.translation3D = new Point3D(0,0,0);
 				}
 								
-				IJ.log(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation3D);
+				Log.info(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation3D);
 			}
 			else if (dim == 2)
 			{
@@ -1267,7 +1267,7 @@ public class Stitch_Image_Collection implements PlugIn
 				imp1.setProcessor(imp1.getTitle(), ip1);
 				imp2.setProcessor(imp2.getTitle(), ip2);
 								
-				IJ.log(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation2D);
+				Log.info(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation2D);
 			}
 			else 
 			{
@@ -1406,7 +1406,7 @@ public class Stitch_Image_Collection implements PlugIn
 			if (iI.invalid)
 			{
 				imageInformationList.remove(i);
-				IJ.log("Removed: " + iI.imageName);
+				Log.info("Removed: " + iI.imageName);
 			}
 			else
 				i++;

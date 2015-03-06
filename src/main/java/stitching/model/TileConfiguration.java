@@ -23,12 +23,12 @@
  */
 package stitching.model;
 
-import ij.IJ;
-
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import stitching.utils.Log;
 
 
 /**
@@ -158,10 +158,10 @@ public class TileConfiguration
 			++i;
 		}
 		
-		IJ.log( "Successfully optimized configuration of " + tiles.size() + " tiles after " + i + " iterations:" );
-		IJ.log( "  average displacement: " + decimalFormat.format( error ) + "px" );
-		IJ.log( "  minimal displacement: " + decimalFormat.format( minError ) + "px" );
-		IJ.log( "  maximal displacement: " + decimalFormat.format( maxError ) + "px" );
+		Log.info( "Successfully optimized configuration of " + tiles.size() + " tiles after " + i + " iterations:" );
+		Log.info( "  average displacement: " + decimalFormat.format( error ) + "px" );
+		Log.info( "  minimal displacement: " + decimalFormat.format( minError ) + "px" );
+		Log.info( "  maximal displacement: " + decimalFormat.format( maxError ) + "px" );
 	}
 
 }

@@ -143,13 +143,13 @@ public class Stitch_Multiple_Series_File implements PlugIn
 		
 		for ( ImageInformation iI : imageInformationList )
 		{
-			IJ.log( iI.imageName );
+			Log.info( iI.imageName );
 			
 			String offset = "";
 			for ( int d = 0; d < iI.offset.length; ++d )
 				offset += iI.offset[ d ] + ", ";
 			
-			IJ.log( offset );
+			Log.info( offset );
 		}
 
 		final GridLayout gridLayout = new GridLayout();

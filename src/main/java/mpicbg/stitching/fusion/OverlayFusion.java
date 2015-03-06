@@ -109,9 +109,9 @@ public class OverlayFusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		//IJ.log( "ch: " + imp.getNChannels() );
-		//IJ.log( "slices: " + imp.getNSlices() );
-		//IJ.log( "frames: " + imp.getNFrames() );
+		//Log.info( "ch: " + imp.getNChannels() );
+		//Log.info( "slices: " + imp.getNSlices() );
+		//Log.info( "frames: " + imp.getNFrames() );
 		result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
 		
 		if ( imp.getNChannels() > 1 )
