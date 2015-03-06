@@ -46,6 +46,7 @@ import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.meta.MetadataRetrieve;
+import stitching.utils.Log;
 
 public class CommonFunctions
 {
@@ -1138,12 +1139,9 @@ public class CommonFunctions
 		final double locationY = getPosition( hasPlane ? retrieve.getPlanePositionY( series, planeIndex ) : null, stageLabelY, invertY );
 		final double locationZ = ignoreZStage ? 0 : getPosition( hasPlane ? retrieve.getPlanePositionZ( series, planeIndex ) : null, stageLabelZ, false );
 
-		if ( IJ.debugMode )
-		{
-			IJ.log( "locationX:  " + locationX );
-			IJ.log( "locationY:  " + locationY );
-			IJ.log( "locationZ:  " + locationZ );
-		}
+		Log.debug( "locationX:  " + locationX );
+		Log.debug( "locationY:  " + locationY );
+		Log.debug( "locationZ:  " + locationZ );
 
 		return new double[] { locationX, locationY, locationZ };
 	}

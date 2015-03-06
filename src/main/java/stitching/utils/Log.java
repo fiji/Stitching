@@ -9,6 +9,12 @@ import ij.IJ;
  */
 public final class Log {
 
+	/** Issues a message to the ImageJ log window, but only in debug mode. */
+	public static void debug(final String message) {
+		if (!IJ.debugMode) return;
+		IJ.log(message);
+	}
+
 	/**
 	 * Issues an error message to the ImageJ log window.
 	 * 

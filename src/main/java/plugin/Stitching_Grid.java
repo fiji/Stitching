@@ -855,8 +855,7 @@ public class Stitching_Grid implements PlugIn
 
 			final int numSeries = r.getSeriesCount();
 			
-			if ( IJ.debugMode )
-				IJ.log( "numSeries:  " + numSeries );
+			Log.debug( "numSeries:  " + numSeries );
 			
 			// get maxZ
 			int dim = 2;
@@ -864,12 +863,10 @@ public class Stitching_Grid implements PlugIn
 				if ( r.getSizeZ() > 1 )
 					dim = 3;
 
-			if ( IJ.debugMode )
-				IJ.log( "dim:  " + dim );
+			Log.debug( "dim:  " + dim );
 
 			final MetadataRetrieve retrieve = service.asRetrieve(r.getMetadataStore());
-			if ( IJ.debugMode )
-				IJ.log( "retrieve:  " + retrieve );
+			Log.debug( "retrieve:  " + retrieve );
 
 			// CTR HACK: In the case of a single series, we treat each time point
 			// as a separate series for the purpose of stitching tiles.
@@ -877,13 +874,11 @@ public class Stitching_Grid implements PlugIn
 
 			for ( int series = 0; series < numSeries; ++series )
 			{
-				if ( IJ.debugMode )
-					IJ.log( "fetching data for series:  " + series );
+				Log.debug( "fetching data for series:  " + series );
 				r.setSeries( series );
 
 				final int sizeT = r.getSizeT();
-				if ( IJ.debugMode )
-					IJ.log( "sizeT:  " + sizeT );
+				Log.debug( "sizeT:  " + sizeT );
 
 				final int maxT = timeHack ? sizeT : 1;
 
@@ -907,24 +902,21 @@ public class Stitching_Grid implements PlugIn
 						if ( posX >= 0 && cal != null && cal.getValue().floatValue() != 0 )
 							calX = cal.getValue().floatValue();
 
-						if ( IJ.debugMode )
-							IJ.log( "calibrationX:  " + calX );
+						Log.debug( "calibrationX:  " + calX );
 
 						final int posY = dimOrder.indexOf( 'Y' );
 						cal = retrieve.getPixelsPhysicalSizeY( series );
 						if ( posY >= 0 && cal != null && cal.getValue().floatValue() != 0 )
 							calY = cal.getValue().floatValue();
 
-						if ( IJ.debugMode )
-							IJ.log( "calibrationY:  " + calY );
+						Log.debug( "calibrationY:  " + calY );
 
 						final int posZ = dimOrder.indexOf( 'Z' );
 						cal = retrieve.getPixelsPhysicalSizeZ( series );
 						if ( posZ >= 0 && cal != null && cal.getValue().floatValue() != 0 )
 							calZ = cal.getValue().floatValue();
 
-						if ( IJ.debugMode )
-							IJ.log( "calibrationZ:  " + calZ );
+						Log.debug( "calibrationZ:  " + calZ );
 
 						// location in pixel values;
 						locationX /= calX;
