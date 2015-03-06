@@ -12,6 +12,7 @@ import mpicbg.models.PointMatch;
 import mpicbg.models.Tile;
 import mpicbg.models.TranslationModel2D;
 import mpicbg.models.TranslationModel3D;
+import stitching.utils.Log;
 
 
 public class GlobalOptimization 
@@ -200,8 +201,7 @@ public class GlobalOptimization
 			}
 			catch ( Exception e )
 			{ 
-				IJ.log( "Cannot compute global optimization: " + e ); 
-				e.printStackTrace(); 
+				Log.error( "Cannot compute global optimization: " + e, e );
 			}
 		}
 		while(redo);

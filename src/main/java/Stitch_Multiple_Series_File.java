@@ -41,6 +41,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
@@ -301,8 +302,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 		}
 		catch ( Exception ex ) 
 		{ 
-			IJ.handleException(ex);
-			ex.printStackTrace();
+			Log.error(ex);
 			return null; 
 		}
 		

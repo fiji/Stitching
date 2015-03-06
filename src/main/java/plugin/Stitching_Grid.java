@@ -46,6 +46,7 @@ import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import ome.xml.model.primitives.PositiveFloat;
 import stitching.CommonFunctions;
+import stitching.utils.Log;
 import tools.RoiPicker;
 
 /**
@@ -819,8 +820,7 @@ public class Stitching_Grid implements PlugIn
 		}
 		catch (Exception e)
 		{
-			IJ.log( "Cannot open multiseries file: " + e );
-			e.printStackTrace();
+			Log.error( "Cannot open multiseries file: " + e , e );
 			return null;
 		}
 		return imps;
@@ -962,8 +962,7 @@ public class Stitching_Grid implements PlugIn
 		}
 		catch ( Exception ex ) 
 		{ 
-			IJ.handleException(ex);
-			ex.printStackTrace();
+			Log.error(ex);
 			return null; 
 		}
 
@@ -1018,8 +1017,7 @@ public class Stitching_Grid implements PlugIn
 		} 
 		catch (Exception e) 
 		{
-			IJ.log( "Cannot open multiseries file: " + e );
-			e.printStackTrace();
+			Log.error( "Cannot open multiseries file: " + e, e );
 			return null;
 		}
 

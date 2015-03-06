@@ -8,6 +8,7 @@ import java.io.File;
 import loci.plugins.BF;
 import loci.plugins.in.ImporterOptions;
 import mpicbg.models.Model;
+import stitching.utils.Log;
 
 public class ImageCollectionElement 
 {
@@ -119,8 +120,7 @@ public class ImageCollectionElement
 		} 
 		catch ( Exception e ) 
 		{
-			IJ.log( "Cannot open file '" + file + "': " + e );
-			//e.printStackTrace();
+			Log.error( "Cannot open file '" + file + "': " + e );
 			return null;
 		}
 	}

@@ -47,6 +47,7 @@ import stitching.CrossCorrelationResult2D;
 import stitching.FloatArray2D;
 import stitching.ImageInformation;
 import stitching.Point2D;
+import stitching.utils.Log;
 
 public class Stitching_2D implements PlugIn
 {
@@ -840,8 +841,7 @@ public class Stitching_2D implements PlugIn
 						result[myEntry] = testCrossCorrelation(points[myShift], img1, img2);
 					} catch (Exception e)
 					{
-						e.printStackTrace();
-						IJ.log(e.getMessage());
+						Log.error(e);
 					}
 				}
 			};

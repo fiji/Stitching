@@ -55,6 +55,7 @@ import stitching.CrossCorrelationResult3D;
 import stitching.FloatArray3D;
 import stitching.ImageInformation;
 import stitching.Point3D;
+import stitching.utils.Log;
 
 public class Stitching_3D implements PlugIn
 {
@@ -740,8 +741,7 @@ public class Stitching_3D implements PlugIn
 					}
 					catch (Exception e)
 					{
-						e.printStackTrace();
-						IJ.error(e.getMessage());
+						Log.error(e);
 					}
 				}
 			};

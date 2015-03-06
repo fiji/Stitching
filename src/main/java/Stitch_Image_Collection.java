@@ -65,6 +65,7 @@ import stitching.model.Tile;
 import stitching.model.TileConfiguration;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 public class Stitch_Image_Collection implements PlugIn
 {
@@ -1133,7 +1134,7 @@ public class Stitch_Image_Collection implements PlugIn
 						t.resetTile();
 				}
 			}
-			catch ( NotEnoughDataPointsException e ){ e.printStackTrace(); }
+			catch ( NotEnoughDataPointsException e ){ Log.error(e); }
 		}
 		while(redo);
 		
