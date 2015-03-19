@@ -5,11 +5,11 @@ import java.util.Collections;
 
 public class MedianPixelFusion implements PixelFusion
 {
-	final ArrayList< Float > list;
+	final ArrayList< Double > list;
 	
 	public MedianPixelFusion() 
 	{
-		list = new ArrayList< Float >();
+		list = new ArrayList< Double >();
 		clear(); 
 	}
 	
@@ -17,13 +17,13 @@ public class MedianPixelFusion implements PixelFusion
 	public void clear() { list.clear();	}
 
 	@Override
-	public void addValue( final float value, final int imageId, final float[] localPosition ) 
+	public void addValue( final double value, final int imageId, final double[] localPosition ) 
 	{
 		list.add( value );
 	}
 
 	@Override
-	public float getValue() 
+	public double getValue() 
 	{ 
 		if ( list.size() == 0 )
 			return 0;
