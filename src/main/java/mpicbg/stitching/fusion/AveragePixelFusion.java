@@ -15,18 +15,18 @@ public class AveragePixelFusion implements PixelFusion
 	}
 
 	@Override
-	public void addValue( final float value, final int imageId, final float[] localPosition ) 
+	public void addValue( final double value, final int imageId, final double[] localPosition ) 
 	{
 		avg += value;
 		++count;
 	}
 
 	@Override
-	public float getValue() 
+	public double getValue() 
 	{ 
 		if ( count == 0 )
 			return 0;
-		return (float) (avg/count); 
+		return (avg/count); 
 	}
 
 	@Override

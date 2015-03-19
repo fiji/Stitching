@@ -2,7 +2,7 @@ package mpicbg.stitching.fusion;
 
 public class MaxPixelFusion implements PixelFusion 
 {
-	float max;
+	double max;
 	boolean set;
 	
 	public MaxPixelFusion() { clear(); }
@@ -15,7 +15,7 @@ public class MaxPixelFusion implements PixelFusion
 	}
 
 	@Override
-	public void addValue( final float value, final int imageId, final float[] localPosition ) 
+	public void addValue( final double value, final int imageId, final double[] localPosition ) 
 	{
 		if ( set )
 		{
@@ -30,7 +30,7 @@ public class MaxPixelFusion implements PixelFusion
 	}
 
 	@Override
-	public float getValue() { return max; }
+	public double getValue() { return max; }
 
 	@Override
 	public PixelFusion copy() { return new MaxPixelFusion(); }

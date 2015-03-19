@@ -39,17 +39,17 @@ public class GlobalOptimization
 					if ( params.dimensionality == 3 )
 					{
 						// the transformations that map each tile into the relative global coordinate system (that's why the "-")
-						p1 = new Point( new float[]{ 0,0,0 } );
+						p1 = new Point( new double[]{ 0,0,0 } );
 						
 						if ( ignoreZ )
-							p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], 0 } );
+							p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], 0 } );
 						else
-							p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], -pair.getRelativeShift()[ 2 ] } );
+							p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ], -pair.getRelativeShift()[ 2 ] } );
 					}
 					else 
 					{
-						p1 = new Point( new float[]{ 0, 0 } );
-						p2 = new Point( new float[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ] } );						
+						p1 = new Point( new double[]{ 0, 0 } );
+						p2 = new Point( new double[]{ -pair.getRelativeShift()[ 0 ], -pair.getRelativeShift()[ 1 ] } );						
 					}
 					
 					t1.addMatch( new PointMatchStitching( p1, p2, pair.getCrossCorrelation(), pair ) );
@@ -147,7 +147,7 @@ public class GlobalOptimization
 
 				if ( ( ( avgError*params.relativeThreshold < maxError && maxError > 0.95 ) || avgError > params.absoluteThreshold ) )
 				{
-					float longestDisplacement = 0;
+					double longestDisplacement = 0;
 					PointMatch worstMatch = null;
 
 					// new way of finding biggest error to look for the largest displacement

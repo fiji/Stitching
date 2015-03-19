@@ -10,7 +10,7 @@ package mpicbg.stitching.fusion;
  */
 public class OverlapFusion implements PixelFusion {
 
-	float lastValue;
+	double lastValue;
 	
 	public OverlapFusion() { clear(); }
 	
@@ -20,12 +20,12 @@ public class OverlapFusion implements PixelFusion {
 	}
 
 	@Override
-	public void addValue(float value, int imageId, float[] localPosition) {
+	public void addValue(double value, int imageId, double[] localPosition) {
 		lastValue = value;	
 	}
 
 	@Override
-	public float getValue() {		
+	public double getValue() {		
 		return lastValue;
 	}
 

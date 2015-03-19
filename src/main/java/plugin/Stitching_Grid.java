@@ -601,7 +601,7 @@ public class Stitching_Grid implements PlugIn
 			}
 
 			if (addTilesAsRois) {
-				float[] offset = new float[dimensionality];
+				double[] offset = new double[dimensionality];
         Fusion.estimateBounds(offset, new int[dimensionality], images, models,
                 dimensionality);
 				generateRois(offset, optimized);
@@ -637,7 +637,7 @@ public class Stitching_Grid implements PlugIn
 	 * fusedImage is the resultant on which the ROIs will be drawn. The offset
 	 * is a global offset to 0,0 for the upper leftmost tile.
 	 */
-	protected void generateRois(float[] offsets, ArrayList<ImagePlusTimePoint> optimizedImages)
+	protected void generateRois(double[] offsets, ArrayList<ImagePlusTimePoint> optimizedImages)
 	{
 		IJ.showStatus("Generating ROIs from image tiles...");
 
@@ -674,7 +674,7 @@ public class Stitching_Grid implements PlugIn
 			// ROI/ImageJ slice number
 			int slice = 1;
 			// compute the x,y coordinates within this slice
-			float[] coords = new float[iptp.getElement().getDimensionality()];
+			double[] coords = new double[iptp.getElement().getDimensionality()];
 			iptp.getModel().applyInPlace(coords);
 			for (int j=0; j<offsets.length; j++) {
 				coords[j] -= offsets[j];
@@ -1434,7 +1434,7 @@ public class Stitching_Grid implements PlugIn
     		else
     		{
     			final TranslationModel2D m = (TranslationModel2D)element.getModel();
-    			final float[] tmp = new float[ 2 ];
+    			final double[] tmp = new double[ 2 ];
     			m.applyInPlace( tmp );
     			
     			out.println( element.getFile().getName() + "; ; (" + tmp[ 0 ] + ", " + tmp[ 1 ] + ")");

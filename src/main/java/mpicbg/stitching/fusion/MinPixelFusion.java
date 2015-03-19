@@ -2,7 +2,7 @@ package mpicbg.stitching.fusion;
 
 public class MinPixelFusion implements PixelFusion 
 {
-	float min;
+	double min;
 	boolean set;
 	
 	public MinPixelFusion() { clear(); }
@@ -15,7 +15,7 @@ public class MinPixelFusion implements PixelFusion
 	}
 
 	@Override
-	public void addValue( final float value, final int imageId, final float[] localPosition )
+	public void addValue( final double value, final int imageId, final double[] localPosition )
 	{
 		if ( set )
 		{
@@ -29,7 +29,7 @@ public class MinPixelFusion implements PixelFusion
 	}
 
 	@Override
-	public float getValue() { return min; }
+	public double getValue() { return min; }
 
 	@Override
 	public PixelFusion copy() { return new MinPixelFusion(); }

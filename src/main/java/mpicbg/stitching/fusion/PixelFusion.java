@@ -14,14 +14,14 @@ public interface PixelFusion
 	 * @param imageId - from which input image as defined by the id
 	 * @param localPosition - the position inside the input image in local coordinates of the input image
 	 */
-	void addValue( float value, int imageId, float[] localPosition );
+	void addValue( double value, int imageId, double[] localPosition );
 	
 	/**
 	 *  return the result for the current pixel
 	 *  
 	 * @return - the value for the output image
 	 */
-	float getValue();
+	double getValue();
 	
 	/**
 	 * Convinience method for multi-threading

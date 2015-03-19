@@ -66,7 +66,7 @@ public class Fusion
 			final int dimensionality, final boolean subpixelResolution, final int fusionType, final String outputDirectory, final boolean noOverlap, final boolean ignoreZeroValues, final boolean displayImages )
 	{
 		// first we need to estimate the boundaries of the new image
-		final float[] offset = new float[ dimensionality ];
+		final double[] offset = new double[ dimensionality ];
 		final int[] size = new int[ dimensionality ];
 		final int numTimePoints = images.get( 0 ).getNFrames();
 		final int numChannels = images.get( 0 ).getNChannels();
@@ -278,7 +278,7 @@ public class Fusion
 	 * @param input - FloatType, because of Interpolation that needs to be done
 	 * @param transform - the transformation
 	 */
-	protected static <T extends RealType<T>> void fuseBlock( final Img<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final float[] offset, 
+	protected static <T extends RealType<T>> void fuseBlock( final Img<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final double[] offset, 
 			final ArrayList< InvertibleBoundable > transform, final PixelFusion fusion, final boolean displayFusion )
 	{
 		final int numDimensions = output.numDimensions();
@@ -370,12 +370,12 @@ public class Fusion
 	 */
 	private static List<ClassifiedRegion> buildTileList(int numImages,
 		int numDimensions, ArrayList<InvertibleBoundable> transform,
-		ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input, float[] offset)
+		ArrayList<? extends ImageInterpolation<? extends RealType<?>>> input, double[] offset)
 	{
 		Stack<ClassifiedRegion> rawTiles = new Stack<ClassifiedRegion>();
 
 		for ( int i = 0; i < numImages; ++i ){
-				final float[] min = new float[ numDimensions ];
+				final double[] min = new double[ numDimensions ];
 				transform.get(i).applyInPlace(min);
 				ClassifiedRegion shape = new ClassifiedRegion(numDimensions);
 				shape.addClass(i);
@@ -527,10 +527,10 @@ public class Fusion
 			private ImagePlus[] fusionImp;
 			private int[] count;
 			private double positionsPerThread;
-			private float[] offset;
+			private double[] offset;
 			private long[] lastDraw = new long[1];
 			private final ArrayList<RealRandomAccess<? extends RealType<?>>> in;
-			private final float[][] inPos;
+			private final double[][] inPos;
 			private final PixelFusion myFusion;
 			private final RandomAccess<T> out;
 
@@ -540,7 +540,7 @@ public class Fusion
 			Vector<Chunk> threadChunks, int numImages, Img<T> output,
 			PixelFusion fusion, ClassifiedRegion[] currentTile,
 			ArrayList<InvertibleBoundable> transform, ImagePlus[] fusionImp,
-			int[] count, double positionsPerThread, float[] offset, int[] loopDim)
+			int[] count, double positionsPerThread, double[] offset, int[] loopDim)
 		{
 			this.threadNumber = threadNumber;
 			this.threadChunks = threadChunks;
@@ -553,7 +553,7 @@ public class Fusion
 			this.loopDim = loopDim;
 
 			in = getThreadInterpolators(interpolators, threadNumber, input, numImages);
-			inPos = new float[numImages][output.numDimensions()];
+			inPos = new double[numImages][output.numDimensions()];
 			myFusion = fusion.copy();
 			out = output.randomAccess();
 		}
@@ -615,7 +615,7 @@ public class Fusion
 		private void processTile(ClassifiedRegion r, int depth,
 			PixelFusion myFusion, ArrayList<InvertibleBoundable> transform,
 			ArrayList<RealRandomAccess<? extends RealType<?>>> in,
-			RandomAccess<T> out, float[][] inPos,
+			RandomAccess<T> out, double[][] inPos,
 			int threadNumber, int[] count, long[] lastDraw, ImagePlus fusionImp)
 			throws NoninvertibleModelException
 		{
@@ -634,7 +634,7 @@ public class Fusion
 		private void processTile(ClassifiedRegion r, int[] images, int depth,
 			PixelFusion myFusion, ArrayList<InvertibleBoundable> transform,
 			ArrayList<RealRandomAccess<? extends RealType<?>>> in,
-			RandomAccess<T> out, float[][] inPos,
+			RandomAccess<T> out, double[][] inPos,
 			int threadNumber, int[] count, long[] lastDraw, ImagePlus fusionImp)
 			throws NoninvertibleModelException
 		{
@@ -683,7 +683,7 @@ public class Fusion
 
 			// Loop over the images in this region
 			for (int d = 0; d < r.size(); d++) {
-				final float value = out.getFloatPosition(d) + offset[d];
+				final double value = out.getDoublePosition(d) + offset[d];
 
 				for (int index = 0; index < images.length; index++) {
 					// Get the positions for the current image
@@ -784,7 +784,7 @@ public class Fusion
 	 * @param input - FloatType, because of Interpolation that needs to be done
 	 * @param transform - the transformation
 	 */
-	protected static <T extends RealType<T>> void fuseBlockNoOverlap( final Img<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final float[] offset, 
+	protected static <T extends RealType<T>> void fuseBlockNoOverlap( final Img<T> output, final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final double[] offset, 
 			final ArrayList< InvertibleBoundable > transform, final boolean displayFusion )
 	{
 		final int numDimensions = output.numDimensions();
@@ -879,7 +879,7 @@ public class Fusion
 	 * @param transform - the transformation
 	 */
 	protected static <T extends RealType<T>> void writeBlock( final Img<T> outputSlice, final int numSlices, final int t, final int numTimePoints, final int c, final int numChannels, 
-			final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final float[] offset, 
+			final ArrayList< ? extends ImageInterpolation< ? extends RealType< ? > > > input, final double[] offset, 
 			final ArrayList< InvertibleBoundable > transform, final PixelFusion fusion, final String outputDirectory )
 	{
 		final int numImages = input.size();
@@ -905,7 +905,7 @@ public class Fusion
 						numSlices + "...");
 
 				final RandomAccess<T> out = outputSlice.randomAccess();
-				final float[][] inPos = new float[ numImages ][ numDimensions ];
+				final double[][] inPos = new double[ numImages ][ numDimensions ];
 				final int[] count = new int[1];
 
 				IJ.showProgress(0);
@@ -945,9 +945,9 @@ public class Fusion
 	 */
 	private static <T extends RealType<T>> void writeTile(ClassifiedRegion r,
 		int depth, final int slice, PixelFusion myFusion,
-		ArrayList<InvertibleBoundable> transform, float[] offset,
+		ArrayList<InvertibleBoundable> transform, double[] offset,
 		ArrayList<RealRandomAccess<? extends RealType<?>>> in,
-		RandomAccess<T> out, float[][] inPos, int[] count,
+		RandomAccess<T> out, double[][] inPos, int[] count,
 		final long sliceSize, final int numSlices)
 		throws NoninvertibleModelException
 	{
@@ -986,7 +986,7 @@ public class Fusion
 
 		// Loop over the images in this region
 		for (int d = 0; d < out.numDimensions(); d++) {
-			final float value = out.getFloatPosition(d) + offset[d];
+			final double value = out.getDoublePosition(d) + offset[d];
 
 			for (int index = 0; index < images.length; index++) {
 				// Get the positions for the current image
@@ -996,7 +996,7 @@ public class Fusion
 
 		if (r.size() > out.numDimensions()) {
 			final int dim = r.size() - 1;
-			final float value = slice + offset[dim];
+			final double value = slice + offset[dim];
 			for (int index = 0; index < images.length; index++) {
 				// Get the positions for the current image
 				inPos[images[index]][dim] = value;
@@ -1054,7 +1054,7 @@ public class Fusion
 	 * @param models - all models
 	 * @param dimensionality - which dimensionality (2 or 3)
 	 */
-	public static void estimateBounds( final float[] offset, final int[] size, final List<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality )
+	public static void estimateBounds( final double[] offset, final int[] size, final List<ImagePlus> images, final ArrayList<InvertibleBoundable> models, final int dimensionality )
 	{
 		final int[][] imgSizes = new int[ images.size() ][ dimensionality ];
 		
@@ -1085,24 +1085,24 @@ public class Fusion
 	 * @param models - all models
 	 * @param dimensionality - which dimensionality (2 or 3)
 	 */
-	public static void estimateBounds( final float[] offset, final int[] size, final int[][]imgSizes, final ArrayList<InvertibleBoundable> models, final int dimensionality )
+	public static void estimateBounds( final double[] offset, final int[] size, final int[][]imgSizes, final ArrayList<InvertibleBoundable> models, final int dimensionality )
 	{
 		final int numImages = imgSizes.length;
 		final int numTimePoints = models.size() / numImages;
 		
 		// estimate the bounaries of the output image
-		final float[][] max = new float[ numImages * numTimePoints ][];
-		final float[][] min = new float[ numImages * numTimePoints ][ dimensionality ];
+		final double[][] max = new double[ numImages * numTimePoints ][];
+		final double[][] min = new double[ numImages * numTimePoints ][ dimensionality ];
 		
 		if ( dimensionality == 2 )
 		{
 			for ( int i = 0; i < numImages * numTimePoints; ++i )
-				max[ i ] = new float[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ] };
+				max[ i ] = new double[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ] };
 		}
 		else
 		{
 			for ( int i = 0; i < numImages * numTimePoints; ++i )
-				max[ i ] = new float[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ], imgSizes[ i % numImages ][ 2 ] };
+				max[ i ] = new double[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ], imgSizes[ i % numImages ][ 2 ] };
 		}
 		
 		//IJ.log( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
@@ -1124,8 +1124,8 @@ public class Fusion
 		//IJ.log( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
 		
 		// dimensions of the final image
-		final float[] minImg = new float[ dimensionality ];
-		final float[] maxImg = new float[ dimensionality ];
+		final double[] minImg = new double[ dimensionality ];
+		final double[] maxImg = new double[ dimensionality ];
 
 		if ( max.length == 1 )
 		{
@@ -1160,7 +1160,7 @@ public class Fusion
 		
 		for ( int d = 0; d < dimensionality; ++d )
 		{
-			size[ d ] = Math.round( maxImg[ d ] - minImg[ d ] );
+			size[ d ] = (int)Math.round( maxImg[ d ] - minImg[ d ] );
 			offset[ d ] = minImg[ d ];			
 		}
 		
@@ -1203,13 +1203,13 @@ public class Fusion
 		
 		Cursor< FloatType > c = img.localizingCursor();
 		final int numDimensions = img.numDimensions();
-		final float[] tmp = new float[ numDimensions ];
+		final double[] tmp = new double[ numDimensions ];
 		
 		// for blending
 		final long[] dimensions = new long[ numDimensions ];
 		img.dimensions( dimensions );
 		final float percentScaling = 0.2f;
-		final float[] border = new float[ numDimensions ];
+		final double[] border = new double[ numDimensions ];
 					
 		while ( c.hasNext() )
 		{

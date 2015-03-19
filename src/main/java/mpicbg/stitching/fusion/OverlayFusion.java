@@ -56,7 +56,7 @@ public class OverlayFusion
 		// the size of the new image
 		final int[] size = new int[ dimensionality ];
 		// the offset relative to the output image which starts with its local coordinates (0,0,0)
-		final float[] offset = new float[ dimensionality ];
+		final double[] offset = new double[ dimensionality ];
 
 		final int[][] imgSizes = new int[ numImages ][ dimensionality ];
 		
@@ -131,7 +131,7 @@ public class OverlayFusion
 		// the size of the new image
 		final int[] size = new int[ dimensionality ];
 		// the offset relative to the output image which starts with its local coordinates (0,0,0)
-		final float[] offset = new float[ dimensionality ];
+		final double[] offset = new double[ dimensionality ];
 
 		// estimate the boundaries of the output image and the offset for fusion (negative coordinates after transform have to be shifted to 0,0,0)
 		Fusion.estimateBounds( offset, size, images, models, dimensionality );
@@ -195,7 +195,7 @@ public class OverlayFusion
 	 * @param input - FloatType, because of Interpolation that needs to be done
 	 * @param transform - the transformation
 	 */
-	protected static <T extends RealType<T>> void fuseChannel( final Img<T> output, final RealRandomAccessible<FloatType> input, final float[] offset, final InvertibleCoordinateTransform transform )
+	protected static <T extends RealType<T>> void fuseChannel( final Img<T> output, final RealRandomAccessible<FloatType> input, final double[] offset, final InvertibleCoordinateTransform transform )
 	{
 		final int dims = output.numDimensions();
 		long imageSize = output.dimension( 0 );
@@ -226,7 +226,7 @@ public class OverlayFusion
             		final Cursor<T> out = output.localizingCursor();
             		final RealRandomAccess<FloatType> in = input.realRandomAccess();
             		
-            		final float[] tmp = new float[ input.numDimensions() ];
+            		final double[] tmp = new double[ input.numDimensions() ];
             		
             		try 
             		{
@@ -239,7 +239,7 @@ public class OverlayFusion
             				out.fwd();
             				
             				for ( int d = 0; d < dims; ++d )
-            					tmp[ d ] = out.getFloatPosition( d ) + offset[ d ];
+            					tmp[ d ] = out.getDoublePosition( d ) + offset[ d ];
             				
             				transform.applyInverseInPlace( tmp );
             	

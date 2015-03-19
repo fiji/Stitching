@@ -15,7 +15,7 @@ public class BlendingPixelFusionIgnoreZero extends BlendingPixelFusion
 	}	
 
 	@Override
-	public void addValue( final float value, final int imageId, final float[] localPosition ) 
+	public void addValue( final double value, final int imageId, final double[] localPosition ) 
 	{
 		if ( value != 0.0 )
 		{
