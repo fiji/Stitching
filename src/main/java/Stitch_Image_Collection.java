@@ -65,6 +65,7 @@ import stitching.model.Tile;
 import stitching.model.TileConfiguration;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 public class Stitch_Image_Collection implements PlugIn
 {
@@ -165,9 +166,9 @@ public class Stitch_Image_Collection implements PlugIn
 	
 	public ImagePlus work(ArrayList<ImageInformation> imageInformationList, boolean createPreview, boolean computeOverlap, String fusionMethod, String handleRGB, String fileName, boolean showImage)
 	{	
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Stitching the following files:");
+		Log.timestamp("Stitching the following files:");
 		for (ImageInformation iI : imageInformationList)
-			IJ.log("" + iI);	
+			Log.info("" + iI);	
 		
 		// make max intensity projection and find overlapping tiles
 		ArrayList<OverlapProperties> overlappingTiles = findOverlappingTiles(imageInformationList, createPreview, fusionMethod);
@@ -196,13 +197,13 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		
 		// output the final positions
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Final image positions in the fused image:");
+		Log.timestamp("Final image positions in the fused image:");
 		for (ImageInformation i: newImageInformationList)
 		{
 			if (dim == 3)
-				IJ.log("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1] + ", " + i.position[2]);
+				Log.info("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1] + ", " + i.position[2]);
 			else
-				IJ.log("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1]);
+				Log.info("Tile " + i.id + " (" + i.imageName + "): " + i.position[0] + ", " + i.position[1]);
 		}
 		
 		// write the new tile configuration
@@ -211,15 +212,15 @@ public class Stitch_Image_Collection implements PlugIn
 		// getMax and set minimum coordinates to 0,0,0
 		float[] max = getAndApplyMinMax(newImageInformationList, dim);		
 		if (dim == 3)
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
+			Log.timestamp("Size of bounding box for output image: " + max[0] + ", " + max[1] + ", " + max[2]);
 		else
-			IJ.log("(" + new Date(System.currentTimeMillis()) + "): Size of bounding box for output image: " + max[0] + ", " + max[1]);
+			Log.timestamp("Size of bounding box for output image: " + max[0] + ", " + max[1]);
 		
 		// fuse the images
 		ImagePlus fused = fuseImages(newImageInformationList, max, "Stitched Image", fusionMethod, rgbOrder, dim, alpha, showImage );
 		if ( showImage )
 			fused.show();
-		IJ.log("(" + new Date(System.currentTimeMillis()) + "): Finished Stitching.");
+		Log.timestamp("Finished Stitching.");
 
 		return fused;
 	}
@@ -260,7 +261,7 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		catch (Exception e)
 		{
-			IJ.log("Cannot write registered configuration file: " + e );
+			Log.error("Cannot write registered configuration file: " + e );
 		}
 	}
 	
@@ -277,17 +278,17 @@ public class Stitch_Image_Collection implements PlugIn
 		else type = AVG; // fusionMethod.equals("Average")
 		
 		if (type == AVG)
-			IJ.log("Average Fusion started.");
+			Log.info("Average Fusion started.");
 		else if (type == MAX)
-			IJ.log("Maximum Fusion started.");
+			Log.info("Maximum Fusion started.");
 		else if (type == MIN)
-			IJ.log("Minimum Fusion started.");
+			Log.info("Minimum Fusion started.");
 		else if (type == LIN_BLEND)
-			IJ.log("Linear Blending Fusion started.");
+			Log.info("Linear Blending Fusion started.");
 		else if (type == RED_CYAN)
-			IJ.log("Red-Cyan Fusion started.");
+			Log.info("Red-Cyan Fusion started.");
 		else if (type == CommonFunctions.NONE)
-			IJ.log("Overlapping (non fusion) started.");
+			Log.info("Overlapping (non fusion) started.");
 
 		final int imageType = imageInformationList.get(0).imageType; 
 		final int imgW = Math.round(max[0]);
@@ -709,9 +710,9 @@ public class Stitch_Image_Collection implements PlugIn
 		else
 			if ( !cal.equals(newOne) )
 			{
-				IJ.log( "Calibration mismatch: " );
-				IJ.log( "  First   image: " + cal.toString() );
-				IJ.log( "  Current image: " + newOne.toString() );						
+				Log.error( "Calibration mismatch: " );
+				Log.error( "  First   image: " + cal.toString() );
+				Log.error( "  Current image: " + newOne.toString() );						
 			}
 		
 		return cal;
@@ -1033,11 +1034,11 @@ public class Stitch_Image_Collection implements PlugIn
 						tiles.add( t2 );				
 				}
 			}
-			IJ.log("Tile size: " + tiles.size());
+			Log.info("Tile size: " + tiles.size());
 			
 			if( tiles.size() == 0 )
 			{
-				IJ.log("Error: No correlated tiles found, setting the first tile to (0,0,0).");
+				Log.error("Error: No correlated tiles found, setting the first tile to (0,0,0).");
 				
 				for ( int d = 0; d < firstImage.position.length; ++d )
 					firstImage.position[ d ] = 0;
@@ -1045,27 +1046,27 @@ public class Stitch_Image_Collection implements PlugIn
 				ArrayList<ImageInformation> imageInformationList = new ArrayList<ImageInformation>();
 				imageInformationList.add( firstImage );
 				
-				IJ.log(" image information list size =" + imageInformationList.size());
+				Log.info(" image information list size =" + imageInformationList.size());
 				
 				return imageInformationList;
 			}						
 			
 			// trash everything but the largest graph			
 			final ArrayList< ArrayList< Tile > > graphs = Tile.identifyConnectedGraphs( tiles );
-			IJ.log("Number of tile graphs = " + graphs.size());
+			Log.info("Number of tile graphs = " + graphs.size());
 			
 			/*
 			for ( final ArrayList< Tile > graph : graphs )
 			{
-				IJ.log("graph size = " + graph.size());
+				Log.info("graph size = " + graph.size());
 				if ( graph.size() < 30 )
 				{
 					tiles.removeAll( graph );
-					IJ.log("-removed");
+					Log.info("-removed");
 				}
 				else
 				{
-					IJ.log("-kept");
+					Log.info("-kept");
 					tc.fixTile( graph.get( 0 ) );
 				}
 			}
@@ -1080,14 +1081,14 @@ public class Stitch_Image_Collection implements PlugIn
 					largestGraph = graph;
 				}
 				
-				//IJ.log("graph size = " + graph.size());
+				//Log.info("graph size = " + graph.size());
 			}
 			
 			for ( final ArrayList< Tile > graph : graphs )
 				if ( graph != largestGraph )
 				{
 					tiles.removeAll( graph );
-					//IJ.log(" Removed graph of size " + graph.size());
+					//Log.info(" Removed graph of size " + graph.size());
 				}
 			/*
 			for ( final ArrayList< Tile > graph : graphs )
@@ -1099,8 +1100,8 @@ public class Stitch_Image_Collection implements PlugIn
 			tc.addTiles( tiles );
 			tc.fixTile( tiles.get( 0 ) );						
 			
-			//IJ.log(" tiles size =" + tiles.size());
-			//IJ.log(" tc.getTiles() size =" + tc.getTiles().size());
+			//Log.info(" tiles size =" + tiles.size());
+			//Log.info(" tc.getTiles() size =" + tc.getTiles().size());
 			
 			try
 			{
@@ -1111,7 +1112,7 @@ public class Stitch_Image_Collection implements PlugIn
 				
 				if ( (avgError*thresholdDisplacementRelative < maxError && maxError > 0.75) || avgError > thresholdDisplacementAbsolute)
 				{
-					IJ.log("maxError more than " + thresholdDisplacementRelative + " times bigger than avgerror.");
+					Log.info("maxError more than " + thresholdDisplacementRelative + " times bigger than avgerror.");
 					Tile worstTile = tc.getWorstError();
 					ArrayList< PointMatch > matches = worstTile.getMatches();
 					
@@ -1125,7 +1126,7 @@ public class Stitch_Image_Collection implements PlugIn
 							worstMatch = p;
 						}
 					
-					IJ.log("Identified link between " + worstMatch.o.i1.imageName + " and " + worstMatch.o.i2.imageName + " (R=" + worstMatch.o.R +") to be bad. Reoptimizing.");
+					Log.info("Identified link between " + worstMatch.o.i1.imageName + " and " + worstMatch.o.i2.imageName + " (R=" + worstMatch.o.R +") to be bad. Reoptimizing.");
 					worstMatch.o.validOverlap = false;
 					redo = true;
 					
@@ -1133,7 +1134,7 @@ public class Stitch_Image_Collection implements PlugIn
 						t.resetTile();
 				}
 			}
-			catch ( NotEnoughDataPointsException e ){ e.printStackTrace(); }
+			catch ( NotEnoughDataPointsException e ){ Log.error(e); }
 		}
 		while(redo);
 		
@@ -1152,7 +1153,7 @@ public class Stitch_Image_Collection implements PlugIn
 		Collections.sort(imageInformationList);
 		
 		
-		IJ.log(" image information list size =" + imageInformationList.size());
+		Log.info(" image information list size =" + imageInformationList.size());
 		
 		return imageInformationList;
 	}
@@ -1223,7 +1224,7 @@ public class Stitch_Image_Collection implements PlugIn
 					o.translation3D = new Point3D(0,0,0);
 				}
 								
-				IJ.log(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation3D);
+				Log.info(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation3D);
 			}
 			else if (dim == 2)
 			{
@@ -1266,7 +1267,7 @@ public class Stitch_Image_Collection implements PlugIn
 				imp1.setProcessor(imp1.getTitle(), ip1);
 				imp2.setProcessor(imp2.getTitle(), ip2);
 								
-				IJ.log(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation2D);
+				Log.info(o.i1.id + " overlaps " + o.i2.id + ": " + o.R + " translation: " + o.translation2D);
 			}
 			else 
 			{
@@ -1328,7 +1329,7 @@ public class Stitch_Image_Collection implements PlugIn
 			
 			if (iI.imp == null)
 			{
-				IJ.log("Cannot load " + iI.imageName + " ignoring.");
+				IJ.error("Cannot load " + iI.imageName + " ignoring.");
 				iI.invalid = true;
 				continue;
 			}
@@ -1405,7 +1406,7 @@ public class Stitch_Image_Collection implements PlugIn
 			if (iI.invalid)
 			{
 				imageInformationList.remove(i);
-				IJ.log("Removed: " + iI.imageName);
+				Log.info("Removed: " + iI.imageName);
 			}
 			else
 				i++;
@@ -1442,8 +1443,8 @@ public class Stitch_Image_Collection implements PlugIn
 		// create the preview
 		if (createPreview)
 		{
-			System.out.println("startX: " + startX + " startY: " + startY);
-			System.out.println("endX: " + endX + " endY: " + endY);
+			Log.debug("startX: " + startX + " startY: " + startY);
+			Log.debug("endX: " + endX + " endY: " + endY);
 			
 			final FloatProcessor out = new FloatProcessor(endX - startX, endY - startY);
 			
@@ -1488,7 +1489,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String entries[] = line.split("=");
 						if (entries.length != 2)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not look like [ dim = n ]: " + line);
 							return null;						
 						}
@@ -1499,7 +1500,7 @@ public class Stitch_Image_Collection implements PlugIn
 						}
 						catch (NumberFormatException e)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse dimensionality: " + entries[1].trim());
 							return null;														
 						}
@@ -1508,14 +1509,14 @@ public class Stitch_Image_Collection implements PlugIn
 					{
 						if (dim < 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Header missing, should look like [dim = n], but first line is: " + line);
 							return null;							
 						}
 						
 						if (dim < 2 || dim > 3)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": only dimensions of 2 and 3 are supported: " + line);
 							return null;							
 						}
@@ -1524,7 +1525,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String entries[] = line.split(";");
 						if (entries.length != 3)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + " does not have 3 entries! [fileName; ImagePlus; (x,y,...)]");
 							return null;						
 						}
@@ -1533,7 +1534,7 @@ public class Stitch_Image_Collection implements PlugIn
 						
 						if (imageName.length() == 0 && imp.length() == 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": You have to give a filename or a ImagePlus [fileName; ImagePlus; (x,y,...)]: " + line);
 							return null;						
 						}
@@ -1541,7 +1542,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String point = entries[2].trim();
 						if (!point.startsWith("(") || !point.endsWith(")"))
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,...): " + point);
 							return null;
 						}
@@ -1550,7 +1551,7 @@ public class Stitch_Image_Collection implements PlugIn
 						String points[] = point.split(",");
 						if (points.length != dim)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,..), dim = " + dim + ": " + point);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,..), dim = " + dim + ": " + point);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Wrong format of coordinates: (x,y,z,...), dim = " + dim + ": " + point);
 							return null;
 						}
@@ -1582,7 +1583,7 @@ public class Stitch_Image_Collection implements PlugIn
 						
 						if (imageInformation.imp == null && imp.length() > 0)
 						{
-							System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
+							Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
 							IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot find ImagePlus, is not opened: " + imp);
 							return null;						
 						}
@@ -1596,7 +1597,7 @@ public class Stitch_Image_Collection implements PlugIn
 							}
 							catch (NumberFormatException e)
 							{
-								System.err.println("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
+								Log.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
 								IJ.error("Stitch_Many_Cubes.readLayoutFile: Line " + lineNo + ": Cannot parse number: " + points[i].trim());
 								return null;							
 							}
@@ -1608,7 +1609,7 @@ public class Stitch_Image_Collection implements PlugIn
 		}
 		catch (IOException e)
 		{
-			System.err.println("Stitch_Many_Cubes.readLayoutFile: " + e);
+			Log.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			IJ.error("Stitch_Many_Cubes.readLayoutFile: " + e);
 			return null;
 		}
@@ -1625,7 +1626,7 @@ public class Stitch_Image_Collection implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("Stitch_Many_Cubes.openFileRead(): " + e);
+		Log.error("Stitch_Many_Cubes.openFileRead(): " + e);
 		inputFile = null;
 	  }
 	  return(inputFile);

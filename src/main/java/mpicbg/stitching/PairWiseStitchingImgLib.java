@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import stitching.utils.Log;
 import mpicbg.imglib.algorithm.fft.PhaseCorrelation;
 import mpicbg.imglib.algorithm.fft.PhaseCorrelationPeak;
 import mpicbg.imglib.algorithm.scalespace.DifferenceOfGaussianPeak;
@@ -63,7 +64,7 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getWrappedImageUnsignedByte( imp2, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );
+					Log.error( "Unknown image type: " + imp2.getType() );
 				
 				image1.close();
 			}
@@ -78,7 +79,7 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getWrappedImageUnsignedByte( imp2, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );
+					Log.error( "Unknown image type: " + imp2.getType() );
 
 				image1.close();
 			} 
@@ -93,13 +94,13 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getWrappedImageUnsignedByte( imp2, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );
+					Log.error( "Unknown image type: " + imp2.getType() );
 				
 				image1.close();
 			} 
 			else
 			{
-				IJ.log( "Unknown image type: " + imp1.getType() );			
+				Log.error( "Unknown image type: " + imp1.getType() );			
 			}
 		}
 		else
@@ -119,7 +120,7 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getImage( imp2, roi2, imgFactoryByte, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );					
+					Log.error( "Unknown image type: " + imp2.getType() );					
 			}
 			else if ( imp1.getType() == ImagePlus.GRAY16 )
 			{
@@ -132,7 +133,7 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getImage( imp2, roi2, imgFactoryByte, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );					
+					Log.error( "Unknown image type: " + imp2.getType() );					
 			}
 			else if ( imp1.getType() == ImagePlus.GRAY8 )
 			{
@@ -145,16 +146,16 @@ public class PairWiseStitchingImgLib
 				else if ( imp2.getType() == ImagePlus.GRAY8 )
 					result = performStitching( image1, getImage( imp2, roi2, imgFactoryByte, params.channel2, timepoint2 ), params );
 				else
-					IJ.log( "Unknown image type: " + imp2.getType() );					
+					Log.error( "Unknown image type: " + imp2.getType() );					
 			}
 			else
 			{
-				IJ.log( "Unknown image type: " + imp1.getType() );			
+				Log.error( "Unknown image type: " + imp1.getType() );			
 			}
 		}
 		if ( result == null )
 		{
-			IJ.log( "Pairwise stitching failed." );
+			Log.error( "Pairwise stitching failed." );
 			return null;
 		}
 		
@@ -178,17 +179,17 @@ public class PairWiseStitchingImgLib
 	{
 		if ( img1 == null )
 		{
-			IJ.log( "Image 1 could not be wrapped." );
+			Log.error( "Image 1 could not be wrapped." );
 			return null;
 		}
 		else if ( img2 == null )
 		{
-			IJ.log( "Image 2 could not be wrapped." );
+			Log.error( "Image 2 could not be wrapped." );
 			return null;
 		}
 		else if ( params == null )
 		{
-			IJ.log( "Parameters are null." );
+			Log.error( "Parameters are null." );
 			return null;
 		}
 		
@@ -208,7 +209,7 @@ public class PairWiseStitchingImgLib
 		phaseCorr.setComputeFFTinParalell( true );
 		if ( !phaseCorr.process() )
 		{
-			IJ.log( "Could not compute phase correlation: " + phaseCorr.getErrorMessage() );
+			Log.error( "Could not compute phase correlation: " + phaseCorr.getErrorMessage() );
 			return null;
 		}
 
@@ -375,7 +376,7 @@ public class PairWiseStitchingImgLib
 		}
 		else
 		{
-			IJ.log( "Unknow image type: " + imp.getType() );
+			Log.error( "Unknow image type: " + imp.getType() );
 			return false;
 		}
 	}
@@ -425,7 +426,7 @@ public class PairWiseStitchingImgLib
 		}
 		else
 		{
-			IJ.log( "Unknow image type: " + imp.getType() );
+			Log.error( "Unknow image type: " + imp.getType() );
 			return false;
 		}
 	}
@@ -596,7 +597,7 @@ public class PairWiseStitchingImgLib
 		// we can only do rectangular rois
 		if ( roi != null && roi.getType() != Roi.RECTANGLE )
 		{
-			IJ.log( "WARNING: roi for " + imp.getTitle() + " is not a rectangle, we have to ignore it." );
+			Log.warn( "roi for " + imp.getTitle() + " is not a rectangle, we have to ignore it." );
 			roi = null;
 		}
 

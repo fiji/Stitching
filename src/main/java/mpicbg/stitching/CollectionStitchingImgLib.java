@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import stitching.utils.Log;
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
 import mpicbg.imglib.util.Util;
 import mpicbg.models.TranslationModel2D;
@@ -28,7 +29,7 @@ public class CollectionStitchingImgLib
 			
 			if ( pairs == null || pairs.size() == 0 )
 			{
-				IJ.log( "No overlapping tiles could be found given the approximate layout." );
+				Log.error( "No overlapping tiles could be found given the approximate layout." );
 				return null;
 			}
 			
@@ -68,7 +69,7 @@ public class CollectionStitchingImgLib
 	            				final PairWiseStitchingResult result = PairWiseStitchingImgLib.stitchPairwise( pair.getImagePlus1(), pair.getImagePlus2(), roi1, roi2, pair.getTimePoint1(), pair.getTimePoint2(), params );			
 	            				if ( result == null )
 	            				{
-	            					IJ.log( "Collection stitching failed" );
+	            					Log.error( "Collection stitching failed" );
 	            					return;
 	            				}
 	
@@ -79,7 +80,7 @@ public class CollectionStitchingImgLib
 	            				
 	            				pair.setCrossCorrelation( result.getCrossCorrelation() );
 	
-	            				IJ.log( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
+	            				Log.info( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
 	            						Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
 	                    	}
 	                    }
@@ -91,7 +92,7 @@ public class CollectionStitchingImgLib
 	        
 	        // get the final positions of all tiles
 			optimized = GlobalOptimization.optimize( pairs, pairs.get( 0 ).getTile1(), params );
-			IJ.log( "Finished registration process (" + (System.currentTimeMillis() - time) + " ms)." );
+			Log.info( "Finished registration process (" + (System.currentTimeMillis() - time) + " ms)." );
 		}
 		else
 		{

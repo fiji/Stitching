@@ -33,6 +33,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 public class OverlayFusion 
 {
@@ -93,7 +94,7 @@ public class OverlayFusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}				
 			}
 		}
@@ -108,9 +109,9 @@ public class OverlayFusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		//IJ.log( "ch: " + imp.getNChannels() );
-		//IJ.log( "slices: " + imp.getNSlices() );
-		//IJ.log( "frames: " + imp.getNFrames() );
+		//Log.info( "ch: " + imp.getNChannels() );
+		//Log.info( "slices: " + imp.getNSlices() );
+		//Log.info( "frames: " + imp.getNFrames() );
 		result.setDimensions( imp.getNChannels(), 1, imp.getNFrames() );
 		
 		if ( imp.getNChannels() > 1 )
@@ -163,7 +164,7 @@ public class OverlayFusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}
 				
 				// count all channels
@@ -249,7 +250,7 @@ public class OverlayFusion
             		} 
             		catch (NoninvertibleModelException e) 
             		{
-            			IJ.log( "Cannot invert model, qutting." );
+            			Log.error( "Cannot invert model, qutting." );
             			return;
             		}
 
@@ -281,7 +282,7 @@ public class OverlayFusion
 		} 
 		catch (NoninvertibleModelException e) 
 		{
-			IJ.log( "Cannot invert model, qutting." );
+			Log.error( "Cannot invert model, qutting." );
 			return;
 		}
 		*/

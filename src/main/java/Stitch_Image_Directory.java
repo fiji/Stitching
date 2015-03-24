@@ -41,6 +41,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
@@ -129,12 +130,12 @@ public class Stitch_Image_Directory implements PlugIn
 			File file = new File( dir, fileName );
 			if ( file.isFile() && !file.isHidden() )
 			{
-				IJ.log( file.getPath() );
+				Log.info( file.getPath() );
 				files.add( fileName );
 			}
 		}
 		
-		IJ.log("Found " + files.size() + " files.");
+		Log.info("Found " + files.size() + " files.");
 		
 		if( files.size() < 2 )
 		{
@@ -168,7 +169,7 @@ public class Stitch_Image_Directory implements PlugIn
         		
         		if (imp == null)
         		{
-        			IJ.log("Cannot read: " + file + ", trying next one...");
+        			Log.error("Cannot read: " + file + ", trying next one...");
         			continue;
         		}
         		
@@ -242,7 +243,7 @@ public class Stitch_Image_Directory implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("CreateGridLayout.openFileWrite(): " + e);
+		IJ.error("CreateGridLayout.openFileWrite(): " + e);
 		outputFile = null;
 	  }
 	  return(outputFile);

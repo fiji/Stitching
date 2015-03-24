@@ -46,6 +46,7 @@ import loci.formats.FormatException;
 import loci.formats.FormatTools;
 import loci.formats.IFormatReader;
 import loci.formats.meta.MetadataRetrieve;
+import stitching.utils.Log;
 
 public class CommonFunctions
 {
@@ -201,11 +202,11 @@ public class CommonFunctions
 			//final String dimensionOrder = r.getDimensionOrder();
 			
 			if (timepoints > 1)
-				IJ.log("More than one timepoint. Not implemented yet. Returning first timepoint");
+				Log.warn("More than one timepoint. Not implemented yet. Returning first timepoint");
 			
 			if (r.getSizeC() > 3)
 			{
-				IJ.log("More than three channels. ImageJ supports only 3 channels, returning the first three channels.");
+				Log.warn("More than three channels. ImageJ supports only 3 channels, returning the first three channels.");
 				channels = 3;
 			}
 			else
@@ -215,7 +216,7 @@ public class CommonFunctions
 			
 			if (!(pixelType == FormatTools.UINT8 || pixelType == FormatTools.UINT16))
 			{
-				IJ.log("PixelType " + pixelTypeString + " not supported yet, returning. ");
+				Log.error("PixelType " + pixelTypeString + " not supported yet, returning. ");
 				return null;
 			}
 			
@@ -233,16 +234,16 @@ public class CommonFunctions
 					end = to;
 			}
 			
-			/*System.out.println("width: " + width);
-			System.out.println("height: " + height);
-			System.out.println("depth: " + depth);
-			System.out.println("timepoints: " + timepoints);
-			System.out.println("channels: " + channels);
-			System.out.println("images: " + num);
-			System.out.println("image format: " + formatType);
-			System.out.println("bytes per pixel: " + bytesPerPixel);
-			System.out.println("pixel type: " + pixelTypeString);			
-			System.out.println("dimensionOrder: " + dimensionOrder);*/
+			/*Log.debug("width: " + width);
+			Log.debug("height: " + height);
+			Log.debug("depth: " + depth);
+			Log.debug("timepoints: " + timepoints);
+			Log.debug("channels: " + channels);
+			Log.debug("images: " + num);
+			Log.debug("image format: " + formatType);
+			Log.debug("bytes per pixel: " + bytesPerPixel);
+			Log.debug("pixel type: " + pixelTypeString);			
+			Log.debug("dimensionOrder: " + dimensionOrder);*/
 
 			final ImageStack stack = new ImageStack(width, height);	
 			final int t = 0;			
@@ -255,7 +256,7 @@ public class CommonFunctions
 				{
 					final int index = r.getIndex(z, c, t);
 					r.openBytes(index, b[c]);					
-					//System.out.println(index);
+					//Log.debug(index);
 				}
 				
 				if (channels == 1)
@@ -1138,12 +1139,9 @@ public class CommonFunctions
 		final double locationY = getPosition( hasPlane ? retrieve.getPlanePositionY( series, planeIndex ) : null, stageLabelY, invertY );
 		final double locationZ = ignoreZStage ? 0 : getPosition( hasPlane ? retrieve.getPlanePositionZ( series, planeIndex ) : null, stageLabelZ, false );
 
-		if ( IJ.debugMode )
-		{
-			IJ.log( "locationX:  " + locationX );
-			IJ.log( "locationY:  " + locationY );
-			IJ.log( "locationZ:  " + locationZ );
-		}
+		Log.debug( "locationX:  " + locationX );
+		Log.debug( "locationY:  " + locationY );
+		Log.debug( "locationZ:  " + locationZ );
 
 		return new double[] { locationX, locationY, locationZ };
 	}

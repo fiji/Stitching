@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import stitching.utils.Log;
+
 public class TextFileAccess 
 {
 	public static BufferedReader openFileRead(final File file)
@@ -18,7 +20,7 @@ public class TextFileAccess
 		}
 		catch (IOException e)
 		{
-			System.out.println("TextFileAccess.openFileRead(): " + e);
+			Log.error("TextFileAccess.openFileRead(): " + e);
 			inputFile = null;
 		}
 		return (inputFile);
@@ -33,7 +35,7 @@ public class TextFileAccess
 		}
 		catch (IOException e)
 		{
-			System.out.println("TextFileAccess.openFileRead(): " + e);
+			Log.error("TextFileAccess.openFileRead(): " + e);
 			inputFile = null;
 		}
 		return (inputFile);
@@ -48,7 +50,7 @@ public class TextFileAccess
 		}
 		catch (IOException e)
 		{
-			System.out.println("TextFileAccess.openFileWrite(): " + e);
+			Log.error("TextFileAccess.openFileWrite(): " + e);
 			outputFile = null;
 		}
 		return (outputFile);
@@ -63,7 +65,7 @@ public class TextFileAccess
 		}
 		catch (IOException e)
 		{
-			System.out.println("TextFileAccess.openFileWrite(): " + e);
+			Log.error("TextFileAccess.openFileWrite(): " + e);
 			outputFile = null;
 		}
 		return (outputFile);

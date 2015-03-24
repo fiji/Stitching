@@ -39,6 +39,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Util;
 import stitching.CommonFunctions;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 
 public class Stitching_Pairwise implements PlugIn 
@@ -69,7 +70,7 @@ public class Stitching_Pairwise implements PlugIn
 	@Override
 	public void run( final String arg0 ) 
 	{
-		IJ.log( "Stitching internal version: " + Stitching_Grid.version );
+		Log.info( "Stitching internal version: " + Stitching_Grid.version );
 		
 		// get list of image stacks
 		final int[] idList = WindowManager.getIDList();		
@@ -248,9 +249,9 @@ public class Stitching_Pairwise implements PlugIn
 		
 		if ( !params.computeOverlap && params.timeSelect > 0 )
 		{
-			IJ.log( "WARNING: You chose to not compute overlap, ignoring the option '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'!" );
+			Log.warn( "You chose to not compute overlap, ignoring the option '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'!" );
 			params.timeSelect = defaultTimeSelect = 0;
-			IJ.log( "WARNING: Instead we will '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'" );
+			Log.warn( "Instead we will '" + CommonFunctions.timeSelect[ params.timeSelect ] + "'" );
 		}
 		
 		if ( params.timeSelect > 0 )
@@ -292,7 +293,7 @@ public class Stitching_Pairwise implements PlugIn
 			if ( params.computeOverlap )
 			{
 				result = PairWiseStitchingImgLib.stitchPairwise( imp1, imp2, imp1.getRoi(), imp2.getRoi(), 1, 1, params );
-				IJ.log( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
+				Log.info( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
 				
 				// update the dialog to show the numbers next time
 				defaultxOffset = result.getOffset( 0 );
@@ -320,7 +321,7 @@ public class Stitching_Pairwise implements PlugIn
 				}
 				
 				result = new PairWiseStitchingResult( offset, 0.0f, 0.0f );
-				IJ.log( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " (from dialog)");
+				Log.info( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " (from dialog)");
 			}
 						
 			
@@ -390,7 +391,7 @@ public class Stitching_Pairwise implements PlugIn
 	            				
 	            				pair.setCrossCorrelation( result.getCrossCorrelation() );
 
-	            				IJ.log( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
+	            				Log.info( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
 	            						Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
 	                    	}
 	                    }
@@ -404,8 +405,8 @@ public class Stitching_Pairwise implements PlugIn
 			
 			for ( int f = 0; f < imp1.getNFrames(); ++f )
 			{
-				IJ.log ( optimized.get( f*2 ).getImagePlus().getTitle() + "["+ optimized.get( f*2 ).getImpId() + "," + optimized.get( f*2 ).getTimePoint() + "]: " + optimized.get( f*2 ).getModel() );
-				IJ.log ( optimized.get( f*2 + 1 ).getImagePlus().getTitle() + "["+ optimized.get( f*2 + 1 ).getImpId() + "," + optimized.get( f*2 + 1 ).getTimePoint() + "]: " + optimized.get( f*2 + 1 ).getModel() );
+				Log.info ( optimized.get( f*2 ).getImagePlus().getTitle() + "["+ optimized.get( f*2 ).getImpId() + "," + optimized.get( f*2 ).getTimePoint() + "]: " + optimized.get( f*2 ).getModel() );
+				Log.info ( optimized.get( f*2 + 1 ).getImagePlus().getTitle() + "["+ optimized.get( f*2 + 1 ).getImpId() + "," + optimized.get( f*2 + 1 ).getTimePoint() + "]: " + optimized.get( f*2 + 1 ).getModel() );
 				models.add( (InvertibleBoundable)optimized.get( f*2 ).getModel() );
 				models.add( (InvertibleBoundable)optimized.get( f*2 + 1 ).getModel() );
 			}
@@ -413,7 +414,7 @@ public class Stitching_Pairwise implements PlugIn
 		}
 		
 		// now fuse
-		IJ.log( "Fusing ..." );
+		Log.info( "Fusing ..." );
 		
 		final ImagePlus ci;
 		final long start = System.currentTimeMillis();			
@@ -431,7 +432,7 @@ public class Stitching_Pairwise implements PlugIn
 			ci.show();
 		}
 
-		IJ.log( "Finished ... (" + (System.currentTimeMillis() - start) + " ms)");
+		Log.info( "Finished ... (" + (System.currentTimeMillis() - start) + " ms)");
 	}
 	
 	protected static < T extends RealType< T > & NativeType< T > > ImagePlus fuse( final T targetType, final ImagePlus imp1, final ImagePlus imp2, final ArrayList<InvertibleBoundable> models, final StitchingParameters params )

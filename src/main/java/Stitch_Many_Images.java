@@ -4,7 +4,6 @@ import static stitching.CommonFunctions.colorList;
 import static stitching.CommonFunctions.methodListCollection;
 import static stitching.CommonFunctions.rgbTypes;
 import fiji.util.gui.GenericDialogPlus;
-import ij.IJ;
 import ij.gui.GenericDialog;
 import ij.gui.MultiLineLabel;
 import ij.plugin.PlugIn;
@@ -13,6 +12,8 @@ import java.awt.Checkbox;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
+
+import stitching.utils.Log;
 
 
 public class Stitch_Many_Images implements PlugIn
@@ -73,7 +74,7 @@ public class Stitch_Many_Images implements PlugIn
 			if( gd.getNextBoolean() )
 				result = i;
 		
-		IJ.log( "You selected " + stichingTypes[ result ] );
+		Log.info( "You selected " + stichingTypes[ result ] );
 		
 		// store choice for next run
 		stitchingType = result;

@@ -8,6 +8,7 @@ import java.io.File;
 import loci.plugins.BF;
 import loci.plugins.in.ImporterOptions;
 import mpicbg.models.Model;
+import stitching.utils.Log;
 
 public class ImageCollectionElement 
 {
@@ -81,7 +82,7 @@ public class ImageCollectionElement
 		{
 			if ( !file.exists() )
 			{
-				IJ.log( "Cannot find file: '" + file + "' - abort stitching." );
+				Log.error( "Cannot find file: '" + file + "' - abort stitching." );
 				return null;
 			}
 			
@@ -102,7 +103,7 @@ public class ImageCollectionElement
 			
 			if ( imp.length > 1 )
 			{
-				IJ.log( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
+				Log.error( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
 				
 				for ( ImagePlus i : imp )
 					i.close();
@@ -119,8 +120,7 @@ public class ImageCollectionElement
 		} 
 		catch ( Exception e ) 
 		{
-			IJ.log( "Cannot open file '" + file + "': " + e );
-			//e.printStackTrace();
+			Log.error( "Cannot open file '" + file + "': " + e );
 			return null;
 		}
 	}

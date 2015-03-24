@@ -41,6 +41,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /**
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
@@ -142,13 +143,13 @@ public class Stitch_Multiple_Series_File implements PlugIn
 		
 		for ( ImageInformation iI : imageInformationList )
 		{
-			IJ.log( iI.imageName );
+			Log.info( iI.imageName );
 			
 			String offset = "";
 			for ( int d = 0; d < iI.offset.length; ++d )
 				offset += iI.offset[ d ] + ", ";
 			
-			IJ.log( offset );
+			Log.info( offset );
 		}
 
 		final GridLayout gridLayout = new GridLayout();
@@ -169,7 +170,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 	{
 		if ( filename == null || filename.length() == 0 )
 		{
-			IJ.log( "Filename is empty!" );
+			Log.error( "Filename is empty!" );
 			return null;
 		}
 		
@@ -188,12 +189,11 @@ public class Stitch_Multiple_Series_File implements PlugIn
 
 			final int numSeries = r.getSeriesCount();
 			
-			if ( IJ.debugMode )
-				IJ.log( "numSeries:  " + numSeries );
+			Log.debug( "numSeries:  " + numSeries );
 			
 			if ( numSeries == 1 )
 			{
-				IJ.log( "File contains only one tile: " + filename );
+				Log.error( "File contains only one tile: " + filename );
 				return null;
 			}
 			
@@ -203,13 +203,11 @@ public class Stitch_Multiple_Series_File implements PlugIn
 				if ( r.getSizeZ() > 1 )
 					dim = 3;
 
-			if ( IJ.debugMode )
-				IJ.log( "dim:  " + dim );
+			Log.debug( "dim:  " + dim );
 
 			for ( int series = 0; series < numSeries; ++series )
 			{
-				if ( IJ.debugMode )
-					IJ.log( "fetching data for series:  " + series );
+				Log.debug( "fetching data for series:  " + series );
 				r.setSeries( series );
 
 				final MetadataRetrieve retrieve = service.asRetrieve(r.getMetadataStore());
@@ -232,36 +230,30 @@ public class Stitch_Multiple_Series_File implements PlugIn
 					if ( posX >= 0 && cal != null && cal.floatValue() != 0 )
 						calX = cal.floatValue(); 
 	
-					if ( IJ.debugMode )
-						IJ.log( "calibrationX:  " + calX );
+					Log.debug( "calibrationX:  " + calX );
 	
 					final int posY = dimOrder.indexOf( 'Y' );
 					cal = retrieve.getPixelsPhysicalSizeY( 0 ).getValue();
 					if ( posY >= 0 && cal != null && cal.floatValue() != 0 )
 						calY = cal.floatValue();
 	
-					if ( IJ.debugMode )
-						IJ.log( "calibrationY:  " + calY );
+					Log.debug( "calibrationY:  " + calY );
 	
 					final int posZ = dimOrder.indexOf( 'Z' );
 					cal = retrieve.getPixelsPhysicalSizeZ( 0 ).getValue();
 					if ( posZ >= 0 && cal != null && cal.floatValue() != 0 )
 						calZ = cal.floatValue();
 				
-					if ( IJ.debugMode )
-						IJ.log( "calibrationZ:  " + calZ );
+					Log.debug( "calibrationZ:  " + calZ );
 	
 					// location in pixel values;
 					locationX /= calX;
 					locationY /= calY;
 					locationZ /= calZ;
 				}
-				if ( IJ.debugMode )
-				{
-					IJ.log( "locationX [px]:  " + locationX );
-					IJ.log( "locationY [px]:  " + locationY );
-					IJ.log( "locationZ [px]:  " + locationZ );
-				}
+				Log.debug( "locationX [px]:  " + locationX );
+				Log.debug( "locationY [px]:  " + locationY );
+				Log.debug( "locationZ [px]:  " + locationZ );
 
 				// increase overlap if desired
 				locationX *= (100.0-increaseOverlap)/100.0;
@@ -301,8 +293,7 @@ public class Stitch_Multiple_Series_File implements PlugIn
 		}
 		catch ( Exception ex ) 
 		{ 
-			IJ.handleException(ex);
-			ex.printStackTrace();
+			Log.error(ex);
 			return null; 
 		}
 		
