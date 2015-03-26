@@ -43,6 +43,7 @@ import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import stitching.utils.CompositeImageFixer;
+import stitching.utils.Log;
 
 /**
  * Manages the fusion for all types except the overlayfusion
@@ -237,7 +238,7 @@ public class Fusion
 				} 
 				catch (ImgLibException e) 
 				{
-					IJ.log( "Output image has no ImageJ type: " + e );
+					Log.error( "Output image has no ImageJ type: " + e );
 				}				
 			}
 		}
@@ -261,9 +262,9 @@ public class Fusion
 			result = OverlayFusion.switchZCinXYCZT( result );
 			return CompositeImageFixer.makeComposite( result, CompositeImage.COMPOSITE );
 		}
-		//IJ.log( "ch: " + imp.getNChannels() );
-		//IJ.log( "slices: " + imp.getNSlices() );
-		//IJ.log( "frames: " + imp.getNFrames() );
+		//Log.info( "ch: " + imp.getNChannels() );
+		//Log.info( "slices: " + imp.getNSlices() );
+		//Log.info( "frames: " + imp.getNFrames() );
 		result.setDimensions( numChannels, 1, numTimePoints );
 		
 		if ( numChannels > 1 || numTimePoints > 1 )
@@ -303,7 +304,7 @@ public class Fusion
 				fusionImp[0].show();
 			}
 			catch (ImgLibException e) {
-				IJ.log("Output image has no ImageJ type: " + e);
+				Log.error("Output image has no ImageJ type: " + e);
 			}
 		}
 
@@ -576,7 +577,7 @@ public class Fusion
 						threadNumber, count, lastDraw, fusionImp[0]);
 				}
 				catch (NoninvertibleModelException e) {
-					IJ.log("Cannot invert model, qutting.");
+					Log.error("Cannot invert model, qutting.");
 					return;
 				}
 
@@ -818,7 +819,7 @@ public class Fusion
             			}
             			catch ( ImgLibException e )
             			{
-            				IJ.log( "Output image has no ImageJ type: " + e );
+            				Log.error( "Output image has no ImageJ type: " + e );
             			}                		
                 	}
 
@@ -925,12 +926,12 @@ public class Fusion
 		} 
 		catch ( NoninvertibleModelException e ) 
 		{
-			IJ.log( "Cannot invert model, qutting." );
+			Log.error( "Cannot invert model, qutting." );
 			return;
 		} 
 		catch ( ImgLibException e ) 
 		{
-			IJ.log( "Output image has no ImageJ type: " + e );
+			Log.error( "Output image has no ImageJ type: " + e );
 			return;
 		}
 	}
@@ -1105,8 +1106,8 @@ public class Fusion
 				max[ i ] = new double[] { imgSizes[ i % numImages ][ 0 ], imgSizes[ i % numImages ][ 1 ], imgSizes[ i % numImages ][ 2 ] };
 		}
 		
-		//IJ.log( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
-		//IJ.log( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
+		//Log.info( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
+		//Log.info( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
 
 		// casts of the models
 		final ArrayList<InvertibleBoundable> boundables = new ArrayList<InvertibleBoundable>();
@@ -1116,12 +1117,12 @@ public class Fusion
 			final InvertibleBoundable boundable = models.get( i ); 
 			boundables.add( boundable );
 			
-			//IJ.log( "i: " + boundable );
+			//Log.info( "i: " + boundable );
 			
 			boundable.estimateBounds( min[ i ], max[ i ] );
 		}
-		//IJ.log( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
-		//IJ.log( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
+		//Log.info( "1: " + Util.printCoordinates( min[ 0 ] ) + " -> " + Util.printCoordinates( max[ 0 ] ) );
+		//Log.info( "2: " + Util.printCoordinates( min[ 1 ] ) + " -> " + Util.printCoordinates( max[ 1 ] ) );
 		
 		// dimensions of the final image
 		final double[] minImg = new double[ dimensionality ];
@@ -1151,7 +1152,7 @@ public class Fusion
 				}
 			}
 		}
-		//IJ.log( "output: " + Util.printCoordinates( minImg ) + " -> " + Util.printCoordinates( maxImg ) );
+		//Log.info( "output: " + Util.printCoordinates( minImg ) + " -> " + Util.printCoordinates( maxImg ) );
 
 		// the size of the new image
 		//final int[] size = new int[ dimensionality ];
@@ -1164,8 +1165,8 @@ public class Fusion
 			offset[ d ] = minImg[ d ];			
 		}
 		
-		//IJ.log( "size: " + Util.printCoordinates( size ) );
-		//IJ.log( "offset: " + Util.printCoordinates( offset ) );		
+		//Log.info( "size: " + Util.printCoordinates( size ) );
+		//Log.info( "offset: " + Util.printCoordinates( offset ) );		
 	}
 
 	/**
@@ -1222,6 +1223,6 @@ public class Fusion
 		}
 		
 		ImageJFunctions.show( img );
-		System.out.println( "done" );
+		Log.debug( "done" );
 	}
 }

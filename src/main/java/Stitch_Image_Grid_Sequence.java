@@ -28,6 +28,7 @@ import ij.gui.MultiLineLabel;
 import ij.io.FileSaver;
 import ij.plugin.PlugIn;
 import stitching.GridLayout;
+import stitching.utils.Log;
 
 /**
  * Plugin class to stitch a sequence of grid of images (fixed X/Y configuration)
@@ -243,18 +244,17 @@ public class Stitch_Image_Grid_Sequence implements PlugIn
 			
 			final String outputFusedPath = outputDirectory + System.getProperty("file.separator") + fusedImage.getTitle() 
 								+ "_" + Stitch_Image_Grid.getLeadingZeros(numZValues, zs) + ".tif"; 
-			IJ.log("Saving " + outputFusedPath +  " ... ");
+			Log.info("Saving " + outputFusedPath +  " ... ");
 			try 
 			{
 				new FileSaver(fusedImage).saveAsTiff(outputFusedPath);
 			} 
 			catch (Exception e) 
 			{
-				IJ.log("Error while saving " + outputFusedPath);
-				e.printStackTrace();
+				Log.error("Error while saving " + outputFusedPath, e);
 				return;
 			}
-			IJ.log("Saved");
+			Log.info("Saved");
 			
 			startI += gridSize;
 			

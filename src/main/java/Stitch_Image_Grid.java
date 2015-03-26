@@ -40,6 +40,7 @@ import stitching.GridLayout;
 import stitching.ImageInformation;
 import stitching.model.TranslationModel2D;
 import stitching.model.TranslationModel3D;
+import stitching.utils.Log;
 
 /* from Curtis
  * 
@@ -50,7 +51,7 @@ public class ChooseFile {
   public static void main(String[] args) {
     String s = args[0];
     FilePattern fp = new FilePattern(new Location(s));
-    System.out.println("pattern = " + fp.getPattern());
+    Log.debug("pattern = " + fp.getPattern());
 
     String[] prefixes = fp.getPrefixes();
     int[] count = fp.getCount();
@@ -62,7 +63,7 @@ public class ChooseFile {
       letter++;
     }
     sb.append(fp.getSuffix());
-    System.out.println("Steffi's pattern = " + sb.toString());
+    Log.debug("Steffi's pattern = " + sb.toString());
   }
 }
 [8:04:38 PM] Curtis Rueden: That's how you generate a pattern for the Stitcher like you need.
@@ -418,7 +419,7 @@ public class Stitch_Image_Grid implements PlugIn
 	  }
 	  catch (IOException e)
 	  {
-		System.err.println("CreateGridLayout.openFileWrite(): " + e);
+		Log.error("CreateGridLayout.openFileWrite(): " + e);
 		outputFile = null;
 	  }
 	  return(outputFile);

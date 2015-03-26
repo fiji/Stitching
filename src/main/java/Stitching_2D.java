@@ -47,6 +47,7 @@ import stitching.CrossCorrelationResult2D;
 import stitching.FloatArray2D;
 import stitching.ImageInformation;
 import stitching.Point2D;
+import stitching.utils.Log;
 
 public class Stitching_2D implements PlugIn
 {
@@ -213,7 +214,7 @@ public class Stitching_2D implements PlugIn
 
 			if ((imp1.getType() == ImagePlus.COLOR_RGB || imp1.getType() == ImagePlus.COLOR_256) && method.equals(methodList[RED_CYAN]))
 			{
-				IJ.log("Warning: Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
+				Log.warn("Red-Cyan Overlay is not possible for RGB images, reducing images to Single Channel data.");
 			}
 		}
 		
@@ -381,13 +382,13 @@ public class Stitching_2D implements PlugIn
 
 		if (doLogging)
 		{
-			IJ.log("Translation Parameters:");
-			IJ.log("(second stack relative to first stack)");
+			Log.info("Translation Parameters:");
+			Log.info("(second stack relative to first stack)");
 			
 			if ( this.translation == null )
-				IJ.log("x= " + shift.x + " y= " + shift.y + " R= " + result[0].R);
+				Log.info("x= " + shift.x + " y= " + shift.y + " R= " + result[0].R);
 			else
-				IJ.log("x= " + shift.x + " y= " + shift.y);
+				Log.info("x= " + shift.x + " y= " + shift.y);
 		}
 	}
 
@@ -840,8 +841,7 @@ public class Stitching_2D implements PlugIn
 						result[myEntry] = testCrossCorrelation(points[myShift], img1, img2);
 					} catch (Exception e)
 					{
-						e.printStackTrace();
-						IJ.log(e.getMessage());
+						Log.error(e);
 					}
 				}
 			};
@@ -855,7 +855,7 @@ public class Stitching_2D implements PlugIn
 
 		if (doLogging)
 			for (int i = 0; i < result.length; i++)
-				IJ.log("x:" + result[i].shift.x + " y:" + result[i].shift.y + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
+				Log.info("x:" + result[i].shift.x + " y:" + result[i].shift.y + " overlap:" + result[i].overlappingPixels + " R:" + result[i].R + " Peak:" + result[i].PCMValue);
 
 		return result;
 	}
@@ -922,7 +922,7 @@ public class Stitching_2D implements PlugIn
 		// if less than 1% is overlapping
 		if (count <= (Math.min(w1, w2) * Math.min(h1, h2)) * 0.01)
 		{
-			//IJ.log("lower than 1%");
+			//Log.info("lower than 1%");
 			result.R = 0;
 			result.SSQ = Float.MAX_VALUE;
 			result.overlappingPixels = count;
@@ -1269,7 +1269,7 @@ public class Stitching_2D implements PlugIn
 
 		if (ip == null )
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 
@@ -1284,7 +1284,7 @@ public class Stitching_2D implements PlugIn
 
 			if (rgbType == -1)
 			{
-				System.err.println("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
+				Log.warn("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
 				rgbType = colorList.length - 1;
 			}
 		}
@@ -1294,7 +1294,7 @@ public class Stitching_2D implements PlugIn
 
 		if (width * height == 0)
 		{
-			System.out.println("Image is empty.");
+			Log.error("Image is empty.");
 			return null;
 		}
 
@@ -1347,7 +1347,7 @@ public class Stitching_2D implements PlugIn
 
 		if (ip == null )
 		{
-			System.out.println("Image Stack is empty.");
+			Log.error("Image Stack is empty.");
 			return null;
 		}
 
@@ -1362,7 +1362,7 @@ public class Stitching_2D implements PlugIn
 
 			if (rgbType == -1)
 			{
-				System.err.println("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
+				Log.warn("Unrecognized command to handle RGB: " + handleRGB + ". Assuming Average of Red, Green and Blue.");
 				rgbType = colorList.length - 1;
 			}
 		}
@@ -1372,7 +1372,7 @@ public class Stitching_2D implements PlugIn
 
 		if (width * height == 0)
 		{
-			System.out.println("Image is empty.");
+			Log.error("Image is empty.");
 			return null;
 		}
 

@@ -10,6 +10,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import stitching.utils.Log;
+
 
 public class DeltaVision_Converter implements PlugIn
 {
@@ -91,18 +93,18 @@ public class DeltaVision_Converter implements PlugIn
 			else
 				dim = 2;
 			
-			IJ.log( "slices: " + z + ", dimensionality = " + dim );
-			IJ.log( "channels: " + w );
-			IJ.log( "timepoints: " + t );
-			IJ.log( "x-resolution: " + xRes );
-			IJ.log( "y-resolution: " + yRes );
-			IJ.log( "z-resolution: " + zRes );
-			IJ.log( "image size x: " + sizeX );
-			IJ.log( "image size y: " + sizeY );
+			Log.info( "slices: " + z + ", dimensionality = " + dim );
+			Log.info( "channels: " + w );
+			Log.info( "timepoints: " + t );
+			Log.info( "x-resolution: " + xRes );
+			Log.info( "y-resolution: " + yRes );
+			Log.info( "z-resolution: " + zRes );
+			Log.info( "image size x: " + sizeX );
+			Log.info( "image size y: " + sizeY );
 
 			if ( t > 1 )
 			{
-				IJ.log( "Cannot handle more than one timepoint" );
+				Log.error( "Cannot handle more than one timepoint" );
 				return;
 			}
 			
@@ -145,7 +147,7 @@ public class DeltaVision_Converter implements PlugIn
 		}
 		catch ( Exception e )
 		{
-			System.out.println( "Cannot open file '" + dvLogFile + "': " + e );
+			Log.error( "Cannot open file '" + dvLogFile + "': " + e );
 			return;
 		}
 		

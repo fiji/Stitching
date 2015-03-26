@@ -28,6 +28,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
+import stitching.utils.Log;
+
 /**
  * Abstract class for arbitrary transformation models to be applied
  * to {@link Point Points} in n-dimensional space.
@@ -198,7 +200,7 @@ public abstract class Model implements CoordinateTransform
 		}
 		catch ( Exception e )
 		{
-			System.err.println( e.getMessage() );
+			Log.error( e );
 			return null;
 		}
 		
@@ -225,8 +227,8 @@ public abstract class Model implements CoordinateTransform
 				if ( m.getDistance() < t )
 					inliers.add( m );
 			}
-			//System.out.println( ( num_inliers - inliers.size() ) + " candidates with e > " + t + " removed by iterative robust regression." );
-			//System.out.println( inliers.size() + " inliers remaining." );
+			//Log.debug( ( num_inliers - inliers.size() ) + " candidates with e > " + t + " removed by iterative robust regression." );
+			//Log.debug( inliers.size() + " inliers remaining." );
 			
 			model.cost = observer.mean;
 		}
@@ -273,7 +275,7 @@ public abstract class Model implements CoordinateTransform
 		}
 		catch ( Exception e )
 		{
-			System.err.println( e.getMessage() );
+			Log.error( e );
 			return null;
 		}
 		
@@ -310,7 +312,7 @@ public abstract class Model implements CoordinateTransform
 			}
 			catch ( Exception e )
 			{
-				System.err.println( e.getMessage() );
+				Log.error( e );
 				return null;
 			}
 			final ArrayList< PointMatch > temp_inliers = new ArrayList< PointMatch >();

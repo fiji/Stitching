@@ -28,6 +28,8 @@ import ij.process.ImageProcessor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import stitching.utils.Log;
+
 public class PaintInvertibleCoordinateTransformThread extends Thread
 {
 	final protected ImagePlus imp;
@@ -70,7 +72,7 @@ public class PaintInvertibleCoordinateTransformThread extends Thread
 								transform.applyInverseInPlace( t );
 								target.putPixel( x, y, source.getPixel( ( int )t[ 0 ], ( int )t[ 1 ] ) );
 							}
-							catch ( NoninvertibleModelException e ){ e.printStackTrace(); }
+							catch ( NoninvertibleModelException e ){ Log.error( e ); }
 						}
 						imp.updateAndDraw();
 					}
