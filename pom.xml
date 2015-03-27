@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>Stitching_</artifactId>
-	<version>3.0.1</version>
+	<version>3.0.2-SNAPSHOT</version>
 
 	<name>plugins/Stitching_.jar</name>
 	<description />
