@@ -36,6 +36,7 @@ import loci.formats.IFormatReader;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.services.OMEXMLService;
+import ome.units.quantity.Length;
 import stitching.CommonFunctions;
 import stitching.GridLayout;
 import stitching.ImageInformation;
@@ -222,27 +223,27 @@ public class Stitch_Multiple_Series_File implements PlugIn
 				{
 					// calibration
 					double calX = 1, calY = 1, calZ = 1;
-					Double cal;
+					Length cal;
 					final String dimOrder = r.getDimensionOrder().toUpperCase();
 					
 					final int posX = dimOrder.indexOf( 'X' );
-					cal = retrieve.getPixelsPhysicalSizeX( 0 ).getValue();
-					if ( posX >= 0 && cal != null && cal.floatValue() != 0 )
-						calX = cal.floatValue(); 
+					cal = retrieve.getPixelsPhysicalSizeX( 0 );
+					if ( posX >= 0 && cal != null && cal.value().doubleValue() != 0 )
+						calX = cal.value().doubleValue();
 	
 					Log.debug( "calibrationX:  " + calX );
 	
 					final int posY = dimOrder.indexOf( 'Y' );
-					cal = retrieve.getPixelsPhysicalSizeY( 0 ).getValue();
-					if ( posY >= 0 && cal != null && cal.floatValue() != 0 )
-						calY = cal.floatValue();
+					cal = retrieve.getPixelsPhysicalSizeY( 0 );
+					if ( posY >= 0 && cal != null && cal.value().doubleValue() != 0 )
+						calY = cal.value().doubleValue();
 	
 					Log.debug( "calibrationY:  " + calY );
 	
 					final int posZ = dimOrder.indexOf( 'Z' );
-					cal = retrieve.getPixelsPhysicalSizeZ( 0 ).getValue();
-					if ( posZ >= 0 && cal != null && cal.floatValue() != 0 )
-						calZ = cal.floatValue();
+					cal = retrieve.getPixelsPhysicalSizeZ( 0 );
+					if ( posZ >= 0 && cal != null && cal.value().doubleValue() != 0 )
+						calZ = cal.value().doubleValue();
 				
 					Log.debug( "calibrationZ:  " + calZ );
 	
