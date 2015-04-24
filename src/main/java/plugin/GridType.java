@@ -8,6 +8,7 @@ import ij.gui.MultiLineLabel;
 import java.awt.Choice;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.LinkedHashSet;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -164,19 +165,11 @@ public class GridType
 
 		// the interactive changing is not compatible with the macro language, 
 		// thats why we show all possible options and figure out what was meant
-		allChoices = new String[ 12 ];
-		allChoices[ 0 ] = choose2[ 0 ][ 0 ];
-		allChoices[ 1 ] = choose2[ 0 ][ 1 ];
-		allChoices[ 2 ] = choose2[ 0 ][ 2 ];
-		allChoices[ 3 ] = choose2[ 0 ][ 3 ];
-		allChoices[ 4 ] = choose2[ 1 ][ 0 ];
-		allChoices[ 5 ] = choose2[ 1 ][ 1 ];
-		allChoices[ 6 ] = choose2[ 1 ][ 2 ];
-		allChoices[ 7 ] = choose2[ 1 ][ 3 ];
-		allChoices[ 8 ] = choose2[ 4 ][ 0 ];		
-		allChoices[ 9 ] = choose2[ 5 ][ 0 ];		
-		allChoices[ 10 ] = choose2[ 6 ][ 0 ];
-		allChoices[ 11 ] = choose2[ 6 ][ 1 ];
+		final LinkedHashSet<String> allChoicesSet = new LinkedHashSet<String>();
+		for ( final String[] choices : choose2 )
+			for ( final String choice : choices )
+				allChoicesSet.add(choice);
+		allChoices = allChoicesSet.toArray( new String[ allChoicesSet.size() ] );
 	}
 	
 	protected final void imageSwitch( final Choice choice1, final Choice choice2, final ImageIcon[][] images, final ImageIcon display, final JLabel label )
