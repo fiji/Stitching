@@ -1,4 +1,4 @@
-![](http://jenkins.imagej.net/job/Stitching/lastBuild/badge/icon)
+[![](http://jenkins.imagej.net/job/Stitching/lastBuild/badge/icon)](http://jenkins.imagej.net/job/Stitching/)
 
 Stitching
 =========
