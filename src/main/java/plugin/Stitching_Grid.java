@@ -398,9 +398,15 @@ public class Stitching_Grid implements PlugIn
 		else
 			elements = null;
 		
-		if ( elements == null || elements.size() < 2 )
+		if ( elements == null )
 		{
-			Log.error( "Could not initialise stitching." );
+			Log.error("Error during tile discovery, or invalid grid type. Aborting.");
+			return;
+		}
+		if ( elements.size() < 2 )
+		{
+			Log.error("Found: " + elements.size() +
+				" tiles, but at least 2 are required for stitching. Aborting.");
 			return;
 		}
 		
