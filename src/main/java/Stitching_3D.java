@@ -544,7 +544,8 @@ public class Stitching_3D implements PlugIn
 			FloatArray3D invPCM = computePhaseCorrelationMatrix(fft1, fft2, maxDim.x);
 
 			// find the peaks
-			ArrayList<Point3D> peaks = findPeaks(invPCM, img1Dim, img2Dim, ext1Dim, ext2Dim);
+			ArrayList<Point3D> peaks = findPeaks(invPCM, img1Dim, img2Dim, ext1Dim, ext2Dim,
+                    checkPeaks);
 
 			// get the original images
 			img1 = applyROI(imp1, img1Dim, ext1Dim, handleRGB1, false /* no windowing of course*/);
@@ -737,7 +738,8 @@ public class Stitching_3D implements PlugIn
 					{
 						int myEntry = entry.getAndIncrement();
 						int myShift = shift.getAndIncrement();
-						result[myEntry] = testCrossCorrelation(points[myShift], img1, img2);
+						result[myEntry] = testCrossCorrelation(points[myShift], img1, img2,
+                                minOverlap);
 					}
 					catch (Exception e)
 					{
@@ -760,7 +762,8 @@ public class Stitching_3D implements PlugIn
 		return result;
 	}
 
-	private CrossCorrelationResult3D testCrossCorrelation(Point3D shift, FloatArray3D img1, FloatArray3D img2)
+	private static CrossCorrelationResult3D testCrossCorrelation(Point3D shift, FloatArray3D img1,
+                                                           FloatArray3D img2, double minOverlap)
 	{
 		// init Result Datastructure
 		CrossCorrelationResult3D result = new CrossCorrelationResult3D();
@@ -941,7 +944,8 @@ public class Stitching_3D implements PlugIn
 		return result;
 	}
 
-	private ArrayList<Point3D> findPeaks(FloatArray3D invPCM, Point3D img1, Point3D img2, Point3D ext1, Point3D ext2)
+	public static ArrayList<Point3D> findPeaks(FloatArray3D invPCM, Point3D img1, Point3D img2,
+                                            Point3D ext1, Point3D ext2, int checkPeaks)
 	{
 		int w = invPCM.width;
 		int h = invPCM.height;
@@ -1012,7 +1016,7 @@ public class Stitching_3D implements PlugIn
 		return peaks;
 	}
 
-	private boolean isLocalMaxima(FloatArray3D invPCM, int x, int y, int z)
+	private static boolean isLocalMaxima(FloatArray3D invPCM, int x, int y, int z)
 	{
 		int width = invPCM.width;
 		int height = invPCM.height;
