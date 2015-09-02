@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>Stitching_</artifactId>
-	<version>3.0.3-SNAPSHOT</version>
+	<version>3.1.0</version>
 
 	<name>plugins/Stitching_.jar</name>
 	<description />
@@ -18,7 +18,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/fiji/Stitching</connection>
 		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
-		<tag>HEAD</tag>
+		<tag>Stitching_-3.1.0</tag>
 		<url>https://github.com/fiji/Stitching</url>
 	</scm>
 	<ciManagement>
