@@ -125,9 +125,10 @@ public class CollectionStitchingImgLib
 
 	protected static Roi getROI( final ImageCollectionElement e1, final ImageCollectionElement e2 )
 	{
-		final int start[] = new int[ 2 ], end[] = new int[ 2 ];
+		final int dims = e1.getDimensionality();
+		final int start[] = new int[ dims ], end[] = new int[ dims ];
 		
-		for ( int dim = 0; dim < 2; ++dim )
+		for ( int dim = 0; dim < dims; ++dim )
 		{			
 			// begin of 2 lies inside 1
 			if ( e2.offset[ dim ] >= e1.offset[ dim ] && e2.offset[ dim ] <= e1.offset[ dim ] + e1.size[ dim ] )
@@ -151,8 +152,12 @@ public class CollectionStitchingImgLib
 				end[ dim ] = -1;
 			}
 		}
-		
-		return new Roi( new Rectangle( start[ 0 ], start[ 1 ], end[ 0 ] - start[ 0 ], end[ 1 ] - start[ 1 ] ) );
+		if( dims < 3 )
+			return new Roi( new Rectangle( start[ 0 ], start[ 1 ], end[ 0 ] - start[ 0 ], end[ 1 ] - start[ 1 ] ) );
+		else
+			return new Roi3D( start[ 0 ], start[ 1 ], start[ 2 ],
+					end[ 0 ] - start[ 0 ], end[ 1 ] - start[ 1 ],
+					end[ 2 ] - start[ 2 ] );
 	}
 
 	protected static Vector< ComparePair > findOverlappingTiles( final ArrayList< ImageCollectionElement > elements, final StitchingParameters params )

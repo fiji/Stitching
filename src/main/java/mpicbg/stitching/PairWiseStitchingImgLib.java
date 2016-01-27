@@ -164,12 +164,16 @@ public class PairWiseStitchingImgLib
 		{
 			result.offset[ 0 ] -= roi2.getBounds().x;
 			result.offset[ 1 ] -= roi2.getBounds().y;
+			if( roi2 instanceof Roi3D )
+				 result.offset[ 2 ] -= ((Roi3D) roi2).startZ;
 		}	
 		
 		if ( roi1 != null )
 		{
 			result.offset[ 0 ] += roi1.getBounds().x;
-			result.offset[ 1 ] += roi1.getBounds().y;			
+			result.offset[ 1 ] += roi1.getBounds().y;
+			if( roi1 instanceof Roi3D )
+				 result.offset[ 2 ] += ((Roi3D) roi1).startZ;
 		}
 		
 		return result;
@@ -299,7 +303,10 @@ public class PairWiseStitchingImgLib
 			offset[ 1 ] = roi.getBounds().y;
 			
 			if ( numDimensions == 3 )
-				size[ 2 ] = imp.getNSlices();
+			{
+				offset[ 2 ] = ((Roi3D) roi).startZ;
+				size[ 2 ] = ((Roi3D) roi).depth;
+			}
 		}
 		
 		// create the Image
