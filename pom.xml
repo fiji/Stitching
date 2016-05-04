@@ -19,10 +19,7 @@
 		<developer>
 			<id>StephanPreibisch</id>
 			<name>Stephan Preibisch</name>
-			<email>stephan.preibisch@gmx.de</email>
-			<url>http://fly.mpi-cbg.de/~preibisch/</url>
-			<organization>MPI-CBG at Dresden</organization>
-			<organizationUrl>http://mpi-cbg.de/</organizationUrl>
+			<url>http://imagej.net/User:StephanP</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -32,7 +29,6 @@
 				<role>support</role>
 				<role>maintainer</role>
 			</roles>
-			<timezone>+1</timezone>
 		</developer>
 		<developer>
 			<id>ctrueden</id>
@@ -73,7 +69,7 @@
 		</contributor>
 		<contributor>
 			<name>Kevin Mader</name>
-			<url>http://imagej.net/User:Msmader</url>
+			<url>http://imagej.net/User:Ksmader</url>
 			<properties><id>kmader</id></properties>
 		</contributor>
 		<contributor>
