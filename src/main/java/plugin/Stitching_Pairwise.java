@@ -88,7 +88,7 @@ public class Stitching_Pairwise implements PlugIn
 		/**
 		 * The first dialog for choosing the images
 		 */
-		final GenericDialog gd1 = new GenericDialog( "Paiwise Stitching of Images" );
+		final GenericDialog gd1 = new GenericDialog( "Pairwise Stitching of Images" );
 		
 		if ( defaultImg1 >= imgList.length || defaultImg2 >= imgList.length )
 		{
@@ -177,7 +177,7 @@ public class Stitching_Pairwise implements PlugIn
 		/**
 		 * Show the next dialog
 		 */
-		final GenericDialog gd2 = new GenericDialog( "Paiwise Stitching" );
+		final GenericDialog gd2 = new GenericDialog( "Pairwise Stitching" );
 				
 		gd2.addChoice("Fusion_method", fusionMethodList, fusionMethodList[ defaultFusionMethod ] );
 		gd2.addStringField("Fused_image name: ", imp1.getTitle() + "<->" + imp2.getTitle(), 20 );
