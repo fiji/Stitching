@@ -3,17 +3,31 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>15.1.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>13.0.0</version>
 		<relativePath />
 	</parent>
 
+	<groupId>sc.fiji</groupId>
 	<artifactId>Stitching_</artifactId>
 	<version>3.1.2-SNAPSHOT</version>
 
-	<name>plugins/Stitching_.jar</name>
-	<description />
+	<name>Stitching</name>
+	<description>A plugin for reconstructing big images/stacks from an arbitrary number of tiled input images/stacks.</description>
+	<url>https://imagej.net/Stitching</url>
+	<inceptionYear>2007</inceptionYear>
+	<organization>
+		<name>Fiji</name>
+		<url>http://fiji.sc/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>GNU General Public License v2+</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -75,6 +89,13 @@
 		<contributor><name>John Lapage</name></contributor>
 	</contributors>
 
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
 	<scm>
 		<connection>scm:git:git://github.com/fiji/Stitching</connection>
 		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
@@ -117,7 +138,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>
-			<version>1.1.3-DEPRECATED</version>
+			<version>1.1.6</version>
 		</dependency>
 
 		<!-- ImageJ dependencies -->
@@ -154,11 +175,11 @@
 			<artifactId>formats-bsd</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-common</artifactId>
+			<groupId>org.openmicroscopy</groupId>
+			<artifactId>ome-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ome</groupId>
+			<groupId>org.openmicroscopy</groupId>
 			<artifactId>ome-xml</artifactId>
 		</dependency>
 
