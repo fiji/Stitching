@@ -107,8 +107,8 @@
 		<url>https://github.com/fiji/Stitching/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/Stitching/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/fiji/Stitching</url>
 	</ciManagement>
 
 	<properties>
