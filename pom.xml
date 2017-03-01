@@ -113,7 +113,7 @@
 
 	<properties>
 		<license.licenseName>gpl_v2</license.licenseName>
-		<license.copyrightOwners>Fiji development team</license.copyrightOwners>
+		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
 		<license.projectName>Fiji distribution of ImageJ for the life sciences.</license.projectName>
 	</properties>
 
