@@ -31,20 +31,23 @@ import stitching.utils.Log;
 /**
  * Abstract class for arbitrary transformation models to be applied
  * to {@link Point Points} in n-dimensional space.
- * 
- * Model: R^n --> R^n 
- * 
+ * <p>
+ * Model: {@code R^n --> R^n} 
+ * </p>
+ * <p>
  * Provides methods for generic optimization and model extraction algorithms.
  * Currently, the Random Sample Consensus \citet{FischlerB81} and a robust
  * regression method are implemented.
- *  
+ * </p>
+ * <p>
  * TODO: A model is planned to be a generic transformation pipeline to be
- *   applied to images, volumes or arbitrary sets of n-dimensional points.
- *   E.g. lens transformation of camera images, pose and location of mosaic
- *   tiles, non-rigid bending of confocal stacks etc.
- *  
- * 
+ * applied to images, volumes or arbitrary sets of n-dimensional points.
+ * E.g. lens transformation of camera images, pose and location of mosaic
+ * tiles, non-rigid bending of confocal stacks etc.
+ * </p>
+ * <p>
  * BibTeX:
+ * </p>
  * <pre>
  * &#64;article{FischlerB81,
  *	 author    = {Martin A. Fischler and Robert C. Bolles},
@@ -96,10 +99,10 @@ public abstract class Model implements CoordinateTransform
 	final public void setError( double e ){ setCost( e ); }
 
 	/**
-	 * less than operater to make the models comparable, returns false for error < 0
+	 * less than operater to make the models comparable, returns false for error &lt; 0
 	 * 
 	 * @param m
-	 * @return false for error < 0, otherwise true if this.error is smaller than m.error
+	 * @return false for error &lt; 0, otherwise true if this.error is smaller than m.error
 	 */
 	public boolean betterThan( Model m )
 	{
@@ -134,7 +137,7 @@ public abstract class Model implements CoordinateTransform
 	 * The estimated model transfers match.p2.local to match.p1.world.
 	 * 
 	 * @param matches set of point correpondences
-	 * @throws an exception if matches does not contain enough data points
+	 * @throws NotEnoughDataPointsException an exception if matches does not contain enough data points
 	 */
 	abstract public void fit( Collection< PointMatch > matches ) throws NotEnoughDataPointsException;
 
@@ -149,7 +152,7 @@ public abstract class Model implements CoordinateTransform
 	 * @param candidates set of point correspondence candidates
 	 * @param inliers set of point correspondences that fit the model
 	 * @param epsilon maximal allowed transfer error
-	 * @param min_inliers minimal ratio of inliers (0.0 => 0%, 1.0 => 100%)
+	 * @param min_inlier_ratio minimal ratio of inliers (0.0 =&gt; 0%, 1.0 =&gt; 100%)
 	 */
 	final static public boolean test(
 			Model model,
@@ -179,7 +182,7 @@ public abstract class Model implements CoordinateTransform
 	 * 
 	 * This method performs well on data sets with low amount of outliers.  If
 	 * you have many outliers, you can filter those with a `tolerant' RANSAC
-	 * first as done in {@link #filterRansac() filterRansac}.
+	 * first as done in {@link #filterRansac}.
 	 * 
 	 * @param modelClass Class of the model to be estimated
 	 * @param candidates Candidate data points eventually inluding some outliers
@@ -246,7 +249,7 @@ public abstract class Model implements CoordinateTransform
 	 * 
 	 * This method performs well on data sets with low amount of outliers.  If
 	 * you have many outliers, you can filter those with a `tolerant' RANSAC
-	 * first as done in {@link #filterRansac() filterRansac}.
+	 * first as done in {@link #filterRansac}.
 	 * 
 	 * @param modelClass Class of the model to be estimated
 	 * @param candidates Candidate data points inluding (many) outliers

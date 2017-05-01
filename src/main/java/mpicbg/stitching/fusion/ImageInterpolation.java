@@ -30,10 +30,10 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 /**
- * This class is necessary as it can create an {@link Interpolator} for an {@link Image} even if hold it as < ? extends RealType< ? > >
+ * This class is necessary as it can create an {@link InterpolatorFactory} for
+ * an {@link Img} even if hold it as {@code < ? extends RealType< ? > >}.
  * 
- * @author preibischs
- *
+ * @author Stephan Preibisch
  * @param <T>
  */
 public class ImageInterpolation< T extends RealType< T > > 

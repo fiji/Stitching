@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * Helper class for running the " Image > Scale..." plugin on a collection of
+ * Helper class for running the "Image &gt; Scale..." plugin on a collection of
  * {@link ImagePlus} objects. Displays one dialog to collect scale values, which
  * are applied to all provided images.
  * <p>
@@ -131,8 +131,8 @@ public class Downsampler {
 	}
 
 	/**
-	 * Runs the "Image > Scale..." plugin on all provided ImagePlus objects, based
-	 * on the previous {@link #getInput(int, int)} call.
+	 * Runs the "Image &gt; Scale..." plugin on all provided ImagePlus objects,
+	 * based on the previous {@link #getInput(int, int)} call.
 	 */
 	public void run(ImagePlus... imps) {
 		checkInit();

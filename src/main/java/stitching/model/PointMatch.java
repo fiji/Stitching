@@ -208,7 +208,6 @@ public class PointMatch
 	 * 
 	 * @param p1 Point 1
 	 * @param p2 Point 2
-	 * @param weights Weight
 	 */
 	public PointMatch(
 			Point p1,

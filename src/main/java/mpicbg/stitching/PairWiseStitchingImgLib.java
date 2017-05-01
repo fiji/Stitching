@@ -52,7 +52,7 @@ import mpicbg.imglib.type.numeric.real.FloatType;
  * It deals with aligning two slices (2d) or stacks (3d) having an arbitrary
  * amount of channels. If the ImagePlus contains several time-points it will 
  * only consider the first time-point as this requires global optimization of 
- * many independent 2d/3d <-> 2d/3d alignments.
+ * many independent 2d/3d &lt;-&gt; 2d/3d alignments.
  * 
  * @author Stephan Preibisch (stephan.preibisch@gmx.de)
  *
@@ -278,7 +278,7 @@ public class PairWiseStitchingImgLib
 	}
 
 	/**
-	 * return an {@link Image}<T> as input for the PhaseCorrelation.
+	 * return an {@code Image<T>} as input for the PhaseCorrelation.
 	 * 
 	 * @param imp - the {@link ImagePlus}
 	 * @param imgFactory - the {@link ImageFactory} defining wher to put it into
@@ -534,10 +534,9 @@ public class PairWiseStitchingImgLib
 	 * return an {@link Image} of {@link UnsignedByteType} as input for the PhaseCorrelation. If no rectangular roi
 	 * is selected, it will only wrap the existing ImagePlus!
 	 * 
-	 * @param targetType - which {@link RealType}
+	 * @param imp - the {@link ImagePlus}
 	 * @param channel - which channel (if channel=0 means average all channels)
 	 * @param timepoint - which timepoint
-	 * @param imp - the {@link ImagePlus}
 	 * 
 	 * @return - the {@link Image} or null if it was not an ImagePlus.GRAY8 or if channel = 0
 	 */
@@ -552,10 +551,9 @@ public class PairWiseStitchingImgLib
 	 * return an {@link Image} of {@link UnsignedShortType} as input for the PhaseCorrelation. If no rectangular roi
 	 * is selected, it will only wrap the existing ImagePlus!
 	 * 
-	 * @param targetType - which {@link RealType}
+	 * @param imp - the {@link ImagePlus}
 	 * @param channel - which channel (if channel=0 means average all channels)
 	 * @param timepoint - which timepoint
-	 * @param imp - the {@link ImagePlus}
 	 * 
 	 * @return - the {@link Image} or null if it was not an ImagePlus.GRAY16 or if channel = 0
 	 */
@@ -570,10 +568,9 @@ public class PairWiseStitchingImgLib
 	 * return an {@link Image} of {@link FloatType} as input for the PhaseCorrelation. If no rectangular roi
 	 * is selected, it will only wrap the existing ImagePlus!
 	 * 
-	 * @param targetType - which {@link RealType}
+	 * @param imp - the {@link ImagePlus}
 	 * @param channel - which channel (if channel=0 means average all channels)
 	 * @param timepoint - which timepoint
-	 * @param imp - the {@link ImagePlus}
 	 * 
 	 * @return - the {@link Image} or null if it was not an ImagePlus.GRAY32 or if channel = 0
 	 */
@@ -585,11 +582,12 @@ public class PairWiseStitchingImgLib
 	}
 
 	/**
-	 * Determines if this imageplus with these parameters can be wrapped directly into an Image<T>.
+	 * Determines if this imageplus with these parameters can be wrapped directly into an {@code Image<T>}.
 	 * This is important, because if we would wrap the first but not the second image, they would
 	 * have different {@link ImageFactory}s
 	 * 
 	 * @param imp - the ImagePlus
+	 * @param roi
 	 * @param channel - which channel (if channel=0 means average all channels)
 	 * 
 	 * @return true if it can be wrapped, otherwise false

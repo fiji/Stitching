@@ -54,7 +54,7 @@ import stitching.utils.Log;
 /**
  * Plugin class to stitch a sequence of grid of images (fixed X/Y configuration)
  * 
- * @author Ignacio Arganda-Carreras <iarganda@mit.edu>
+ * @author Ignacio Arganda-Carreras
  */
 public class Stitch_Image_Grid_Sequence implements PlugIn
 {

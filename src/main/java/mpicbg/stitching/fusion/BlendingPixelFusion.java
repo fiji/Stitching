@@ -98,11 +98,9 @@ public class BlendingPixelFusion implements PixelFusion
 	/**
 	 * From SPIM Registration
 	 * 
-	 * 
 	 * @param location
 	 * @param dimensions
 	 * @param border
-	 * @param dimensionScaling
 	 * @param percentScaling
 	 * @return
 	 */

@@ -53,6 +53,7 @@ import javax.swing.JList;
  * The Rois of the list can be itereated by repeated clicking.
  * <p>
  * NB: Known limitations to this tool:
+ * </p>
  * <ul>
  * <li>When displaying a union of all matching Rois, only the first will be
  * selected in the RoiManager.</li>
@@ -60,7 +61,6 @@ import javax.swing.JList;
  * automatically update to display that Roi.</li>
  * <li>Works best with "Show all" Rois off.
  * </ul>
- * </p>
  * 
  * @author Mark Hinier
  * @version 1.0 - 30 Aug 2013

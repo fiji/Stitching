@@ -77,7 +77,7 @@ public class Point
 	 * {@link #w world coordinates}.
 	 * 
 	 * @param model
-	 * @param amount 0.0 -> no application, 1.0 -> full application
+	 * @param amount 0.0 -&gt; no application, 1.0 -&gt; full application
 	 */
 	final public void apply( Model model, float amount )
 	{
