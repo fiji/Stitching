@@ -11,7 +11,7 @@
 
 	<groupId>sc.fiji</groupId>
 	<artifactId>Stitching_</artifactId>
-	<version>3.1.3-SNAPSHOT</version>
+	<version>3.1.3</version>
 
 	<name>Stitching</name>
 	<description>A plugin for reconstructing big images/stacks from an arbitrary number of tiled input images/stacks.</description>
@@ -99,7 +99,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/fiji/Stitching</connection>
 		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
-		<tag>HEAD</tag>
+		<tag>Stitching_-3.1.3</tag>
 		<url>https://github.com/fiji/Stitching</url>
 	</scm>
 	<issueManagement>
