@@ -109,6 +109,7 @@ public class ImageCollectionElement
 			
 			ImporterOptions options = new ImporterOptions();
 			options.setId( file.getAbsolutePath() );
+			options.setSeriesOn(getIndex(), true);
 			options.setSplitChannels( false );
 			options.setSplitTimepoints( false );
 			options.setSplitFocalPlanes( false );

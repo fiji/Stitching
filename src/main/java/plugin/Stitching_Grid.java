@@ -892,7 +892,7 @@ public class Stitching_Grid implements PlugIn
 			// CTR HACK: In the case of a single series, we treat each time point
 			// as a separate series for the purpose of stitching tiles.
 			timeHack = numSeries == 1;
-
+			
 			for ( int series = 0; series < numSeries; ++series )
 			{
 				Log.debug( "fetching data for series:  " + series );
@@ -963,7 +963,7 @@ public class Stitching_Grid implements PlugIn
 					}
 					else
 					{
-						element = new ImageCollectionElement( new File( multiSeriesFile ), elements.size() );
+						element = new ImageCollectionElement( new File( multiSeriesFile ), series );
 						element.setModel( new TranslationModel3D() );
 						element.setOffset( new float[]{ (float)locationX, (float)locationY, (float)locationZ } );
 						element.setDimensionality( 3 );
