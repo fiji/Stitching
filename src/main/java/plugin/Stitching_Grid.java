@@ -956,7 +956,7 @@ public class Stitching_Grid implements PlugIn
 
 					if ( dim == 2 )
 					{
-						element = new ImageCollectionElement( new File( multiSeriesFile ), elements.size() );
+						element = new ImageCollectionElement( new File( multiSeriesFile ), series );
 						element.setModel( new TranslationModel2D() );
 						element.setOffset( new float[]{ (float)locationX, (float)locationY } );
 						element.setDimensionality( 2 );
