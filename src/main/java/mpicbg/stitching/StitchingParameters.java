@@ -22,14 +22,16 @@
 package mpicbg.stitching;
 
 import mpicbg.imglib.container.ContainerFactory;
-import mpicbg.imglib.container.array.ArrayContainerFactory;
+import net.imglib2.img.ImgFactory;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.type.numeric.real.FloatType;
 
 public class StitchingParameters 
 {
 	/**
 	 * If we cannot wrap, which factory do we use for computing the phase correlation
 	 */
-	public static ContainerFactory phaseCorrelationFactory = new ArrayContainerFactory();
+	public static ImgFactory< ? > phaseCorrelationFactory = new ArrayImgFactory< FloatType >();
 	
 	/**
 	 * If you want to force that the {@link ContainerFactory} above is always used set this to true

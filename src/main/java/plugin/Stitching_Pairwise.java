@@ -21,6 +21,11 @@
  */
 package plugin;
 import static stitching.CommonFunctions.addHyperLinkListener;
+
+import java.util.ArrayList;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import fiji.stacks.Hyperstack_rearranger;
 import ij.CompositeImage;
 import ij.IJ;
@@ -30,11 +35,6 @@ import ij.WindowManager;
 import ij.gui.GenericDialog;
 import ij.gui.MultiLineLabel;
 import ij.plugin.PlugIn;
-
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.Model;
 import mpicbg.models.TranslationModel2D;
@@ -43,7 +43,6 @@ import mpicbg.stitching.ComparePair;
 import mpicbg.stitching.GlobalOptimization;
 import mpicbg.stitching.ImagePlusTimePoint;
 import mpicbg.stitching.PairWiseStitchingImgLib;
-import mpicbg.stitching.PairWiseStitchingResult;
 import mpicbg.stitching.StitchingParameters;
 import mpicbg.stitching.fusion.Fusion;
 import mpicbg.stitching.fusion.OverlayFusion;
@@ -52,12 +51,14 @@ import net.imglib2.interpolation.InterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 import net.imglib2.multithreading.SimpleMultiThreading;
+import net.imglib2.realtransform.Translation;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Util;
+import net.imglib2.util.Pair;
+import net.imglib2.util.ValuePair;
 import stitching.CommonFunctions;
 import stitching.utils.CompositeImageFixer;
 import stitching.utils.Log;
@@ -308,65 +309,64 @@ public class Stitching_Pairwise implements PlugIn
 		{
 			// compute the stitching
 			long start = System.currentTimeMillis();
-			
-			final PairWiseStitchingResult result;
-			
+
+			final Pair< Translation, Double > result;
+
 			if ( params.computeOverlap )
 			{
 				result = PairWiseStitchingImgLib.stitchPairwise( imp1, imp2, imp1.getRoi(), imp2.getRoi(), 1, 1, params );
-				Log.info( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
-				
+				Log.info( "shift (second relative to first): " + result.getA() + " correlation (R)=" + result.getB() + " (" + (System.currentTimeMillis() - start) + " ms)");
+
 				// update the dialog to show the numbers next time
-				defaultxOffset = result.getOffset( 0 );
-				defaultyOffset = result.getOffset( 1 );
+				defaultxOffset = result.getA().getTranslation( 0 );
+				defaultyOffset = result.getA().getTranslation( 1 );
 				if ( params.dimensionality == 3 )
-					defaultzOffset = result.getOffset( 2 );
+					defaultzOffset = result.getA().getTranslation( 2 );
 			}
 			else
 			{
-				final float[] offset;
-				
+				final Translation t;
+
 				if ( params.dimensionality == 2 )
 				{
 					if ( params.subpixelAccuracy )
-						offset = new float[] { (float)params.xOffset, (float)params.yOffset };
+						t = new Translation( params.xOffset, params.yOffset );
 					else
-						offset = new float[] { Math.round( (float)params.xOffset ), Math.round( (float)params.yOffset ) };
+						t = new Translation( Math.round( params.xOffset ), Math.round( params.yOffset ) );
 				}
 				else
 				{
 					if ( params.subpixelAccuracy )
-						offset = new float[] { (float)params.xOffset, (float)params.yOffset, (float)params.zOffset };
+						t = new Translation( params.xOffset, params.yOffset, params.zOffset );
 					else
-						offset = new float[] { Math.round( (float)params.xOffset ), Math.round( (float)params.yOffset ), Math.round( (float)params.zOffset ) };					
+						t = new Translation( Math.round( params.xOffset ), Math.round( params.yOffset ), Math.round( params.zOffset ) );
 				}
-				
-				result = new PairWiseStitchingResult( offset, 0.0f, 0.0f );
-				Log.info( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " (from dialog)");
+
+				result = new ValuePair< Translation, Double >( t, 0.0 ); //new PairWiseStitchingResult( offset, 0.0f, 0.0f );
+				Log.info( "shift (second relative to first): " + t + " (from dialog)");
 			}
-						
-			
+
 			for ( int f = 1; f <= imp1.getNFrames(); ++f )
 			{
 				if ( params.dimensionality == 2 )
 				{
 					TranslationModel2D model1 = new TranslationModel2D();
 					TranslationModel2D model2 = new TranslationModel2D();
-					model2.set( result.getOffset( 0 ), result.getOffset( 1 ) );
-					
-					models.add( model1 );			
+					model2.set( result.getA().getTranslation( 0 ), result.getA().getTranslation( 1 ) );
+
+					models.add( model1 );
 					models.add( model2 );
 				}
 				else
 				{
 					TranslationModel3D model1 = new TranslationModel3D();
 					TranslationModel3D model2 = new TranslationModel3D();
-					model2.set( result.getOffset( 0 ), result.getOffset( 1 ), result.getOffset( 2 ) );
-					
-					models.add( model1 );			
-					models.add( model2 );					
+					model2.set( result.getA().getTranslation( 0 ), result.getA().getTranslation( 1 ), result.getA().getTranslation( 2 ) );
+
+					models.add( model1 );
+					models.add( model2 );
 				}
-			}			
+			}
 		}
 		else
 		{
@@ -402,18 +402,18 @@ public class Stitching_Pairwise implements PlugIn
 	                    		
 	                    		long start = System.currentTimeMillis();			
 
-	            				final PairWiseStitchingResult result = PairWiseStitchingImgLib.stitchPairwise( pair.getImagePlus1(), pair.getImagePlus2(), 
+	                    		final Pair< Translation, Double > result = PairWiseStitchingImgLib.stitchPairwise( pair.getImagePlus1(), pair.getImagePlus2(), 
 	            						pair.getImagePlus1().getRoi(), pair.getImagePlus2().getRoi(), pair.getTimePoint1(), pair.getTimePoint2(), params );			
 
 	            				if ( params.dimensionality == 2 )
-	            					pair.setRelativeShift( new float[]{ result.getOffset( 0 ), result.getOffset( 1 ) } );
+	            					pair.setRelativeShift( new float[]{ (float)result.getA().getTranslation( 0 ), (float)result.getA().getTranslation( 1 ) } );
 	            				else
-	            					pair.setRelativeShift( new float[]{ result.getOffset( 0 ), result.getOffset( 1 ), result.getOffset( 2 ) } );
+	            					pair.setRelativeShift( new float[]{ (float)result.getA().getTranslation( 0 ), (float)result.getA().getTranslation( 1 ), (float)result.getA().getTranslation( 2 ) } );
 	            				
-	            				pair.setCrossCorrelation( result.getCrossCorrelation() );
+	            				pair.setCrossCorrelation( (float)result.getB().doubleValue() );
 
 	            				Log.info( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
-	            						Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
+	            						result.getA() + " correlation (R)=" + result.getB() + " (" + (System.currentTimeMillis() - start) + " ms)");
 	                    	}
 	                    }
 	                }

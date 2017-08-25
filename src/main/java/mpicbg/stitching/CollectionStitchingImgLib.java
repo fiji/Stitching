@@ -21,7 +21,6 @@
  */
 package mpicbg.stitching;
 
-import ij.IJ;
 import ij.gui.Roi;
 
 import java.awt.Rectangle;
@@ -31,9 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import stitching.utils.Log;
 import mpicbg.imglib.multithreading.SimpleMultiThreading;
-import mpicbg.imglib.util.Util;
 import mpicbg.models.TranslationModel2D;
 import mpicbg.models.TranslationModel3D;
+import net.imglib2.realtransform.Translation;
+import net.imglib2.util.Pair;
 
 public class CollectionStitchingImgLib 
 {
@@ -87,7 +87,7 @@ public class CollectionStitchingImgLib
 	                			final Roi roi1 = getROI( pair.getTile1().getElement(), pair.getTile2().getElement() );
 	                			final Roi roi2 = getROI( pair.getTile2().getElement(), pair.getTile1().getElement() );
 	                			
-	            				final PairWiseStitchingResult result = PairWiseStitchingImgLib.stitchPairwise( pair.getImagePlus1(), pair.getImagePlus2(), roi1, roi2, pair.getTimePoint1(), pair.getTimePoint2(), params );			
+	            				final Pair< Translation, Double > result = PairWiseStitchingImgLib.stitchPairwise( pair.getImagePlus1(), pair.getImagePlus2(), roi1, roi2, pair.getTimePoint1(), pair.getTimePoint2(), params );			
 	            				if ( result == null )
 	            				{
 	            					Log.error( "Collection stitching failed" );
@@ -95,14 +95,14 @@ public class CollectionStitchingImgLib
 	            				}
 	
 	            				if ( params.dimensionality == 2 )
-	            					pair.setRelativeShift( new float[]{ result.getOffset( 0 ), result.getOffset( 1 ) } );
+	            					pair.setRelativeShift( new float[]{ (float)result.getA().getTranslation( 0 ), (float)result.getA().getTranslation( 1 ) } );
 	            				else
-	            					pair.setRelativeShift( new float[]{ result.getOffset( 0 ), result.getOffset( 1 ), result.getOffset( 2 ) } );
+	            					pair.setRelativeShift( new float[]{ (float)result.getA().getTranslation( 0 ), (float)result.getA().getTranslation( 1 ), (float)result.getA().getTranslation( 2 ) } );
 	            				
-	            				pair.setCrossCorrelation( result.getCrossCorrelation() );
+	            				pair.setCrossCorrelation( (float)result.getB().doubleValue() );
 	
 	            				Log.info( pair.getImagePlus1().getTitle() + "[" + pair.getTimePoint1() + "]" + " <- " + pair.getImagePlus2().getTitle() + "[" + pair.getTimePoint2() + "]" + ": " + 
-	            						Util.printCoordinates( result.getOffset() ) + " correlation (R)=" + result.getCrossCorrelation() + " (" + (System.currentTimeMillis() - start) + " ms)");
+	            						result.getA() + " correlation (R)=" + result.getB() + " (" + (System.currentTimeMillis() - start) + " ms)");
 	                    	}
 	                    }
 	                }
