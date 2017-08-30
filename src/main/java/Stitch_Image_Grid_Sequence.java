@@ -283,7 +283,7 @@ public class Stitch_Image_Grid_Sequence implements PlugIn
 			fusedImage.close();
 		}
 		
-		IJ.showMessage("Image grid sequence stitching is done!");
+		Log.info("Image grid sequence stitching is done!");
 		
 	}
 
