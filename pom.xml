@@ -3,17 +3,31 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>sc.fiji</groupId>
-		<artifactId>pom-fiji</artifactId>
-		<version>24.0.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>13.0.0</version>
 		<relativePath />
 	</parent>
 
+	<groupId>sc.fiji</groupId>
 	<artifactId>Stitching_</artifactId>
-	<version>3.1.1-SNAPSHOT</version>
+	<version>3.1.5-SNAPSHOT</version>
 
-	<name>plugins/Stitching_.jar</name>
-	<description />
+	<name>Stitching</name>
+	<description>A plugin for reconstructing big images/stacks from an arbitrary number of tiled input images/stacks.</description>
+	<url>https://imagej.net/Stitching</url>
+	<inceptionYear>2007</inceptionYear>
+	<organization>
+		<name>Fiji</name>
+		<url>http://fiji.sc/</url>
+	</organization>
+	<licenses>
+		<license>
+			<name>GNU General Public License v2+</name>
+			<url>http://www.gnu.org/licenses/gpl.html</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
 	<developers>
 		<developer>
@@ -75,6 +89,13 @@
 		<contributor><name>John Lapage</name></contributor>
 	</contributors>
 
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
 	<scm>
 		<connection>scm:git:git://github.com/fiji/Stitching</connection>
 		<developerConnection>scm:git:git@github.com:fiji/Stitching</developerConnection>
@@ -86,13 +107,14 @@
 		<url>https://github.com/fiji/Stitching/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/Stitching/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/fiji/Stitching</url>
 	</ciManagement>
 
 	<properties>
-		<!-- Prevent the plugin from being copied to ./plugins/ by default -->
-		<imagej.app.directory>path/to/Fiji.app/</imagej.app.directory>
+		<license.licenseName>gpl_v2</license.licenseName>
+		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
+		<license.projectName>Fiji distribution of ImageJ for the life sciences.</license.projectName>
 	</properties>
 
 	<repositories>
@@ -116,6 +138,7 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>
+			<version>1.1.6</version>
 		</dependency>
 
 		<!-- ImageJ dependencies -->
@@ -152,11 +175,11 @@
 			<artifactId>formats-bsd</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ome</groupId>
-			<artifactId>formats-common</artifactId>
+			<groupId>org.openmicroscopy</groupId>
+			<artifactId>ome-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>ome</groupId>
+			<groupId>org.openmicroscopy</groupId>
 			<artifactId>ome-xml</artifactId>
 		</dependency>
 

@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Fiji distribution of ImageJ for the life sciences.
+ * %%
+ * Copyright (C) 2007 - 2017 Fiji
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-2.0.html>.
+ * #L%
+ */
 
 package tools;
 
@@ -32,6 +53,7 @@ import javax.swing.JList;
  * The Rois of the list can be itereated by repeated clicking.
  * <p>
  * NB: Known limitations to this tool:
+ * </p>
  * <ul>
  * <li>When displaying a union of all matching Rois, only the first will be
  * selected in the RoiManager.</li>
@@ -39,7 +61,6 @@ import javax.swing.JList;
  * automatically update to display that Roi.</li>
  * <li>Works best with "Show all" Rois off.
  * </ul>
- * </p>
  * 
  * @author Mark Hinier
  * @version 1.0 - 30 Aug 2013

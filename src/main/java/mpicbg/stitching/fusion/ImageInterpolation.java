@@ -1,3 +1,24 @@
+/*
+ * #%L
+ * Fiji distribution of ImageJ for the life sciences.
+ * %%
+ * Copyright (C) 2007 - 2017 Fiji
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-2.0.html>.
+ * #L%
+ */
 package mpicbg.stitching.fusion;
 
 import net.imglib2.RandomAccessible;
@@ -9,10 +30,10 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 /**
- * This class is necessary as it can create an {@link Interpolator} for an {@link Image} even if hold it as < ? extends RealType< ? > >
+ * This class is necessary as it can create an {@link InterpolatorFactory} for
+ * an {@link Img} even if hold it as {@code < ? extends RealType< ? > >}.
  * 
- * @author preibischs
- *
+ * @author Stephan Preibisch
  * @param <T>
  */
 public class ImageInterpolation< T extends RealType< T > > 
