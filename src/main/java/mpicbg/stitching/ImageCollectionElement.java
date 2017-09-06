@@ -26,6 +26,8 @@ import ij.ImagePlus;
 
 import java.io.File;
 
+import loci.formats.ChannelSeparator;
+import loci.formats.IFormatReader;
 import loci.plugins.BF;
 import loci.plugins.in.ImporterOptions;
 import mpicbg.models.Model;
@@ -121,7 +123,7 @@ public class ImageCollectionElement
 				imp = BF.openImagePlus( options );
 			else
 				imp = BF.openImagePlus( file.getAbsolutePath() ); // this worked, so we keep it (altough both should be the same)
-			
+
 			if ( imp.length > 1 )
 			{
 				Log.error( "LOCI does not open the file '" + file + "'correctly, it opens the image and splits it - maybe you should convert all input files first to TIFF?" );
@@ -131,11 +133,34 @@ public class ImageCollectionElement
 				
 				return null;
 			}
+
+			if ( imp[ 0 ].getNSlices() == 1 && imp[ 0 ].getNFrames() > 1 )
+			{
+				try
+				{
+					final IFormatReader r = new ChannelSeparator();
+					r.setId( file.getAbsolutePath() );
+
+					if ( !r.isOrderCertain() )
+					{
+						Log.info( "dimension order is not certain, assuming XYZ instead of XYT" );
+						imp[ 0 ].setDimensions( imp[ 0 ].getNChannels(), imp[ 0 ].getNFrames(), imp[ 0 ].getNSlices() );
+					}
+
+					r.close();
+				}
+				catch ( Exception e ) {}
+			}
+
 			if ( imp[ 0 ].getNSlices() == 1 )
+			{
 				size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight() };
+			}
 			else
+			{
 				size = new int[] { imp[ 0 ].getWidth(), imp[ 0 ].getHeight(), imp[ 0 ].getNSlices() };
-			
+			}
+
 			this.imp = imp[ 0 ];
 			return this.imp;
 		} 
