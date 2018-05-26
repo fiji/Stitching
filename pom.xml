@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>17.1.1</version>
+		<version>22.0.2</version>
 		<relativePath />
 	</parent>
 
@@ -140,7 +140,6 @@
 		<dependency>
 			<groupId>sc.fiji</groupId>
 			<artifactId>legacy-imglib1</artifactId>
-			<version>1.1.6</version>
 		</dependency>
 
 		<!-- ImageJ dependencies -->
@@ -193,7 +192,6 @@
 		<dependency>
 			<groupId>mpicbg</groupId>
 			<artifactId>mpicbg</artifactId>
-			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>
