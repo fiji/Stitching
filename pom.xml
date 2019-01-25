@@ -33,7 +33,7 @@
 		<developer>
 			<id>StephanPreibisch</id>
 			<name>Stephan Preibisch</name>
-			<url>http://imagej.net/User:StephanP</url>
+			<url>https://imagej.net/User:StephanP</url>
 			<roles>
 				<role>founder</role>
 				<role>lead</role>
@@ -47,7 +47,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>debugger</role>
 				<role>support</role>
@@ -58,32 +58,32 @@
 	<contributors>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<properties><id>dscho</id></properties>
 		</contributor>
 		<contributor>
 			<name>Ignacio Arganda-Carreras</name>
-			<url>http://imagej.net/User:Iarganda</url>
+			<url>https://imagej.net/User:Iarganda</url>
 			<properties><id>iarganda</id></properties>
 		</contributor>
 		<contributor>
 			<name>Niko Ehrenfeuchter</name>
-			<url>http://imagej.net/User:Ehrenfeu</url>
+			<url>https://imagej.net/User:Ehrenfeu</url>
 			<properties><id>ehrenfeu</id></properties>
 		</contributor>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/User:Hinerm</url>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Kevin Mader</name>
-			<url>http://imagej.net/User:Ksmader</url>
+			<url>https://imagej.net/User:Ksmader</url>
 			<properties><id>kmader</id></properties>
 		</contributor>
 		<contributor>
 			<name>Stephan Saalfeld</name>
-			<url>http://imagej.net/User:Saalfeld</url>
+			<url>https://imagej.net/User:Saalfeld</url>
 			<properties><id>axtimwalde</id></properties>
 		</contributor>
 		<contributor><name>John Lapage</name></contributor>
@@ -123,7 +123,7 @@
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
