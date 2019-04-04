@@ -834,6 +834,7 @@ public class Stitching_Grid implements PlugIn
 			options.setStackFormat(ImporterOptions.VIEW_HYPERSTACK);
 			options.setStackOrder(ImporterOptions.ORDER_XYCZT);
 			options.setCrop( crop );
+			options.setGroupFiles(false); // NB: Grouping large OME-TIFF sets is super slow...
 			
 			options.setOpenAllSeries( allSeries );
 			
