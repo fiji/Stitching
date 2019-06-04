@@ -54,6 +54,13 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class StitchingUtils {
 
+	public static final int BLENDING_FUSION = 0;
+	public static final int AVERAGE_FUSION = 1;
+	public static final int MEDIAN_FUSION = 2;
+	public static final int MAX_FUSION = 3;
+	public static final int MIN_FUSION = 4;
+	public static final int OVERLAP_FUSION = 5;
+
 	private StitchingUtils() {
 		// prevent instantiation of static utility class
 	}
@@ -109,6 +116,34 @@ public class StitchingUtils {
 	}
 
 	/**
+	 * Fuse a set of tiles, given a set of transformation models and a fusion type
+	 * 
+	 * @param images List of tiles
+	 * @param models List of transformation models
+	 * @param dimensionality 2 or 3
+	 * @param fusionType Type of fusion, one of the following:
+	 *   <li> {@code BLENDING_FUSION}
+	 *   <li> {@code AVERAGE_FUSION}
+	 *   <li> {@code MEDIAN_FUSION}
+	 *   <li> {@code MAX_FUSION}
+	 *   <li> {@code MIN_FUSION}
+	 *   <li> {@code OVERLAP_FUSION}
+	 * @return fused image
+	 */
+	public static ImagePlus fuseTiles(ArrayList<ImagePlus> images, ArrayList<InvertibleBoundable> models, int dimensionality, int fusionType) {
+		switch (images.get(0).getType()) {
+			case ImagePlus.GRAY8:
+				return Fusion.fuse(new UnsignedByteType(), images, models, dimensionality, true, fusionType, null, false, false, false);
+			case ImagePlus.GRAY16:
+				return Fusion.fuse(new UnsignedShortType(), images, models, dimensionality, true, fusionType, null, false, false, false);
+			case ImagePlus.GRAY32:
+				return Fusion.fuse(new FloatType(), images, models, dimensionality, true, fusionType, null, false, false, false);
+			default:
+				throw new RuntimeException("Unknown image type for fusion");
+		}
+	}
+
+	/**
 	 * Fuse a set of tiles, given a set of transformation models
 	 * 
 	 * @param images List of tiles
@@ -117,16 +152,7 @@ public class StitchingUtils {
 	 * @return fused image
 	 */
 	public static ImagePlus fuseTiles(ArrayList<ImagePlus> images, ArrayList<InvertibleBoundable> models, int dimensionality) {
-		switch (images.get(0).getType()) {
-			case ImagePlus.GRAY8:
-				return Fusion.fuse(new UnsignedByteType(), images, models, dimensionality, true, 0, null, false, false, false);
-			case ImagePlus.GRAY16:
-				return Fusion.fuse(new UnsignedShortType(), images, models, dimensionality, true, 0, null, false, false, false);
-			case ImagePlus.GRAY32:
-				return Fusion.fuse(new FloatType(), images, models, dimensionality, true, 0, null, false, false, false);
-			default:
-				throw new RuntimeException("Unknown image type for fusion");
-		}
+		return fuseTiles(images, models, dimensionality, BLENDING_FUSION);
 	}
 
 	/**
