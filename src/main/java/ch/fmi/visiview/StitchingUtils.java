@@ -122,12 +122,14 @@ public class StitchingUtils {
 	 * @param models List of transformation models
 	 * @param dimensionality 2 or 3
 	 * @param fusionType Type of fusion, one of the following:
-	 *   <li> {@code BLENDING_FUSION}
-	 *   <li> {@code AVERAGE_FUSION}
-	 *   <li> {@code MEDIAN_FUSION}
-	 *   <li> {@code MAX_FUSION}
-	 *   <li> {@code MIN_FUSION}
-	 *   <li> {@code OVERLAP_FUSION}
+	 * <ul>
+	 *   <li>{@code BLENDING_FUSION}</li>
+	 *   <li>{@code AVERAGE_FUSION}</li>
+	 *   <li>{@code MEDIAN_FUSION}</li>
+	 *   <li>{@code MAX_FUSION}</li>
+	 *   <li>{@code MIN_FUSION}</li>
+	 *   <li>{@code OVERLAP_FUSION}</li>
+	 * </ul>
 	 * @return fused image
 	 */
 	public static ImagePlus fuseTiles(ArrayList<ImagePlus> images, ArrayList<InvertibleBoundable> models, int dimensionality, int fusionType) {
