@@ -1,47 +1,33 @@
 /*-
  * #%L
- * ImageJ plugins for processing VisiView datasets
+ * Fiji distribution of ImageJ for the life sciences.
  * %%
- * Copyright (C) 2019 Friedrich Miescher Institute for Biomedical
- * 			Research, Basel
+ * Copyright (C) 2007 - 2020 Fiji developers.
  * %%
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 2 of the
+ * License, or (at your option) any later version.
  * 
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-2.0.html>.
  * #L%
  */
 
-package ch.fmi.visiview;
+package mpicbg.stitching;
+
+import java.util.ArrayList;
 
 import ij.ImagePlus;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 import mpicbg.models.InvertibleBoundable;
 import mpicbg.models.TranslationModel2D;
 import mpicbg.models.TranslationModel3D;
-import mpicbg.stitching.CollectionStitchingImgLib;
-import mpicbg.stitching.ImageCollectionElement;
-import mpicbg.stitching.ImagePlusTimePoint;
-import mpicbg.stitching.StitchingParameters;
 import mpicbg.stitching.fusion.Fusion;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.integer.UnsignedShortType;
@@ -155,68 +141,5 @@ public class StitchingUtils {
 	 */
 	public static ImagePlus fuseTiles(ArrayList<ImagePlus> images, ArrayList<InvertibleBoundable> models, int dimensionality) {
 		return fuseTiles(images, models, dimensionality, BLENDING_FUSION);
-	}
-
-	/**
-	 * Create a preview image of a tile layout
-	 * 
-	 * @param image {@code BufferedImage} to draw into
-	 * @param pixelPositions List of positions (2D pixel coordinates)
-	 * @param xSize Width of a single tile
-	 * @param ySize Height of a single tile
-	 */
-	public static void drawPositions(BufferedImage image, ArrayList<float[]> pixelPositions, long xSize, long ySize)
-	{
-		Float xMin = Float.POSITIVE_INFINITY;
-		Float yMin = Float.POSITIVE_INFINITY;
-		Float xMax = Float.NEGATIVE_INFINITY;
-		Float yMax = Float.NEGATIVE_INFINITY;
-
-		for (float[] p : pixelPositions) {
-			if (p[0] < xMin) xMin = p[0];
-			if (p[1] < yMin) yMin = p[1];
-			if (p[0] > xMax) xMax = p[0];
-			if (p[1] > yMax) yMax = p[1];
-		}
-
-		long tileWidth = xSize;
-		long tileHeight = ySize;
-
-		xMax += tileWidth;
-		yMax += tileHeight;
-
-		int width = image.getWidth();
-		int height = image.getHeight();
-		double scaledWidth = xMax - xMin;
-		double scaledHeight = yMax - yMin;
-		Float offsetX = xMin;
-		Float offsetY = yMin;
-		double factor = Math.max(scaledWidth, scaledHeight) / Math.min(width,
-			height);
-
-		Graphics g = image.getGraphics();
-		g.clearRect(0, 0, width, height);
-		int rgb = 0;
-		for (float[] p : pixelPositions) {
-			rgb = nextColor(rgb);
-			g.setXORMode(new Color(rgb)); // TODO replace by HSB color directly?
-			g.fillRect((int) ((p[0] - offsetX) / factor), (int) ((p[1] - offsetY) /
-				factor), (int) (tileWidth / factor), (int) (tileHeight / factor));
-		}
-		g.dispose();
-	}
-
-	private static int nextColor(int rgb) {
-		// Create a "golden angle" color sequence for best contrast, see:
-		// https://github.com/ijpb/MorphoLibJ/blob/c6c688f/src/main/java/inra/ijpb/util/ColorMaps.java#L315
-
-		float[] hsb = Color.RGBtoHSB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb &
-			0xFF, null);
-		hsb[0] += 0.38197;
-		if (hsb[0] > 1) hsb[0] -= 1;
-		hsb[1] += 0.38197;
-		if (hsb[1] > 1) hsb[1] -= 1;
-		hsb[1] = 0.5f * hsb[1] + 0.5f;
-		return Color.HSBtoRGB(hsb[0], hsb[1], 1);
 	}
 }
