@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/fiji/Stitching.svg?branch=master)](https://travis-ci.org/fiji/Stitching)
+[![](https://github.com/fiji/Stitching/actions/workflows/build-main.yml/badge.svg)](https://github.com/fiji/Stitching/actions/workflows/build-main.yml)
 
 Stitching
 =========
