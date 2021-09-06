@@ -338,14 +338,16 @@ public class Stitching_Pairwise implements PlugIn
 					if ( params.subpixelAccuracy )
 						offset = new float[] { (float)params.xOffset, (float)params.yOffset, (float)params.zOffset };
 					else
-						offset = new float[] { Math.round( (float)params.xOffset ), Math.round( (float)params.yOffset ), Math.round( (float)params.zOffset ) };					
+						offset = new float[] { Math.round( (float)params.xOffset ), Math.round( (float)params.yOffset ), Math.round( (float)params.zOffset ) };
 				}
 				
 				result = new PairWiseStitchingResult( offset, 0.0f, 0.0f );
 				Log.info( "shift (second relative to first): " + Util.printCoordinates( result.getOffset() ) + " (from dialog)");
 			}
-						
-			
+
+			if ( mpicbg.stitching.GlobalOptimization.ignoreZ && params.dimensionality == 3 )
+				defaultzOffset = result.getOffset()[ 2 ] = 0;
+
 			for ( int f = 1; f <= imp1.getNFrames(); ++f )
 			{
 				if ( params.dimensionality == 2 )
