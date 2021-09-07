@@ -346,7 +346,10 @@ public class Stitching_Pairwise implements PlugIn
 			}
 
 			if ( mpicbg.stitching.GlobalOptimization.ignoreZ && params.dimensionality == 3 )
+			{
 				defaultzOffset = result.getOffset()[ 2 ] = 0;
+				Log.info( "Ignoring z-shift because mpicbg.stitching.GlobalOptimization.ignoreZ = true");
+			}
 
 			for ( int f = 1; f <= imp1.getNFrames(); ++f )
 			{
