@@ -457,7 +457,7 @@ public class Stitching_Grid implements PlugIn
 			if ( imp == null )
 				return;
 			
-			if (downSample && ( gridType == 5 || gridType == 7)) {
+			if (downSample && ( gridType >= 5)) {
 				if (ds == null) {
 					ds = new Downsampler();
 					ds.getInput(imp.getWidth(), imp.getHeight());
