@@ -275,6 +275,9 @@ public class Fusion
 		
 		//convertXYZCT ...
 		ImagePlus result = new ImagePlus( "", stack );
+
+		// transfer calibration from first tile
+		result.setCalibration(images.get(0).getCalibration());
 		
 		// numchannels, z-slices, timepoints (but right now the order is still XYZCT)
 		if ( dimensionality == 3 )
