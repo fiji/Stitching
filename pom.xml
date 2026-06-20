@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>34.1.0</version>
+		<version>44.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -115,6 +115,9 @@
 		<license.licenseName>gpl_v2</license.licenseName>
 		<license.copyrightOwners>Fiji developers.</license.copyrightOwners>
 		<license.projectName>Fiji distribution of ImageJ for the life sciences.</license.projectName>
+		<scijava.jvm.version>21</scijava.jvm.version>
+		<scijava.javadoc.url.java>https://javadoc.scijava.org/Java21/</scijava.javadoc.url.java>
+		<legacyMode>true</legacyMode> <!-- NB: Make javadoc less strict about Java module system. -->
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
@@ -182,6 +185,17 @@
 		<dependency>
 			<groupId>org.openmicroscopy</groupId>
 			<artifactId>ome-xml</artifactId>
+		</dependency>
+
+		<!-- Pulled transitively (compile) via bio-formats. Re-declared at runtime scope so
+		     it stays available at runtime but is off the compile/javadoc classpath: its jar
+		     has a class in the default package, which the javadoc tool cannot place on the
+		     JDK 9+ module path ("Unable to derive module descriptor") during release. -->
+		<dependency>
+			<groupId>ome</groupId>
+			<artifactId>turbojpeg</artifactId>
+			<version>${bio-formats.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Third party dependencies -->
