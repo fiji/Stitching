@@ -50,6 +50,8 @@ import loci.formats.MetadataTools;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.services.OMEXMLService;
+import loci.formats.in.DynamicMetadataOptions;
+import loci.formats.in.ZeissCZIReader;
 import loci.plugins.BF;
 import loci.plugins.in.ImporterOptions;
 import mpicbg.models.InvertibleBoundable;
@@ -871,6 +873,10 @@ public class Stitching_Grid implements PlugIn
 			final OMEXMLService service = factory.getInstance( OMEXMLService.class );
 			final IMetadata meta = service.createOMEXMLMetadata();
 			r.setMetadataStore( meta );
+
+			final DynamicMetadataOptions options = new DynamicMetadataOptions();
+			options.setBoolean( ZeissCZIReader.ALLOW_AUTOSTITCHING_KEY, false);
+			r.setMetadataOptions( options );
 
 			r.setId( multiSeriesFile );
 

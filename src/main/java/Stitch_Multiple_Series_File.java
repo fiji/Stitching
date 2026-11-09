@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import loci.common.services.ServiceFactory;
 import loci.formats.ChannelSeparator;
 import loci.formats.IFormatReader;
+import loci.formats.in.DynamicMetadataOptions;
+import loci.formats.in.ZeissCZIReader;
 import loci.formats.meta.IMetadata;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.services.OMEXMLService;
@@ -195,30 +197,34 @@ public class Stitch_Multiple_Series_File implements PlugIn
 			Log.error( "Filename is empty!" );
 			return null;
 		}
-		
+
 		final ArrayList<ImageInformation> imageInformationList = new ArrayList<ImageInformation>();
 
 		final IFormatReader r = new ChannelSeparator();
-		
-		try 
+
+		try
 		{
 			final ServiceFactory factory = new ServiceFactory();
 			final OMEXMLService service = factory.getInstance( OMEXMLService.class );
 			final IMetadata meta = service.createOMEXMLMetadata();
 			r.setMetadataStore( meta );
 
+			final DynamicMetadataOptions options = new DynamicMetadataOptions();
+			options.setBoolean( ZeissCZIReader.ALLOW_AUTOSTITCHING_KEY, false);
+			r.setMetadataOptions( options );
+
 			r.setId( filename );
 
 			final int numSeries = r.getSeriesCount();
-			
+
 			Log.debug( "numSeries:  " + numSeries );
-			
+
 			if ( numSeries == 1 )
 			{
 				Log.error( "File contains only one tile: " + filename );
 				return null;
 			}
-			
+
 			// get maxZ
 			int dim = 2;
 			for ( int series = 0; series < numSeries; ++series )
